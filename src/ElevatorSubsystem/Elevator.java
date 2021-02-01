@@ -6,8 +6,5 @@ public class Elevator implements Runnable {
     public void run() {
 
     }
-    public static void main(String[] args)
-    {
-        System.out.println("Test");
-    }
+
 }
