@@ -10,7 +10,7 @@ public class Scheduler implements Runnable {
         schedule = new ArrayList<HashMap<String, String>>();
     }
     public void readCSV(String filename) throws FileNotFoundException {
-        Scanner scanner = new Scanner(new File("test.csv"));
+        Scanner scanner = new Scanner(new File(filename));
 
         String [] keys = {"time","floor","floor button","car button"};
         int rowCount = 0;
