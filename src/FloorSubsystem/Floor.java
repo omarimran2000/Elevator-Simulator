@@ -13,11 +13,32 @@ public class Floor implements Runnable {
     private final Scheduler scheduler;
     private final List<Event> schedule;
     private final ScheduledExecutorService executor;
+    private FloorButton upButton;
+    private FloorButton downButton;
+    private FloorLamp upLamp;
+    private FloorLamp downLamp;
 
-    public Floor(Scheduler scheduler, List<Event> schedule) {
+    public Floor(Scheduler scheduler, List<Event> schedule,boolean topFloor,boolean bottomFloor) {
         this.scheduler = scheduler;
         this.schedule = schedule;
         executor = Executors.newSingleThreadScheduledExecutor();
+        if(!topFloor && !bottomFloor){
+            upButton = new FloorButton();
+            downButton = new FloorButton();
+
+            upLamp = new FloorLamp();
+            downLamp = new FloorLamp();
+        }
+        else if(bottomFloor)
+        {
+            upButton = new FloorButton();
+            upLamp = new FloorLamp();
+        }
+        else
+        {
+            downButton = new FloorButton();
+            downLamp = new FloorLamp();
+        }
     }
 
     private static void runEvent(Event event) {
