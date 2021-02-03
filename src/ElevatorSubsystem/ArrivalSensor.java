@@ -12,7 +12,7 @@ public class ArrivalSensor {
     }
 
     public static long getSecondsToTravelBetweenTwoFloors(int currentFloorNumber, int destinationFloorNumber) {
-        return (destinationFloorNumber - currentFloorNumber) * 10L; //FIXME This needs to be replaced
+        return destinationFloorNumber - currentFloorNumber; //FIXME This needs to be replaced
     }
 
 

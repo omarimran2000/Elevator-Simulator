@@ -12,6 +12,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 public abstract class Floor implements Runnable {
+    private static final boolean skipDuration = true; //FIXME move to a config file.
     private final Scheduler scheduler;
     private final List<Event> schedule;
     private final ScheduledExecutorService executor;
@@ -19,6 +20,7 @@ public abstract class Floor implements Runnable {
     private final FloorLamp downLamp;
     private final int floorNumber;
     private final Queue<Integer> destinationFloorNumbers;
+    private int numEvents;
 
     public Floor(int floorNumber, Scheduler scheduler, List<Event> schedule) {
         this.floorNumber = floorNumber;
@@ -28,18 +30,20 @@ public abstract class Floor implements Runnable {
         upLamp = new FloorLamp();
         downLamp = new FloorLamp();
         destinationFloorNumbers = new LinkedList<>();
+        numEvents = schedule.size();
     }
 
     private void runEvent(Event event) {
         System.out.println(event);
         destinationFloorNumbers.add(event.getCarButton());
         scheduler.moveElevatorToFloorNumber(event.getFloor());
+        numEvents--;
     }
 
     @Override
     public void run() {
         for (Event event : schedule) {
-            long seconds_to_task = Duration.between(FloorSubsystem.getStartDate().toInstant(), event.getTime().toInstant()).getSeconds();
+            long seconds_to_task = skipDuration ? 1 : Duration.between(FloorSubsystem.getStartDate().toInstant(), event.getTime().toInstant()).getSeconds();
             executor.schedule(() -> this.runEvent(event), seconds_to_task, TimeUnit.SECONDS);
         }
     }
@@ -50,6 +54,10 @@ public abstract class Floor implements Runnable {
 
     public int getFloorNumber() {
         return floorNumber;
+    }
+
+    public boolean hasPeopleWaiting() {
+        return !destinationFloorNumbers.isEmpty();
     }
 
     public int getNextElevatorButton() {

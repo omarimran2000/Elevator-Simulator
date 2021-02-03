@@ -35,7 +35,9 @@ public class Scheduler implements Runnable {
     }
 
     public void elevatorArrivedAtFloorNumber(int floorNumber) {
-        moveElevatorToFloorNumber(floors.get(floorNumber).getNextElevatorButton());
+        if (floors.get(floorNumber).hasPeopleWaiting()) {
+            moveElevatorToFloorNumber(floors.get(floorNumber).getNextElevatorButton());
+        }
     }
 
     @Override
