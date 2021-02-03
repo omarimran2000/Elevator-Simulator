@@ -40,9 +40,17 @@ public class FloorSubsystem {
                 max_floor_number = floor_number;
             }
         }
-        for (int floor_number = 0; floor_number <= max_floor_number; floor_number++) {
-            Thread temp = new Thread(new Floor(scheduler, schedule_by_floor.getOrDefault(floor_number, new ArrayList<>()),
-                    floor_number == max_floor_number, floor_number == 0), "Floor " + floor_number);
+
+        Thread temp = new Thread(new BottomFloor(scheduler, schedule_by_floor.getOrDefault(0, new ArrayList<>())), "Floor " + 0);
+        temp.start();
+        floors.add(temp);
+
+        temp = new Thread(new TopFloor(scheduler, schedule_by_floor.getOrDefault(max_floor_number, new ArrayList<>())), "Floor " + max_floor_number);
+        temp.start();
+        floors.add(temp);
+
+        for (int floor_number = 1; floor_number <= max_floor_number; floor_number++) {
+            temp = new Thread(new MiddleFloor(scheduler, schedule_by_floor.getOrDefault(floor_number, new ArrayList<>())), "Floor " + floor_number);
             temp.start();
             floors.add(temp);
         }

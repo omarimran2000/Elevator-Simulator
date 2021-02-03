@@ -9,32 +9,19 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-public class Floor implements Runnable {
+public abstract class Floor implements Runnable {
     private final Scheduler scheduler;
     private final List<Event> schedule;
     private final ScheduledExecutorService executor;
-    private FloorButton upButton;
-    private FloorButton downButton;
-    private FloorLamp upLamp;
-    private FloorLamp downLamp;
+    private final FloorLamp upLamp;
+    private final FloorLamp downLamp;
 
-    public Floor(Scheduler scheduler, List<Event> schedule, boolean topFloor, boolean bottomFloor) {
+    public Floor(Scheduler scheduler, List<Event> schedule) {
         this.scheduler = scheduler;
         this.schedule = schedule;
         executor = Executors.newSingleThreadScheduledExecutor();
-        if (!topFloor && !bottomFloor) {
-            upButton = new FloorButton();
-            downButton = new FloorButton();
-
-            upLamp = new FloorLamp();
-            downLamp = new FloorLamp();
-        } else if (bottomFloor) {
-            upButton = new FloorButton();
-            upLamp = new FloorLamp();
-        } else {
-            downButton = new FloorButton();
-            downLamp = new FloorLamp();
-        }
+        upLamp = new FloorLamp();
+        downLamp = new FloorLamp();
     }
 
     private static void runEvent(Event event) {
@@ -51,5 +38,35 @@ public class Floor implements Runnable {
 
     public void shutdown() {
         executor.shutdown();
+    }
+}
+
+
+class TopFloor extends Floor{
+    private final FloorButton downButton;
+
+    public TopFloor(Scheduler scheduler, List<Event> schedule) {
+        super(scheduler, schedule);
+        downButton = new FloorButton();
+    }
+}
+
+class BottomFloor extends Floor{
+    private final FloorButton upButton;
+
+    public BottomFloor(Scheduler scheduler, List<Event> schedule) {
+        super(scheduler, schedule);
+        upButton = new FloorButton();
+    }
+}
+
+class MiddleFloor extends Floor{
+    private final FloorButton upButton;
+    private final FloorButton downButton;
+
+    public MiddleFloor(Scheduler scheduler, List<Event> schedule) {
+        super(scheduler, schedule);
+        upButton = new FloorButton();
+        downButton = new FloorButton();
     }
 }
