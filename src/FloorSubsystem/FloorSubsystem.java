@@ -13,6 +13,15 @@ import static java.util.stream.Collectors.groupingBy;
 
 public class FloorSubsystem {
     public static final SimpleDateFormat CSV_DATE_FORMAT = new SimpleDateFormat("HH:mm:ss");
+    private static Date START_DATE;
+
+    static {
+        try {
+            START_DATE = CSV_DATE_FORMAT.parse("14:00:00");
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+    }
 
     private final Scheduler scheduler;
     private final Set<Thread> floors;
@@ -33,7 +42,7 @@ public class FloorSubsystem {
         }
 
         for (int floor_number = 0; floor_number < max_floor_number; floor_number++) {
-            Thread temp = new Thread(new Floor(scheduler, schedule_by_floor.get(floor_number)), "Floor " + floor_number);
+            Thread temp = new Thread(new Floor(scheduler, schedule_by_floor.getOrDefault(floor_number, new ArrayList<>())), "Floor " + floor_number);
             temp.start();
             floors.add(temp);
         }
@@ -54,5 +63,9 @@ public class FloorSubsystem {
 
         scanner.close();
         return schedule;
+    }
+
+    public static Date getStartDate() {
+        return START_DATE;
     }
 }

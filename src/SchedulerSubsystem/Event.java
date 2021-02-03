@@ -31,4 +31,14 @@ public class Event {
     public Date getTime() {
         return time;
     }
+
+    @Override
+    public String toString() {
+        return "Event{" +
+                "time=" + time +
+                ", floor=" + floor +
+                ", floor_button_is_up=" + floor_button_is_up +
+                ", car_button=" + car_button +
+                '}';
+    }
 }
