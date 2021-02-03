@@ -4,7 +4,7 @@ import SchedulerSubsystem.Scheduler;
 
 public class Elevator implements Runnable {
 
-    private Scheduler scheduler;
+    private final Scheduler scheduler;
 
     public Elevator(Scheduler scheduler) {
         this.scheduler = scheduler;

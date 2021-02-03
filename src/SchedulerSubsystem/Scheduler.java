@@ -1,14 +1,16 @@
 package SchedulerSubsystem;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Scheduler implements Runnable {
-    ArrayList<HashMap<String,String>> schedule;
+     List<Event> schedule;
+
     public Scheduler() {
-        schedule = new ArrayList<HashMap<String, String>>();
+        schedule = new ArrayList<>();
     }
 
-    public void setSchedule(ArrayList<HashMap<String, String>> schedule) {
+    public void setSchedule(List<Event> schedule) {
         this.schedule = schedule;
     }
 
