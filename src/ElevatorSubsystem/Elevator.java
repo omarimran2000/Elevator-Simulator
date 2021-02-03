@@ -35,6 +35,9 @@ public class Elevator implements Runnable {
 
     @Override
     public void run() {
+        while(scheduler.getNumEvents()>0)
+        {
 
+        }
     }
 }

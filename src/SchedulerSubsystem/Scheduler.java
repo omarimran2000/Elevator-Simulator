@@ -39,9 +39,20 @@ public class Scheduler implements Runnable {
             moveElevatorToFloorNumber(floors.get(floorNumber).getNextElevatorButton());
         }
     }
-
+    public int getNumEvents()
+    {
+        int count = 0;
+        for (int index:floors.keySet())
+        {
+            count+=floors.get(index).getNumEvents();
+        }
+        return count;
+    }
     @Override
     public void run() {
+        while(getNumEvents()>0)
+        {
 
+        }
     }
 }
