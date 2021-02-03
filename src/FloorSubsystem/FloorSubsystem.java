@@ -23,13 +23,8 @@ public class FloorSubsystem {
         }
     }
 
-    private final Scheduler scheduler;
-    private final Set<Thread> floors;
-
-    public FloorSubsystem(Scheduler scheduler, List<Event> schedule) {
-        this.scheduler = scheduler;
-
-        floors = new HashSet<>();
+    public static Map<Integer, Floor> generateFloors(Scheduler scheduler, List<Event> schedule) {
+        Map<Integer, Floor> floors = new HashMap<>();
 
         Map<Integer, List<Event>> schedule_by_floor = schedule.stream().collect(groupingBy(Event::getFloor));
 
@@ -41,23 +36,18 @@ public class FloorSubsystem {
             }
         }
 
-        Thread temp = new Thread(new BottomFloor(scheduler, schedule_by_floor.getOrDefault(0, new ArrayList<>())), "Floor " + 0);
-        temp.start();
-        floors.add(temp);
+        floors.put(0, new BottomFloor(0, scheduler, schedule_by_floor.getOrDefault(0, new ArrayList<>())));
+        ;
+        floors.put(max_floor_number, new TopFloor(max_floor_number, scheduler, schedule_by_floor.getOrDefault(max_floor_number, new ArrayList<>())));
 
-        temp = new Thread(new TopFloor(scheduler, schedule_by_floor.getOrDefault(max_floor_number, new ArrayList<>())), "Floor " + max_floor_number);
-        temp.start();
-        floors.add(temp);
-
-        for (int floor_number = 1; floor_number <= max_floor_number; floor_number++) {
-            temp = new Thread(new MiddleFloor(scheduler, schedule_by_floor.getOrDefault(floor_number, new ArrayList<>())), "Floor " + floor_number);
-            temp.start();
-            floors.add(temp);
+        for (int floor_number = 1; floor_number < max_floor_number; floor_number++) {
+            floors.put(floor_number, new MiddleFloor(floor_number, scheduler, schedule_by_floor.getOrDefault(floor_number, new ArrayList<>())));
         }
+        return floors;
     }
 
-    public FloorSubsystem(Scheduler scheduler, String schedule_filename) throws FileNotFoundException, ParseException {
-        this(scheduler, FloorSubsystem.readCSV(schedule_filename));
+    public static Map<Integer, Floor> generateFloors(Scheduler scheduler, String schedule_filename) throws FileNotFoundException, ParseException {
+        return generateFloors(scheduler, FloorSubsystem.readCSV(schedule_filename));
     }
 
     public static List<Event> readCSV(String filename) throws FileNotFoundException, ParseException {
