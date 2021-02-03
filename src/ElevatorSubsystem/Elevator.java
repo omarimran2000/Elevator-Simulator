@@ -7,11 +7,11 @@ import java.util.ArrayList;
 public class Elevator implements Runnable {
 
     private final Scheduler scheduler;
-    private Door door;
-    private ArrivalSensor arrivalSensor;
-    private Motor motor;
-    private ArrayList<ElevatorButton> buttons;
-    private ArrayList<ElevatorLamp> elevatorLamps;
+    private final Door door;
+    private final ArrivalSensor arrivalSensor;
+    private final Motor motor;
+    private final ArrayList<ElevatorButton> buttons;
+    private final ArrayList<ElevatorLamp> elevatorLamps;
 
     public Elevator(Scheduler scheduler) {
         this.scheduler = scheduler;
