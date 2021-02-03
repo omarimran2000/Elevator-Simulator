@@ -25,6 +25,7 @@ public class Elevator implements Runnable {
     }
 
     public void moveToFloorNumber(int destinationFloorNumber) {
+        System.out.println("moving elevator to " + destinationFloorNumber);
         arrivalSensor.callOnArrival(() -> {
             currentFloorNumber = destinationFloorNumber;
             scheduler.elevatorArrivedAtFloorNumber(destinationFloorNumber);

@@ -33,6 +33,7 @@ public abstract class Floor implements Runnable {
     private void runEvent(Event event) {
         System.out.println(event);
         destinationFloorNumbers.add(event.getCarButton());
+        scheduler.moveElevatorToFloorNumber(event.getFloor());
     }
 
     @Override
