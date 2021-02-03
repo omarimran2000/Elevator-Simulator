@@ -50,6 +50,7 @@ public abstract class Floor implements Runnable {
         {
 
         }
+        shutdown();
     }
 
     public void shutdown() {

@@ -39,5 +39,6 @@ public class Elevator implements Runnable {
         {
 
         }
+        arrivalSensor.shutdown();
     }
 }
