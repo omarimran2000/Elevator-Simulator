@@ -26,8 +26,6 @@ public class Main {
 
         Elevator elevator = new Elevator(scheduler);
         scheduler.setElevators(List.of(elevator));
-        new Thread(elevator, "Elevator 1").start();
-        new Thread(scheduler, "Scheduler").start();
     }
 
 }

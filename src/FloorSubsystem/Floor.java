@@ -38,6 +38,9 @@ public abstract class Floor implements Runnable {
         destinationFloorNumbers.add(event.getCarButton());
         scheduler.moveElevatorToFloorNumber(event.getFloor());
         numEvents--;
+        if (numEvents == 0 && destinationFloorNumbers.size() == 0) {
+            scheduler.shutdown();
+        }
     }
 
     @Override
@@ -46,11 +49,6 @@ public abstract class Floor implements Runnable {
             long seconds_to_task = skipDuration ? 1 : Duration.between(FloorSubsystem.getStartDate().toInstant(), event.getTime().toInstant()).getSeconds();
             executor.schedule(() -> this.runEvent(event), seconds_to_task, TimeUnit.SECONDS);
         }
-        while(scheduler.getNumEvents()>0)
-        {
-
-        }
-        shutdown();
     }
 
     public void shutdown() {
@@ -69,8 +67,8 @@ public abstract class Floor implements Runnable {
         return destinationFloorNumbers.remove();
     }
 
-    public int getNumEvents() {
-        return numEvents;
+    public boolean hasEvents() {
+        return numEvents == 0;
     }
 }
 

@@ -6,7 +6,7 @@ import FloorSubsystem.Floor;
 import java.util.List;
 import java.util.Map;
 
-public class Scheduler implements Runnable {
+public class Scheduler {
     public List<Elevator> elevators;
     public Map<Integer, Floor> floors;
 
@@ -39,20 +39,19 @@ public class Scheduler implements Runnable {
             moveElevatorToFloorNumber(floors.get(floorNumber).getNextElevatorButton());
         }
     }
-    public int getNumEvents()
-    {
-        int count = 0;
-        for (int index:floors.keySet())
-        {
-            count+=floors.get(index).getNumEvents();
-        }
-        return count;
-    }
-    @Override
-    public void run() {
-        while(getNumEvents()>0)
-        {
 
+    private boolean hasEvents() {
+        return floors.values().stream().anyMatch(Floor::hasEvents);
+    }
+
+    private boolean hasMovingElevator() {
+        return elevators.stream().anyMatch(Elevator::isMoving);
+    }
+
+    public void shutdown() {
+        if (!hasEvents() && !hasMovingElevator()) {
+            elevators.forEach(Elevator::shutdown);
+            floors.forEach((k, v) -> v.shutdown());
         }
     }
 }

@@ -4,8 +4,7 @@ import SchedulerSubsystem.Scheduler;
 
 import java.util.ArrayList;
 
-public class Elevator implements Runnable {
-
+public class Elevator {
     private final Scheduler scheduler;
     private final Door door;
     private final ArrivalSensor arrivalSensor;
@@ -25,20 +24,22 @@ public class Elevator implements Runnable {
     }
 
     public void moveToFloorNumber(int destinationFloorNumber) {
+        motor.setDirectionsIsUp(destinationFloorNumber > currentFloorNumber);
+        motor.setMoving(true);
         System.out.println("moving elevator to " + destinationFloorNumber);
         arrivalSensor.callOnArrival(() -> {
             currentFloorNumber = destinationFloorNumber;
             scheduler.elevatorArrivedAtFloorNumber(destinationFloorNumber);
             System.out.println("elevator arrived " + destinationFloorNumber);
+            motor.setMoving(false);
         }, currentFloorNumber, destinationFloorNumber);
     }
 
-    @Override
-    public void run() {
-        while(scheduler.getNumEvents()>0)
-        {
+    public boolean isMoving() {
+        return motor.isMoving();
+    }
 
-        }
+    public void shutdown() {
         arrivalSensor.shutdown();
     }
 }
