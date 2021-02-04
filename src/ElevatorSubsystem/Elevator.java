@@ -32,6 +32,7 @@ public class Elevator implements Runnable {
             scheduler.elevatorArrivedAtFloorNumber(destinationFloorNumber);
             System.out.println("elevator arrived " + destinationFloorNumber);
             motor.setMoving(false);
+            scheduler.shutdown();
         }, currentFloorNumber, destinationFloorNumber);
     }
 

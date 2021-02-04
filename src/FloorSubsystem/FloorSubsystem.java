@@ -37,7 +37,6 @@ public class FloorSubsystem {
         }
 
         floors.put(0, new BottomFloor(0, scheduler, schedule_by_floor.getOrDefault(0, new ArrayList<>())));
-        ;
         floors.put(max_floor_number, new TopFloor(max_floor_number, scheduler, schedule_by_floor.getOrDefault(max_floor_number, new ArrayList<>())));
 
         for (int floor_number = 1; floor_number < max_floor_number; floor_number++) {

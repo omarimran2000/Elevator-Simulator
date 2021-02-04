@@ -38,9 +38,6 @@ public abstract class Floor implements Runnable {
         destinationFloorNumbers.add(event.getCarButton());
         scheduler.moveElevatorToFloorNumber(event.getFloor());
         numEvents--;
-        if (numEvents == 0 && destinationFloorNumbers.size() == 0) {
-            scheduler.shutdown();
-        }
     }
 
     @Override
@@ -68,7 +65,7 @@ public abstract class Floor implements Runnable {
     }
 
     public boolean hasEvents() {
-        return numEvents == 0;
+        return numEvents != 0;
     }
 }
 

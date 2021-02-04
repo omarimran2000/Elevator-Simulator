@@ -44,12 +44,16 @@ public class Scheduler implements Runnable {
         return floors.values().stream().anyMatch(Floor::hasEvents);
     }
 
+    private boolean hasPeopleWaiting() {
+        return floors.values().stream().anyMatch(Floor::hasPeopleWaiting);
+    }
+
     private boolean hasMovingElevator() {
         return elevators.stream().anyMatch(Elevator::isMoving);
     }
 
     public void shutdown() {
-        if (!hasEvents() && !hasMovingElevator()) {
+        if (!hasEvents() && !hasPeopleWaiting() && !hasMovingElevator()) {
             elevators.forEach(Elevator::shutdown);
             floors.forEach((k, v) -> v.shutdown());
         }
