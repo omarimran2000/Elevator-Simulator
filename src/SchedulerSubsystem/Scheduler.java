@@ -6,7 +6,7 @@ import FloorSubsystem.Floor;
 import java.util.List;
 import java.util.Map;
 
-public class Scheduler {
+public class Scheduler implements Runnable {
     public List<Elevator> elevators;
     public Map<Integer, Floor> floors;
 
@@ -53,5 +53,9 @@ public class Scheduler {
             elevators.forEach(Elevator::shutdown);
             floors.forEach((k, v) -> v.shutdown());
         }
+    }
+
+    @Override
+    public void run() {
     }
 }

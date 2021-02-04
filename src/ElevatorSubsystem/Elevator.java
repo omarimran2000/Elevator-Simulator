@@ -4,7 +4,7 @@ import SchedulerSubsystem.Scheduler;
 
 import java.util.ArrayList;
 
-public class Elevator {
+public class Elevator implements Runnable {
     private final Scheduler scheduler;
     private final Door door;
     private final ArrivalSensor arrivalSensor;
@@ -41,5 +41,9 @@ public class Elevator {
 
     public void shutdown() {
         arrivalSensor.shutdown();
+    }
+
+    @Override
+    public void run() {
     }
 }
