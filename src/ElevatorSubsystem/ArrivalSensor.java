@@ -19,4 +19,7 @@ public class ArrivalSensor {
     public void callOnArrival(Runnable callback, int currentFloorNumber, int destinationFloorNumber) {
         executor.schedule(callback, ArrivalSensor.getSecondsToTravelBetweenTwoFloors(currentFloorNumber, destinationFloorNumber), TimeUnit.SECONDS);
     }
+    public void shutdown() {
+        executor.shutdown();
+    }
 }

@@ -46,6 +46,11 @@ public abstract class Floor implements Runnable {
             long seconds_to_task = skipDuration ? 1 : Duration.between(FloorSubsystem.getStartDate().toInstant(), event.getTime().toInstant()).getSeconds();
             executor.schedule(() -> this.runEvent(event), seconds_to_task, TimeUnit.SECONDS);
         }
+        while(scheduler.getNumEvents()>0)
+        {
+
+        }
+        shutdown();
     }
 
     public void shutdown() {
@@ -62,6 +67,10 @@ public abstract class Floor implements Runnable {
 
     public int getNextElevatorButton() {
         return destinationFloorNumbers.remove();
+    }
+
+    public int getNumEvents() {
+        return numEvents;
     }
 }
 
