@@ -22,9 +22,18 @@ public class Elevator implements Runnable {
         buttons = new ArrayList<>();
         elevatorLamps = new ArrayList<>();
         currentFloorNumber = 0;
+        motor.setMoving(false);
     }
 
     public synchronized void moveToFloorNumber(int destinationFloorNumber) {
+        while(motor.isMoving())
+        {
+            try {
+                wait();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
         motor.setDirectionsIsUp(destinationFloorNumber > currentFloorNumber);
         motor.setMoving(true);
         System.out.println("moving elevator to " + destinationFloorNumber);
@@ -38,6 +47,7 @@ public class Elevator implements Runnable {
             motor.setMoving(false);
             scheduler.shutdown();
         }, currentFloorNumber, destinationFloorNumber);
+        notifyAll();
 
     }
     public void openDoors(){

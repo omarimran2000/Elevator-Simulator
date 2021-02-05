@@ -76,9 +76,10 @@ public class Scheduler implements Runnable {
 
     public void shutdown() {
         if (!hasEvents() && !hasPeopleWaiting() && !hasMovingElevator()) {
-            elevators.forEach(Elevator::shutdown);
-            floors.forEach((k, v) -> v.shutdown());
-            executor.shutdown();
+            //elevators.forEach(Elevator::shutdown);
+            //floors.forEach((k, v) -> v.shutdown());
+            //executor.shutdown();
+            System.exit(0);
         }
     }
 
