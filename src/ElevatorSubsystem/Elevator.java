@@ -25,7 +25,7 @@ public class Elevator implements Runnable {
         motor.setMoving(false);
     }
 
-    public synchronized void moveToFloorNumber(int destinationFloorNumber) {
+    public synchronized void moveToFloorNumber(int destinationFloorNumber){
         while(motor.isMoving())
         {
             try {
@@ -37,6 +37,15 @@ public class Elevator implements Runnable {
         motor.setDirectionsIsUp(destinationFloorNumber > currentFloorNumber);
         motor.setMoving(true);
         System.out.println("moving elevator to " + destinationFloorNumber);
+        arrivalSensor.callOnArrival(currentFloorNumber,destinationFloorNumber);
+        currentFloorNumber = destinationFloorNumber;
+        System.out.println("elevator arrived " + destinationFloorNumber);
+        door.setOpen(true);
+        openDoors();
+        motor.setMoving(false);
+        scheduler.elevatorArrivedAtFloorNumber(destinationFloorNumber);
+        //scheduler.shutdown();
+        /*
         arrivalSensor.callOnArrival(() -> {
             currentFloorNumber = destinationFloorNumber;
             scheduler.elevatorArrivedAtFloorNumber(destinationFloorNumber);
@@ -47,6 +56,9 @@ public class Elevator implements Runnable {
             motor.setMoving(false);
             scheduler.shutdown();
         }, currentFloorNumber, destinationFloorNumber);
+
+         */
+        motor.setMoving(false);
         notifyAll();
 
     }
@@ -74,5 +86,9 @@ public class Elevator implements Runnable {
 
     @Override
     public void run() {
+        while(scheduler.hasEvents())
+        {
+
+        }
     }
 }

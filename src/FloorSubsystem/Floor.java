@@ -7,15 +7,15 @@ import java.time.Duration;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
+//import java.util.concurrent.Executors;
+//import java.util.concurrent.ScheduledExecutorService;
+//import java.util.concurrent.TimeUnit;
 
 public abstract class Floor implements Runnable {
     private static final boolean skipDuration = true; //FIXME move to a config file.
     private final Scheduler scheduler;
     private final List<Event> schedule;
-    private final ScheduledExecutorService executor;
+   // private final ScheduledExecutorService executor;
     private final FloorLamp upLamp;
     private final FloorLamp downLamp;
     private final int floorNumber;
@@ -26,11 +26,17 @@ public abstract class Floor implements Runnable {
         this.floorNumber = floorNumber;
         this.scheduler = scheduler;
         this.schedule = schedule;
-        executor = Executors.newSingleThreadScheduledExecutor();
+        //executor = Executors.newSingleThreadScheduledExecutor();
         upLamp = new FloorLamp();
         downLamp = new FloorLamp();
         destinationFloorNumbers = new LinkedList<>();
         numEvents = schedule.size();
+        for (Event event : schedule) {
+            //long seconds_to_task = skipDuration ? 1 : Duration.between(FloorSubsystem.getStartDate().toInstant(), event.getTime().toInstant()).getSeconds();
+            //executor.schedule(() -> this.runEvent(event), seconds_to_task, TimeUnit.SECONDS);
+            scheduler.addToQueue(event);
+
+        }
     }
 
     private void runEvent(Event event) {
@@ -42,18 +48,20 @@ public abstract class Floor implements Runnable {
 
     @Override
     public void run() {
-        for (Event event : schedule) {
-            long seconds_to_task = skipDuration ? 1 : Duration.between(FloorSubsystem.getStartDate().toInstant(), event.getTime().toInstant()).getSeconds();
-            executor.schedule(() -> this.runEvent(event), seconds_to_task, TimeUnit.SECONDS);
+        while(scheduler.hasEvents()) {
         }
     }
 
-    public void shutdown() {
-        executor.shutdown();
-    }
+   // public void shutdown() {
+   //     executor.shutdown();
+    //}
 
     public int getFloorNumber() {
         return floorNumber;
+    }
+    public List<Event> getSchedule()
+    {
+        return schedule;
     }
 
     public boolean hasPeopleWaiting() {
@@ -65,7 +73,7 @@ public abstract class Floor implements Runnable {
     }
 
     public boolean hasEvents() {
-        return numEvents != 0;
+        return ! schedule.isEmpty();
     }
 }
 

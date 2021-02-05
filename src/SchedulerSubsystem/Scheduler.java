@@ -2,9 +2,13 @@ package SchedulerSubsystem;
 
 import ElevatorSubsystem.Elevator;
 import FloorSubsystem.Floor;
+import FloorSubsystem.FloorSubsystem;
 
+import java.time.Clock;
 import java.util.List;
 import java.util.Map;
+import java.util.PriorityQueue;
+import java.util.Timer;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -12,11 +16,15 @@ import java.util.concurrent.TimeUnit;
 public class Scheduler implements Runnable {
     public List<Elevator> elevators;
     public Map<Integer, Floor> floors;
-    private final ScheduledExecutorService executor;
+   // private final ScheduledExecutorService executor;
+    private PriorityQueue<Event> events;
+    public Timer timer;
 
 
     public Scheduler() {
-        executor = Executors.newSingleThreadScheduledExecutor();
+        //executor = Executors.newSingleThreadScheduledExecutor();
+        events = new PriorityQueue<>();
+        //timer= new Timer();
 
     }
 
@@ -52,7 +60,7 @@ public class Scheduler implements Runnable {
 
     public void elevatorArrivedAtFloorNumber(int floorNumber) {
 
-
+        /*
         executor.schedule(() -> {
             closeElevatorDoors();
             if (floors.get(floorNumber).hasPeopleWaiting()) {
@@ -60,10 +68,27 @@ public class Scheduler implements Runnable {
                 moveElevatorToFloorNumber(floors.get(floorNumber).getNextElevatorButton());
             }
         }, 1, TimeUnit.SECONDS); // fix delay
+
+         */
+        try {
+            TimeUnit.SECONDS.sleep(1);
+        }catch (InterruptedException e)
+        {
+
+        }
+        closeElevatorDoors();
+
     }
 
-    private boolean hasEvents() {
-        return floors.values().stream().anyMatch(Floor::hasEvents);
+    public boolean hasEvents() {
+        for(Floor f:floors.values())
+        {
+            if (f.hasEvents())
+            {
+                return true;
+            }
+        }
+        return false;
     }
 
     private boolean hasPeopleWaiting() {
@@ -92,8 +117,27 @@ public class Scheduler implements Runnable {
             elevators.get(0).closeDoors();
     }
 
-
+    public void addToQueue(Event e)
+    {
+        events.add(e);
+    }
+    public void removeEvent(Event e)
+    {
+        for (Floor f:floors.values())
+        {
+            if(f.getSchedule().contains(e))
+            {
+                f.getSchedule().remove(e);
+            }
+        }
+    }
     @Override
     public void run() {
+        while(hasEvents())
+        {
+            moveElevatorToFloorNumber(events.peek().getFloor());
+            moveElevatorToFloorNumber(events.peek().getCarButton());
+            removeEvent(events.poll());
+        }
     }
 }

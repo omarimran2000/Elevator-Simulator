@@ -2,7 +2,7 @@ package SchedulerSubsystem;
 
 import java.util.Date;
 
-public class Event {
+public class Event implements Comparable<Event>{
     private final Date time;
     private final int floor;
     private final boolean floorButtonIsUp;
@@ -40,5 +40,10 @@ public class Event {
                 ", floorButtonIsUp=" + floorButtonIsUp +
                 ", carButton=" + carButton +
                 '}';
+    }
+
+    @Override
+    public int compareTo(Event o) {
+        return this.time.compareTo(o.time);
     }
 }
