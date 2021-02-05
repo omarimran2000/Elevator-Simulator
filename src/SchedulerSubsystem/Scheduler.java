@@ -39,20 +39,27 @@ public class Scheduler implements Runnable {
             moveElevatorToFloorNumber(floors.get(floorNumber).getNextElevatorButton());
         }
     }
-    public int getNumEvents()
-    {
-        int count = 0;
-        for (int index:floors.keySet())
-        {
-            count+=floors.get(index).getNumEvents();
-        }
-        return count;
+
+    private boolean hasEvents() {
+        return floors.values().stream().anyMatch(Floor::hasEvents);
     }
+
+    private boolean hasPeopleWaiting() {
+        return floors.values().stream().anyMatch(Floor::hasPeopleWaiting);
+    }
+
+    private boolean hasMovingElevator() {
+        return elevators.stream().anyMatch(Elevator::isMoving);
+    }
+
+    public void shutdown() {
+        if (!hasEvents() && !hasPeopleWaiting() && !hasMovingElevator()) {
+            elevators.forEach(Elevator::shutdown);
+            floors.forEach((k, v) -> v.shutdown());
+        }
+    }
+
     @Override
     public void run() {
-        while(getNumEvents()>0)
-        {
-
-        }
     }
 }
