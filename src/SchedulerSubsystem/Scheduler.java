@@ -87,6 +87,9 @@ public class Scheduler implements Runnable {
     }
     public void moveElevatorToDestination(int destination)
     {
+        System.out.println("Elevator button "+destination+" has been pressed");
+        elevators.get(0).getButtons().get(destination-1).setOn(false);
+        elevators.get(0).getElevatorLamps().get(destination-1).setLamp(false);
         int currentFloor = elevators.get(0).getCurrentFloorNumber();
         if(currentFloor != destination) {
             elevators.get(0).moveToFloorNumber(destination);
@@ -122,6 +125,10 @@ public class Scheduler implements Runnable {
         }
         return false;
     }
+
+    /**
+     * @param floor The Floor Number
+     */
 
     public void closeElevatorDoors(int floor) {
 

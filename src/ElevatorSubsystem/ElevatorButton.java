@@ -2,13 +2,16 @@ package ElevatorSubsystem;
 
 public class ElevatorButton {
     private int floor;
+    private boolean on;
 
     /**
      * Constructor for ElevatorButton
      * @param floor The floor associated with the button
      */
     public ElevatorButton(int floor){
+
         this.floor = floor;
+        this.on = false;
     }
 
     /**
@@ -17,5 +20,17 @@ public class ElevatorButton {
      */
     public int getFloor(){
         return floor;
+    }
+
+    /**
+     * Getter for button
+     * @return If its been pressed
+     */
+    public boolean isOn() {
+        return on;
+    }
+
+    public void setOn(boolean on) {
+        this.on = on;
     }
 }

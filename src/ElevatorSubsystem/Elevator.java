@@ -31,6 +31,12 @@ public class Elevator implements Runnable {
         elevatorLamps = new ArrayList<>();
         currentFloorNumber = 0;
         motor.setMoving(false);
+
+        for(int i=0;i<scheduler.floors.values().size();i++)
+        {
+            buttons.add(new ElevatorButton(i+1));
+            elevatorLamps.add(new ElevatorLamp());
+        }
     }
 
 
@@ -39,7 +45,6 @@ public class Elevator implements Runnable {
      *
      * @param destinationFloorNumber The destination floor
      */
-    //public void moveToFloorNumber(int destinationFloorNumber) {
     public synchronized void moveToFloorNumber(int destinationFloorNumber){
         while(motor.isMoving())
         {
@@ -52,8 +57,11 @@ public class Elevator implements Runnable {
         idle = false;
 
         motor.setDirectionsIsUp(destinationFloorNumber > currentFloorNumber);
+        System.out.println("Moving elevator to "+destinationFloorNumber);
         motor.setMoving(true);
-        System.out.println("moving elevator to " + destinationFloorNumber);
+        buttons.get(destinationFloorNumber-1).setOn(true);
+        elevatorLamps.get(destinationFloorNumber-1).setLamp(true);
+
         arrivalSensor.callOnArrival(currentFloorNumber,destinationFloorNumber);
         currentFloorNumber = destinationFloorNumber;
 
@@ -93,6 +101,8 @@ public class Elevator implements Runnable {
         System.out.println("doors closed at floor "+floor);
 
         door.setOpen(false);
+        buttons.get(floor-1).setOn(false);
+        elevatorLamps.get(floor-1).setLamp(false);
     }
 
     /**
@@ -128,7 +138,16 @@ public class Elevator implements Runnable {
     {
         return motor;
     }
-     /**
+
+    public ArrayList<ElevatorButton> getButtons() {
+        return buttons;
+    }
+
+    public ArrayList<ElevatorLamp> getElevatorLamps() {
+        return elevatorLamps;
+    }
+
+    /**
      * The run method
      */
     @Override
