@@ -15,11 +15,12 @@ public class Scheduler implements Runnable {
     public Map<Integer, Floor> floors;
    // private final ScheduledExecutorService executor;
     private PriorityQueue<Event> events;
-    public Timer timer;
+    private Timer timer;
 
 
     public Scheduler() {
         //executor = Executors.newSingleThreadScheduledExecutor();
+        timer = new Timer();
         events = new PriorityQueue<>();
 
     }
@@ -105,6 +106,11 @@ public class Scheduler implements Runnable {
             }
         }
     }
+
+    public Timer getTimer() {
+        return timer;
+    }
+
     @Override
     public void run() {
         while(hasEvents())

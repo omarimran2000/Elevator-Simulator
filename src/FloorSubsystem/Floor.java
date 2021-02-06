@@ -37,6 +37,7 @@ public abstract class Floor implements Runnable {
             long seconds_to_task = Duration.between(FloorSubsystem.getStartDate().toInstant(), event.getTime().toInstant()).getSeconds();
             //executor.schedule(() -> this.runEvent(event), seconds_to_task, TimeUnit.SECONDS);
             scheduler.addToQueue(event);
+            scheduler.getTimer().schedule(event,seconds_to_task);
 
         }
     }
