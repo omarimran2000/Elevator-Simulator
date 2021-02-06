@@ -1,29 +1,13 @@
 package FloorSubsystem;
 
 public class FloorButton {
+    private boolean on;
 
-    private boolean direction;
-
-    /**
-     * Constructor for FloorButton
-     */
-    public FloorButton(){
+    public FloorButton() {
+        this.on = false;
     }
 
-    /**
-     * Getter for the direction
-     * @return
-     */
-    public boolean getDirection(){
-        return direction;
-    }
-
-    /**
-     * Setter for the direction
-     * @param direction
-     */
-    public void setDirection(boolean direction){
-        this.direction = direction;
-
+    public void setOn(boolean on) {
+        this.on = on;
     }
 }

@@ -59,7 +59,8 @@ public class Scheduler implements Runnable {
 
     /**
      * Moves the elevator car to the requested floor
-     * @param floorNumber The destination floor
+     * @param destinationFloor The destination floor
+     * @param originalFloor the original floor
      */
     public synchronized void moveElevatorToFloorNumber(int originalFloor, int destinationFloor) {
         while(!elevators.get(0).getIdle())
@@ -100,10 +101,6 @@ public class Scheduler implements Runnable {
     /**
      * @param floorNumber The floor number
      */
-    public void elevatorArrivedAtFloorNumber(int floorNumber) {
-        executor.schedule(() -> {
-            closeElevatorDoors();
-            if (floors.get(floorNumber).hasPeopleWaiting()) {
 
     public synchronized void elevatorArrivedAtFloorNumber(int floorNumber) {
 
@@ -124,13 +121,6 @@ public class Scheduler implements Runnable {
             }
         }
         return false;
-    }
-
-    /**
-     * @return true if there are people waiting for an elevator
-     */
-    private boolean hasPeopleWaiting() {
-        return floors.values().stream().anyMatch(Floor::hasPeopleWaiting);
     }
 
     public void closeElevatorDoors(int floor) {
