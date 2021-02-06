@@ -12,17 +12,22 @@ import java.util.*;
 import static java.util.stream.Collectors.groupingBy;
 
 public class FloorSubsystem {
-    public static final SimpleDateFormat CSV_DATE_FORMAT = new SimpleDateFormat("HH:mm:ss");
+    public static final SimpleDateFormat CSV_DATE_FORMAT = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
     private static Date START_DATE;
 
     static {
         try {
-            START_DATE = CSV_DATE_FORMAT.parse("14:00:00");
+            START_DATE = CSV_DATE_FORMAT.parse("01-01-2021 14:00:00");
         } catch (ParseException e) {
             e.printStackTrace();
         }
     }
 
+    /**
+     * @param scheduler the scheduler
+     * @param schedule the list of events
+     * @return The map of the floors
+     */
     public static Map<Integer, Floor> generateFloors(Scheduler scheduler, List<Event> schedule) {
         Map<Integer, Floor> floors = new HashMap<>();
 
@@ -45,23 +50,42 @@ public class FloorSubsystem {
         return floors;
     }
 
+    /**
+     * Generates the map of floors in the system
+     * @param scheduler The scheduler
+     * @param schedule_filename The input file
+     * @return The map of floors
+     * @throws FileNotFoundException
+     * @throws ParseException
+     */
     public static Map<Integer, Floor> generateFloors(Scheduler scheduler, String schedule_filename) throws FileNotFoundException, ParseException {
         return generateFloors(scheduler, FloorSubsystem.readCSV(schedule_filename));
     }
 
+    /**
+     * Reads the input file and schedules the events
+     * @param filename The input file
+     * @return The scheduled list of events
+     * @throws FileNotFoundException
+     * @throws ParseException
+     */
     public static List<Event> readCSV(String filename) throws FileNotFoundException, ParseException {
         List<Event> schedule = new ArrayList<>();
         Scanner scanner = new Scanner(new File(filename));
 
         while (scanner.hasNext()) {
             String[] line = scanner.nextLine().split(",");
-            schedule.add(new Event(CSV_DATE_FORMAT.parse(line[0]), Integer.parseInt(line[1]), line[2].equalsIgnoreCase("up"), Integer.parseInt(line[3])));
+            schedule.add(new Event(CSV_DATE_FORMAT.parse("01-01-2021 "+line[0]), Integer.parseInt(line[1]), line[2].equalsIgnoreCase("up"), Integer.parseInt(line[3])));
         }
 
         scanner.close();
         return schedule;
     }
 
+    /**
+     * Getter for the start date
+     * @return The start date
+     */
     public static Date getStartDate() {
         return START_DATE;
     }

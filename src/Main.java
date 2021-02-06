@@ -12,8 +12,15 @@ import static FloorSubsystem.FloorSubsystem.generateFloors;
 public class Main {
     public static final String CSV_FILE_NAME = "test.csv";
 
+    /**
+     * Initializes the map of floors, the shceduler and the elevator
+     * Starts the threads
+     * @param args
+     */
     public static void main(String[] args) {
         Scheduler scheduler = new Scheduler();
+
+
 
         try {
             Map<Integer, Floor> floors = generateFloors(scheduler, CSV_FILE_NAME);
