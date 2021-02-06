@@ -9,6 +9,10 @@ import java.util.Map;
 
 import static FloorSubsystem.FloorSubsystem.generateFloors;
 
+/**
+ * This is the main class that starts the threads
+ * @version Feb 06, 2021
+ */
 public class Main {
     public static final String CSV_FILE_NAME = "test.csv";
 
@@ -19,9 +23,6 @@ public class Main {
      */
     public static void main(String[] args) {
         Scheduler scheduler = new Scheduler();
-
-
-
         try {
             Map<Integer, Floor> floors = generateFloors(scheduler, CSV_FILE_NAME);
             scheduler.setFloors(floors);
@@ -35,5 +36,4 @@ public class Main {
         new Thread(elevator, "Elevator 1").start();
         new Thread(scheduler, "Scheduler").start();
     }
-
 }

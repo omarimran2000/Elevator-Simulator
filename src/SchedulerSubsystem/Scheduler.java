@@ -7,7 +7,10 @@ import FloorSubsystem.FloorSubsystem;
 import java.time.*;
 import java.util.*;
 
-
+/**
+ * The Scheduler class schedules the events
+ * @version Feb 06, 2021
+ */
 public class Scheduler implements Runnable {
     public List<Elevator> elevators;
     public Map<Integer, Floor> floors;

@@ -5,6 +5,10 @@ import FloorSubsystem.Floor;
 import java.util.Date;
 import java.util.TimerTask;
 
+/**
+ * The Event class represents the events that occur
+ * @version Feb 06, 2021
+ */
 public class Event implements Comparable<Event>{
     private final Date time;
     private final int floorInt;
