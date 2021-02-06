@@ -10,4 +10,8 @@ public class FloorButton {
     public void setOn(boolean on) {
         this.on = on;
     }
+
+    public boolean isOn() {
+        return on;
+    }
 }

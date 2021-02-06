@@ -3,6 +3,7 @@ package FloorSubsystem;
 import SchedulerSubsystem.Event;
 import SchedulerSubsystem.Scheduler;
 
+import java.awt.*;
 import java.time.Duration;
 import java.util.LinkedList;
 import java.util.List;
@@ -84,6 +85,8 @@ public abstract class Floor implements Runnable {
     }
     public abstract void turnButtonOff();
     public abstract void turnButtonOn();
+    public abstract FloorButton getBottom();
+    public abstract FloorButton getTop();
 }
 
 
@@ -108,6 +111,16 @@ class TopFloor extends Floor {
     {
         downButton.setOn(true);
     }
+
+    @Override
+    public FloorButton getBottom() {
+        return downButton;
+    }
+
+    @Override
+    public FloorButton getTop() {
+        return null;
+    }
 }
 
 class BottomFloor extends Floor {
@@ -130,6 +143,16 @@ class BottomFloor extends Floor {
     public void turnButtonOn()
     {
         upButton.setOn(true);
+    }
+
+    @Override
+    public FloorButton getBottom() {
+        return null;
+    }
+
+    @Override
+    public FloorButton getTop() {
+        return upButton;
     }
 }
 
@@ -157,5 +180,15 @@ class MiddleFloor extends Floor {
     {
         downButton.setOn(true);
         upButton.setOn(true);
+    }
+
+    @Override
+    public FloorButton getBottom() {
+        return downButton;
+    }
+
+    @Override
+    public FloorButton getTop() {
+        return upButton;
     }
 }
