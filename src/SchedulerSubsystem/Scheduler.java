@@ -117,5 +117,6 @@ public class Scheduler implements Runnable {
         {
 
         }
+        timer.cancel();
     }
 }

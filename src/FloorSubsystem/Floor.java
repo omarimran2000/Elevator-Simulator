@@ -34,6 +34,7 @@ public abstract class Floor implements Runnable {
         destinationFloorNumbers = new LinkedList<>();
         numEvents = schedule.size();
         for (Event event : schedule) {
+            event.setFloor(this);
             long seconds_to_task = Duration.between(FloorSubsystem.getStartDate().toInstant(), event.getTime().toInstant()).getSeconds();
             //executor.schedule(() -> this.runEvent(event), seconds_to_task, TimeUnit.SECONDS);
             scheduler.addToQueue(event);
