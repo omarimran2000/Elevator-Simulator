@@ -49,6 +49,7 @@ public abstract class Floor implements Runnable {
         while(scheduler.hasEvents()) {
             if(!schedule.isEmpty() && schedule.peek().getTimeToEvent()<=scheduler.getTimePassed()&&scheduler.priorityEvent().equals(schedule.peek()))
             {
+                this.turnButtonOn();
                 moveElevator(schedule.peek().getCarButton());
                 scheduler.removeEvent(schedule.peek());
                 schedule.poll();
@@ -61,10 +62,6 @@ public abstract class Floor implements Runnable {
 
     }
 
-    public PriorityQueue<Event> getSchedule()
-    {
-        return schedule;
-    }
 
     public boolean hasPeopleWaiting() {
         return !destinationFloorNumbers.isEmpty();
