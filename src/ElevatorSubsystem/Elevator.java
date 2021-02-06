@@ -16,6 +16,11 @@ public class Elevator implements Runnable {
     private int currentFloorNumber;
     private static final long WAIT_TIME = (long) 9.175;
 
+    /**
+     * Constructor for Elevator
+     *
+     * @param scheduler The system scheduler
+     */
     public Elevator(Scheduler scheduler) {
         idle = true;
         this.scheduler = scheduler;
@@ -28,6 +33,13 @@ public class Elevator implements Runnable {
         motor.setMoving(false);
     }
 
+
+    /**
+     * Moves the elevator to the specified floor and notifies the scheduler
+     *
+     * @param destinationFloorNumber The destination floor
+     */
+    //public void moveToFloorNumber(int destinationFloorNumber) {
     public synchronized void moveToFloorNumber(int destinationFloorNumber){
         while(motor.isMoving())
         {
@@ -38,6 +50,7 @@ public class Elevator implements Runnable {
             }
         }
         idle = false;
+
         motor.setDirectionsIsUp(destinationFloorNumber > currentFloorNumber);
         motor.setMoving(true);
         System.out.println("moving elevator to " + destinationFloorNumber);
@@ -53,11 +66,24 @@ public class Elevator implements Runnable {
         notifyAll();
 
     }
+
+
+    /**
+     * Opens the elevator doors
+     */
+    public void openDoors() {
+        System.out.println("doors open");
+    }
+
+
     public void openDoors(int floor){
 
         System.out.println("doors open at floor "+floor);
     }
 
+    /**
+     * Closes the elevator doors
+     */
     public synchronized void closeDoors(int floor){
         try {
             wait(WAIT_TIME * 1000);
@@ -65,14 +91,32 @@ public class Elevator implements Runnable {
             e.printStackTrace();
         }
         System.out.println("doors closed at floor "+floor);
+
         door.setOpen(false);
     }
 
-    public int getCurrentFloorNumber(){
+    /**
+     * Getter for the current floor number
+     * @return The current floor number
+     */
+    public int getCurrentFloorNumber() {
         return currentFloorNumber;
     }
+    /**
+     * @return true if the elevator is moving
+     */
+    public boolean isMoving() {
+        return motor.isMoving();
+    }
 
-    public void setIdle(boolean idle)
+    /**
+     * shutdown the arrival sensor
+     */
+    public void shutdown() {
+        arrivalSensor.shutdown();
+    }
+
+  public void setIdle(boolean idle)
     {
         this.idle = idle;
     }
@@ -84,6 +128,9 @@ public class Elevator implements Runnable {
     {
         return motor;
     }
+     /**
+     * The run method
+     */
     @Override
     public void run() {
         while(scheduler.hasEvents())

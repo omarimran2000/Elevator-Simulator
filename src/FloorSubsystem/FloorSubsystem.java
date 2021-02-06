@@ -23,6 +23,11 @@ public class FloorSubsystem {
         }
     }
 
+    /**
+     * @param scheduler the scheduler
+     * @param schedule the list of events
+     * @return The map of the floors
+     */
     public static Map<Integer, Floor> generateFloors(Scheduler scheduler, List<Event> schedule) {
         Map<Integer, Floor> floors = new HashMap<>();
 
@@ -45,10 +50,25 @@ public class FloorSubsystem {
         return floors;
     }
 
+    /**
+     * Generates the map of floors in the system
+     * @param scheduler The scheduler
+     * @param schedule_filename The input file
+     * @return The map of floors
+     * @throws FileNotFoundException
+     * @throws ParseException
+     */
     public static Map<Integer, Floor> generateFloors(Scheduler scheduler, String schedule_filename) throws FileNotFoundException, ParseException {
         return generateFloors(scheduler, FloorSubsystem.readCSV(schedule_filename));
     }
 
+    /**
+     * Reads the input file and schedules the events
+     * @param filename The input file
+     * @return The scheduled list of events
+     * @throws FileNotFoundException
+     * @throws ParseException
+     */
     public static List<Event> readCSV(String filename) throws FileNotFoundException, ParseException {
         List<Event> schedule = new ArrayList<>();
         Scanner scanner = new Scanner(new File(filename));
@@ -62,6 +82,10 @@ public class FloorSubsystem {
         return schedule;
     }
 
+    /**
+     * Getter for the start date
+     * @return The start date
+     */
     public static Date getStartDate() {
         return START_DATE;
     }

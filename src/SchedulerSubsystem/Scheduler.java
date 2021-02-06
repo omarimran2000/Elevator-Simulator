@@ -16,30 +16,51 @@ public class Scheduler implements Runnable {
     private long timePassed;
 
 
+    /**
+     * Constructor for Scheduler
+     */
     public Scheduler() {
-        //executor = Executors.newSingleThreadScheduledExecutor();
-
         timePassed = 0;
         events = new PriorityQueue<>();
 
     }
 
+    /**
+     * Getter for the list of all the elevators in the system
+     *
+     * @return The list of elevators
+     */
     public List<Elevator> getElevators() {
         return elevators;
     }
 
+    /**
+     * Set the list of elevators
+     * @param elevators The list of elevators
+     */
     public void setElevators(List<Elevator> elevators) {
         this.elevators = elevators;
     }
 
+    /**
+     * @return The map of floors
+     */
     public Map<Integer, Floor> getFloors() {
         return floors;
     }
 
+    /**
+     * Set the map of floors in the system
+     * @param floors The map of floors in the system
+     */
     public void setFloors(Map<Integer, Floor> floors) {
         this.floors = floors;
     }
 
+    /**
+     * Moves the elevator car to the requested floor
+     * @param floorNumber The destination floor
+     */
     public synchronized void moveElevatorToFloorNumber(int originalFloor, int destinationFloor) {
         while(!elevators.get(0).getIdle())
         {
@@ -55,6 +76,7 @@ public class Scheduler implements Runnable {
         int currentFloor = elevators.get(0).getCurrentFloorNumber();
         if(currentFloor != originalFloor) {
             elevators.get(0).moveToFloorNumber(originalFloor);
+
         } else {
             elevators.get(0).openDoors(originalFloor);
             elevatorArrivedAtFloorNumber(originalFloor);
@@ -75,6 +97,14 @@ public class Scheduler implements Runnable {
         notifyAll();
     }
 
+    /**
+     * @param floorNumber The floor number
+     */
+    public void elevatorArrivedAtFloorNumber(int floorNumber) {
+        executor.schedule(() -> {
+            closeElevatorDoors();
+            if (floors.get(floorNumber).hasPeopleWaiting()) {
+
     public synchronized void elevatorArrivedAtFloorNumber(int floorNumber) {
 
         floors.get(floorNumber).turnButtonOff();
@@ -82,6 +112,9 @@ public class Scheduler implements Runnable {
 
     }
 
+    /**
+     * @return true if there are events waiting to be run
+     */
     public boolean hasEvents() {
         for(Floor f:floors.values())
         {
@@ -93,6 +126,9 @@ public class Scheduler implements Runnable {
         return false;
     }
 
+    /**
+     * @return true if there are people waiting for an elevator
+     */
     private boolean hasPeopleWaiting() {
         return floors.values().stream().anyMatch(Floor::hasPeopleWaiting);
     }
@@ -118,6 +154,9 @@ public class Scheduler implements Runnable {
         return events.peek();
     }
 
+    /**
+     * The run method
+     */
     @Override
     public void run() {
         Date d = new Date();

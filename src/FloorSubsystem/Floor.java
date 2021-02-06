@@ -24,6 +24,12 @@ public abstract class Floor implements Runnable {
     private final Queue<Integer> destinationFloorNumbers;
     private int numEvents;
 
+    /**
+     * Constructor
+     * @param floorNumber
+     * @param scheduler
+     * @param schedule A list of events
+     */
     public Floor(int floorNumber, Scheduler scheduler, List<Event> schedule) {
         this.floorNumber = floorNumber;
         this.scheduler = scheduler;
@@ -42,7 +48,6 @@ public abstract class Floor implements Runnable {
 
         }
     }
-
 
     @Override
     public void run() {
@@ -63,11 +68,17 @@ public abstract class Floor implements Runnable {
     }
 
 
+    /**
+     * @return true if there are people waiting for an elevator
+     */
     public boolean hasPeopleWaiting() {
         return !destinationFloorNumbers.isEmpty();
     }
 
 
+    /**
+     * @return true if there are events
+     */
     public boolean hasEvents() {
         return ! schedule.isEmpty();
     }
@@ -79,6 +90,12 @@ public abstract class Floor implements Runnable {
 class TopFloor extends Floor {
     private final FloorButton downButton;
 
+    /**
+     * Constructor for TopFloor
+     * @param floorNumber The floor number
+     * @param scheduler The scheduler
+     * @param schedule The list of scheduled events
+     */
     public TopFloor(int floorNumber, Scheduler scheduler, List<Event> schedule) {
         super(floorNumber, scheduler, schedule);
         downButton = new FloorButton();
@@ -96,6 +113,12 @@ class TopFloor extends Floor {
 class BottomFloor extends Floor {
     private final FloorButton upButton;
 
+    /**
+     * Constructor for BottomFloor
+     * @param floorNumber The floor number
+     * @param scheduler The scheduler
+     * @param schedule The list of scheduled events
+     */
     public BottomFloor(int floorNumber, Scheduler scheduler, List<Event> schedule) {
         super(floorNumber, scheduler, schedule);
         upButton = new FloorButton();
@@ -114,6 +137,12 @@ class MiddleFloor extends Floor {
     private final FloorButton upButton;
     private final FloorButton downButton;
 
+    /**
+     * Constructor for MiddleFloor
+     * @param floorNumber The floor number
+     * @param scheduler The scheduler
+     * @param schedule The list of scheduled events
+     */
     public MiddleFloor(int floorNumber, Scheduler scheduler, List<Event> schedule) {
         super(floorNumber, scheduler, schedule);
         upButton = new FloorButton();
