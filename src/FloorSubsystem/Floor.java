@@ -61,10 +61,6 @@ public abstract class Floor implements Runnable {
 
     }
 
-    public Scheduler getScheduler()
-    {
-        return scheduler;
-    }
     public PriorityQueue<Event> getSchedule()
     {
         return schedule;
@@ -74,9 +70,6 @@ public abstract class Floor implements Runnable {
         return !destinationFloorNumbers.isEmpty();
     }
 
-    public int getNextElevatorButton() {
-        return destinationFloorNumbers.remove();
-    }
 
     public boolean hasEvents() {
         return ! schedule.isEmpty();

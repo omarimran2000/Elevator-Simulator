@@ -108,13 +108,7 @@ public class Scheduler implements Runnable {
     }
     public void removeEvent(Event e)
     {
-        for (Floor f:floors.values())
-        {
-            if(f.getSchedule().contains(e))
-            {
-                f.getSchedule().remove(e);
-            }
-        }
+        events.remove(e);
     }
 
     public long getTimePassed() {
