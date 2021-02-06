@@ -10,12 +10,14 @@ public class Elevator implements Runnable {
     private final Door door;
     private final ArrivalSensor arrivalSensor;
     private final Motor motor;
+    private boolean idle;
     private final ArrayList<ElevatorButton> buttons;
     private final ArrayList<ElevatorLamp> elevatorLamps;
     private int currentFloorNumber;
     private static final long WAIT_TIME = (long) 9.175;
 
     public Elevator(Scheduler scheduler) {
+        idle = true;
         this.scheduler = scheduler;
         door = new Door();
         arrivalSensor = new ArrivalSensor();
@@ -35,6 +37,7 @@ public class Elevator implements Runnable {
                 e.printStackTrace();
             }
         }
+        idle = false;
         motor.setDirectionsIsUp(destinationFloorNumber > currentFloorNumber);
         motor.setMoving(true);
         System.out.println("moving elevator to " + destinationFloorNumber);
@@ -47,7 +50,6 @@ public class Elevator implements Runnable {
         motor.setMoving(false);
         scheduler.elevatorArrivedAtFloorNumber(destinationFloorNumber);
 
-        motor.setMoving(false);
         notifyAll();
 
     }
@@ -70,15 +72,18 @@ public class Elevator implements Runnable {
         return currentFloorNumber;
     }
 
-
-    public boolean isMoving() {
-        return motor.isMoving();
+    public void setIdle(boolean idle)
+    {
+        this.idle = idle;
     }
-
-    public void shutdown() {
-        arrivalSensor.shutdown();
+    public boolean getIdle()
+    {
+        return idle;
     }
-
+    public Motor getMotor()
+    {
+        return motor;
+    }
     @Override
     public void run() {
         while(scheduler.hasEvents())

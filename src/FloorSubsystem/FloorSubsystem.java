@@ -12,12 +12,12 @@ import java.util.*;
 import static java.util.stream.Collectors.groupingBy;
 
 public class FloorSubsystem {
-    public static final SimpleDateFormat CSV_DATE_FORMAT = new SimpleDateFormat("HH:mm:ss");
+    public static final SimpleDateFormat CSV_DATE_FORMAT = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
     private static Date START_DATE;
 
     static {
         try {
-            START_DATE = CSV_DATE_FORMAT.parse("14:00:00");
+            START_DATE = CSV_DATE_FORMAT.parse("01-01-2021 14:00:00");
         } catch (ParseException e) {
             e.printStackTrace();
         }
@@ -55,7 +55,7 @@ public class FloorSubsystem {
 
         while (scanner.hasNext()) {
             String[] line = scanner.nextLine().split(",");
-            schedule.add(new Event(CSV_DATE_FORMAT.parse(line[0]), Integer.parseInt(line[1]), line[2].equalsIgnoreCase("up"), Integer.parseInt(line[3])));
+            schedule.add(new Event(CSV_DATE_FORMAT.parse("01-01-2021 "+line[0]), Integer.parseInt(line[1]), line[2].equalsIgnoreCase("up"), Integer.parseInt(line[3])));
         }
 
         scanner.close();
