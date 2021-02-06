@@ -34,7 +34,7 @@ public abstract class Floor implements Runnable {
         destinationFloorNumbers = new LinkedList<>();
         numEvents = schedule.size();
         for (Event event : schedule) {
-            //long seconds_to_task = skipDuration ? 1 : Duration.between(FloorSubsystem.getStartDate().toInstant(), event.getTime().toInstant()).getSeconds();
+            long seconds_to_task = Duration.between(FloorSubsystem.getStartDate().toInstant(), event.getTime().toInstant()).getSeconds();
             //executor.schedule(() -> this.runEvent(event), seconds_to_task, TimeUnit.SECONDS);
             scheduler.addToQueue(event);
 
@@ -54,9 +54,15 @@ public abstract class Floor implements Runnable {
 
         }
     }
+    public void moveElevator(int carButton){
+        scheduler.moveElevatorToFloorNumber(this.floorNumber);
+        scheduler.moveElevatorToFloorNumber(carButton);
 
-    public int getFloorNumber() {
-        return floorNumber;
+    }
+
+    public Scheduler getScheduler()
+    {
+        return scheduler;
     }
     public List<Event> getSchedule()
     {

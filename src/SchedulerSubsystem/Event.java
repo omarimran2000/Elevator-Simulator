@@ -1,19 +1,21 @@
 package SchedulerSubsystem;
 
-import FloorSubsystem.FloorSubsystem;
+import FloorSubsystem.Floor;
 
 import java.util.Date;
+import java.util.TimerTask;
 
-public class Event implements Comparable<Event>{
+public class Event extends TimerTask implements Comparable<Event>{
     private final Date time;
-    private final int floor;
+    private final int floorInt;
+    private Floor floor;
     private final boolean floorButtonIsUp;
     private final int carButton;
 
 
     public Event(Date time, int floor, boolean floor_button_is_up, int car_button) {
         this.time = time;
-        this.floor = floor;
+        this.floorInt = floor;
         this.floorButtonIsUp = floor_button_is_up;
         this.carButton = car_button;
     }
@@ -27,18 +29,23 @@ public class Event implements Comparable<Event>{
     }
 
     public int getFloor() {
-        return floor;
+        return floorInt;
     }
 
     public Date getTime() {
         return time;
     }
 
+    public void setFloor(Floor floor)
+    {
+        this.floor = floor;
+    }
+
     @Override
     public String toString() {
         return "Event{" +
                 "time=" + time +
-                ", floor=" + floor +
+                ", floor=" + floorInt +
                 ", floorButtonIsUp=" + floorButtonIsUp +
                 ", carButton=" + carButton +
                 '}';
@@ -47,5 +54,11 @@ public class Event implements Comparable<Event>{
     @Override
     public int compareTo(Event o) {
         return this.time.compareTo(o.time);
+    }
+
+    @Override
+    public void run() {
+        floor.moveElevator(carButton);
+        floor.getScheduler().removeEvent(this);
     }
 }

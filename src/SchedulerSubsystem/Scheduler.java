@@ -109,9 +109,7 @@ public class Scheduler implements Runnable {
     public void run() {
         while(hasEvents())
         {
-            moveElevatorToFloorNumber(events.peek().getFloor());
-            moveElevatorToFloorNumber(events.peek().getCarButton());
-            removeEvent(events.poll());
+
         }
     }
 }
