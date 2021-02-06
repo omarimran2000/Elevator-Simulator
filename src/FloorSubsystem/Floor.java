@@ -22,6 +22,12 @@ public abstract class Floor implements Runnable {
     private final Queue<Integer> destinationFloorNumbers;
     private int numEvents;
 
+    /**
+     * Constructor
+     * @param floorNumber
+     * @param scheduler
+     * @param schedule A list of events
+     */
     public Floor(int floorNumber, Scheduler scheduler, List<Event> schedule) {
         this.floorNumber = floorNumber;
         this.scheduler = scheduler;
