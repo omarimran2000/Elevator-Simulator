@@ -16,6 +16,7 @@ public class Elevator implements Runnable {
 
     /**
      * Constructor for Elevator
+     *
      * @param scheduler The system scheduler
      */
     public Elevator(Scheduler scheduler) {
@@ -30,9 +31,10 @@ public class Elevator implements Runnable {
 
     /**
      * Moves the elevator to the specified floor and notifies the scheduler
+     *
      * @param destinationFloorNumber The destination floor
      */
-    public void moveToFloorNumber(int destinationFloorNumber) {
+    //public void moveToFloorNumber(int destinationFloorNumber) {
     public synchronized void moveToFloorNumber(int destinationFloorNumber) {
         motor.setDirectionsIsUp(destinationFloorNumber > currentFloorNumber);
         motor.setMoving(true);
@@ -49,24 +51,40 @@ public class Elevator implements Runnable {
         }, currentFloorNumber, destinationFloorNumber);
 
     }
-    public void openDoors(){
+
+    /**
+     * Opens the elevator doors
+     */
+    public void openDoors() {
         System.out.println("doors open");
     }
 
-    public void closeDoors(){
+    /**
+     * Closes the elevator doors
+     */
+    public void closeDoors() {
         System.out.println("doors closed");
         door.setOpen(false);
     }
 
-    public int getCurrentFloorNumber(){
+    /**
+     * Getter for the current floor number
+     * @return The current floor number
+     */
+    public int getCurrentFloorNumber() {
         return currentFloorNumber;
     }
 
-
+    /**
+     * @return true if the elevator is moving
+     */
     public boolean isMoving() {
         return motor.isMoving();
     }
 
+    /**
+     * shutdown the arrival sensor
+     */
     public void shutdown() {
         arrivalSensor.shutdown();
     }

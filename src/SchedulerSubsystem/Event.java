@@ -8,7 +8,6 @@ public class Event {
     private final boolean floorButtonIsUp;
     private final int carButton;
 
-
     /**
      * Constructor for Event
      * The user presses the button on the floor to request an elevator then enters the elevator and requests a new floor
@@ -35,15 +34,13 @@ public class Event {
     }
 
     /**
-     *
-     * @return
+     * @return true if the floor button is up
      */
-    public boolean isFloorButtonIsUp() {
+    public boolean isFloorButtonUp() {
         return floorButtonIsUp;
     }
 
     /**
-     *
      * @return The current floor
      */
     public int getFloor() {

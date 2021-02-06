@@ -39,13 +39,21 @@ public abstract class Floor implements Runnable {
         numEvents = schedule.size();
     }
 
+    /**
+     * Runs the specified event
+     * @param event The event to be run
+     */
     private void runEvent(Event event) {
-        System.out.println(event);
+        System.out.println(event.toString());
         destinationFloorNumbers.add(event.getCarButton());
         scheduler.moveElevatorToFloorNumber(event.getFloor());
         numEvents--;
     }
 
+    /**
+     * The run method
+     *
+     */
     @Override
     public void run() {
         for (Event event : schedule) {
@@ -54,22 +62,38 @@ public abstract class Floor implements Runnable {
         }
     }
 
+    /**
+     * Shutdown the executor
+     */
     public void shutdown() {
         executor.shutdown();
     }
 
+    /**
+     * Getter for the floor number
+     * @return The floor number
+     */
     public int getFloorNumber() {
         return floorNumber;
     }
 
+    /**
+     * @return true if there are people waiting for an elevator
+     */
     public boolean hasPeopleWaiting() {
         return !destinationFloorNumbers.isEmpty();
     }
 
+    /**
+     * @return The next available elevator button
+     */
     public int getNextElevatorButton() {
         return destinationFloorNumbers.remove();
     }
 
+    /**
+     * @return true if there are events
+     */
     public boolean hasEvents() {
         return numEvents != 0;
     }
@@ -79,6 +103,12 @@ public abstract class Floor implements Runnable {
 class TopFloor extends Floor {
     private final FloorButton downButton;
 
+    /**
+     * Constructor for TopFloor
+     * @param floorNumber The floor number
+     * @param scheduler The scheduler
+     * @param schedule The list of scheduled events
+     */
     public TopFloor(int floorNumber, Scheduler scheduler, List<Event> schedule) {
         super(floorNumber, scheduler, schedule);
         downButton = new FloorButton();
@@ -88,6 +118,12 @@ class TopFloor extends Floor {
 class BottomFloor extends Floor {
     private final FloorButton upButton;
 
+    /**
+     * Constructor for BottomFloor
+     * @param floorNumber The floor number
+     * @param scheduler The scheduler
+     * @param schedule The list of scheduled events
+     */
     public BottomFloor(int floorNumber, Scheduler scheduler, List<Event> schedule) {
         super(floorNumber, scheduler, schedule);
         upButton = new FloorButton();
@@ -98,6 +134,12 @@ class MiddleFloor extends Floor {
     private final FloorButton upButton;
     private final FloorButton downButton;
 
+    /**
+     * Constructor for MiddleFloor
+     * @param floorNumber The floor number
+     * @param scheduler The scheduler
+     * @param schedule The list of scheduled events
+     */
     public MiddleFloor(int floorNumber, Scheduler scheduler, List<Event> schedule) {
         super(floorNumber, scheduler, schedule);
         upButton = new FloorButton();
