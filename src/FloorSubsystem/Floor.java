@@ -18,6 +18,7 @@ public abstract class Floor implements Runnable {
    // private final ScheduledExecutorService executor;
     private final FloorLamp upLamp;
     private final FloorLamp downLamp;
+
     private final int floorNumber;
     private final Queue<Integer> destinationFloorNumbers;
     private int numEvents;
@@ -29,6 +30,7 @@ public abstract class Floor implements Runnable {
         //executor = Executors.newSingleThreadScheduledExecutor();
         upLamp = new FloorLamp();
         downLamp = new FloorLamp();
+
         destinationFloorNumbers = new LinkedList<>();
         numEvents = schedule.size();
         for (Event event : schedule) {
@@ -49,6 +51,7 @@ public abstract class Floor implements Runnable {
     @Override
     public void run() {
         while(scheduler.hasEvents()) {
+
         }
     }
 
@@ -75,6 +78,8 @@ public abstract class Floor implements Runnable {
     public boolean hasEvents() {
         return ! schedule.isEmpty();
     }
+    public abstract void turnButtonOff();
+    public abstract void turnButtonOn();
 }
 
 
@@ -85,6 +90,14 @@ class TopFloor extends Floor {
         super(floorNumber, scheduler, schedule);
         downButton = new FloorButton();
     }
+    public void turnButtonOff()
+    {
+        downButton.setOn(false);
+    }
+    public void turnButtonOn()
+    {
+        downButton.setOn(true);
+    }
 }
 
 class BottomFloor extends Floor {
@@ -93,6 +106,14 @@ class BottomFloor extends Floor {
     public BottomFloor(int floorNumber, Scheduler scheduler, List<Event> schedule) {
         super(floorNumber, scheduler, schedule);
         upButton = new FloorButton();
+    }
+    public void turnButtonOff()
+    {
+        upButton.setOn(false);
+    }
+    public void turnButtonOn()
+    {
+        upButton.setOn(true);
     }
 }
 
@@ -104,5 +125,15 @@ class MiddleFloor extends Floor {
         super(floorNumber, scheduler, schedule);
         upButton = new FloorButton();
         downButton = new FloorButton();
+    }
+    public void turnButtonOff()
+    {
+        downButton.setOn(false);
+        upButton.setOn(false);
+    }
+    public void turnButtonOn()
+    {
+        downButton.setOn(true);
+        upButton.setOn(true);
     }
 }

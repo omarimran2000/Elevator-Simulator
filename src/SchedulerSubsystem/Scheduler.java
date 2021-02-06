@@ -51,7 +51,7 @@ public class Scheduler implements Runnable {
         if(currentFloor != floorNumber) {
             elevators.get(0).moveToFloorNumber(floorNumber);
         } else {
-            elevators.get(0).openDoors();
+            elevators.get(0).openDoors(floorNumber);
             elevatorArrivedAtFloorNumber(floorNumber);
         }
 
@@ -70,13 +70,8 @@ public class Scheduler implements Runnable {
         }, 1, TimeUnit.SECONDS); // fix delay
 
          */
-        try {
-            TimeUnit.SECONDS.sleep(1);
-        }catch (InterruptedException e)
-        {
-
-        }
-        closeElevatorDoors();
+        floors.get(floorNumber).turnButtonOff();
+        closeElevatorDoors(floorNumber);
 
     }
 
@@ -108,13 +103,13 @@ public class Scheduler implements Runnable {
         }
     }
 
-    public void openElevatorDoors(){
-        elevators.get(0).openDoors();
+    public void openElevatorDoors(int floor){
+        elevators.get(0).openDoors(floor);
     }
 
-    public void closeElevatorDoors() {
+    public void closeElevatorDoors(int floor) {
 
-            elevators.get(0).closeDoors();
+            elevators.get(0).closeDoors(floor);
     }
 
     public void addToQueue(Event e)

@@ -13,6 +13,7 @@ public class Elevator implements Runnable {
     private final ArrayList<ElevatorButton> buttons;
     private final ArrayList<ElevatorLamp> elevatorLamps;
     private int currentFloorNumber;
+    private static final long WAIT_TIME = (long) 9.175;
 
     public Elevator(Scheduler scheduler) {
         this.scheduler = scheduler;
@@ -39,9 +40,10 @@ public class Elevator implements Runnable {
         System.out.println("moving elevator to " + destinationFloorNumber);
         arrivalSensor.callOnArrival(currentFloorNumber,destinationFloorNumber);
         currentFloorNumber = destinationFloorNumber;
+
         System.out.println("elevator arrived " + destinationFloorNumber);
         door.setOpen(true);
-        openDoors();
+        openDoors(destinationFloorNumber);
         motor.setMoving(false);
         scheduler.elevatorArrivedAtFloorNumber(destinationFloorNumber);
         //scheduler.shutdown();
@@ -62,12 +64,18 @@ public class Elevator implements Runnable {
         notifyAll();
 
     }
-    public void openDoors(){
-        System.out.println("doors open");
+    public void openDoors(int floor){
+        System.out.println("doors open at floor "+floor);
     }
 
-    public void closeDoors(){
-        System.out.println("doors closed");
+    public void closeDoors(int floor){
+        try {
+            wait(WAIT_TIME * 1000);
+        }catch(InterruptedException ex)
+        {
+
+        }
+        System.out.println("doors closed at floor "+floor);
         door.setOpen(false);
     }
 

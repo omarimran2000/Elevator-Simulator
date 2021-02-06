@@ -23,7 +23,7 @@ public class ArrivalSensor {
     public synchronized void callOnArrival(int currentFloorNumber, int destinationFloorNumber){
         //executor.schedule(callback, ArrivalSensor.getSecondsToTravelBetweenTwoFloors(currentFloorNumber, destinationFloorNumber), TimeUnit.SECONDS);
         try {
-            wait(getSecondsToTravelBetweenTwoFloors(currentFloorNumber, destinationFloorNumber));
+            wait(getSecondsToTravelBetweenTwoFloors(currentFloorNumber, destinationFloorNumber)*1000);
         }catch(InterruptedException ex)
         {
             ex.getStackTrace();
