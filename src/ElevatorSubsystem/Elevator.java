@@ -46,20 +46,7 @@ public class Elevator implements Runnable {
         openDoors(destinationFloorNumber);
         motor.setMoving(false);
         scheduler.elevatorArrivedAtFloorNumber(destinationFloorNumber);
-        //scheduler.shutdown();
-        /*
-        arrivalSensor.callOnArrival(() -> {
-            currentFloorNumber = destinationFloorNumber;
-            scheduler.elevatorArrivedAtFloorNumber(destinationFloorNumber);
-            System.out.println("elevator arrived " + destinationFloorNumber);
-            door.setOpen(true);
-            openDoors();
 
-            motor.setMoving(false);
-            scheduler.shutdown();
-        }, currentFloorNumber, destinationFloorNumber);
-
-         */
         motor.setMoving(false);
         notifyAll();
 
@@ -69,12 +56,6 @@ public class Elevator implements Runnable {
     }
 
     public void closeDoors(int floor){
-        try {
-            wait(WAIT_TIME * 1000);
-        }catch(InterruptedException ex)
-        {
-
-        }
         System.out.println("doors closed at floor "+floor);
         door.setOpen(false);
     }

@@ -4,11 +4,8 @@ import ElevatorSubsystem.Elevator;
 import FloorSubsystem.Floor;
 import FloorSubsystem.FloorSubsystem;
 
-import java.time.Clock;
-import java.util.List;
-import java.util.Map;
-import java.util.PriorityQueue;
-import java.util.Timer;
+import java.time.*;
+import java.util.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -24,7 +21,6 @@ public class Scheduler implements Runnable {
     public Scheduler() {
         //executor = Executors.newSingleThreadScheduledExecutor();
         events = new PriorityQueue<>();
-        //timer= new Timer();
 
     }
 
@@ -88,23 +84,6 @@ public class Scheduler implements Runnable {
 
     private boolean hasPeopleWaiting() {
         return floors.values().stream().anyMatch(Floor::hasPeopleWaiting);
-    }
-
-    private boolean hasMovingElevator() {
-        return elevators.stream().anyMatch(Elevator::isMoving);
-    }
-
-    public void shutdown() {
-        if (!hasEvents() && !hasPeopleWaiting() && !hasMovingElevator()) {
-            //elevators.forEach(Elevator::shutdown);
-            //floors.forEach((k, v) -> v.shutdown());
-            //executor.shutdown();
-            System.exit(0);
-        }
-    }
-
-    public void openElevatorDoors(int floor){
-        elevators.get(0).openDoors(floor);
     }
 
     public void closeElevatorDoors(int floor) {

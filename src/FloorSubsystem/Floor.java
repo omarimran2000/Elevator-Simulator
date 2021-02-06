@@ -55,10 +55,6 @@ public abstract class Floor implements Runnable {
         }
     }
 
-   // public void shutdown() {
-   //     executor.shutdown();
-    //}
-
     public int getFloorNumber() {
         return floorNumber;
     }

@@ -1,5 +1,7 @@
 package SchedulerSubsystem;
 
+import FloorSubsystem.FloorSubsystem;
+
 import java.util.Date;
 
 public class Event implements Comparable<Event>{
