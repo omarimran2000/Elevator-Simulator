@@ -61,8 +61,6 @@ public class Elevator implements Runnable {
         motor.setDirectionsIsUp(destinationFloorNumber > currentFloorNumber);
         System.out.println("Moving elevator to "+destinationFloorNumber);
         motor.setMoving(true);
-        buttons.get(destinationFloorNumber-1).setOn(true);
-        elevatorLamps.get(destinationFloorNumber-1).setLamp(true);
 
         arrivalSensor.callOnArrival(currentFloorNumber,destinationFloorNumber);
         currentFloorNumber = destinationFloorNumber;
@@ -76,15 +74,6 @@ public class Elevator implements Runnable {
         notifyAll();
 
     }
-
-
-    /**
-     * Opens the elevator doors
-     */
-    public void openDoors() {
-        System.out.println("doors open");
-    }
-
 
     public void openDoors(int floor){
 
@@ -114,31 +103,14 @@ public class Elevator implements Runnable {
     public int getCurrentFloorNumber() {
         return currentFloorNumber;
     }
-    /**
-     * @return true if the elevator is moving
-     */
-    public boolean isMoving() {
-        return motor.isMoving();
-    }
 
-    /**
-     * shutdown the arrival sensor
-     */
-    public void shutdown() {
-        arrivalSensor.shutdown();
-    }
-
-  public void setIdle(boolean idle)
+    public void setIdle(boolean idle)
     {
         this.idle = idle;
     }
     public boolean getIdle()
     {
         return idle;
-    }
-    public Motor getMotor()
-    {
-        return motor;
     }
 
     public ArrayList<ElevatorButton> getButtons() {

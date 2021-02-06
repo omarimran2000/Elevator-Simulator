@@ -3,7 +3,7 @@ package SchedulerSubsystem;
 import FloorSubsystem.Floor;
 
 import java.util.Date;
-import java.util.TimerTask;
+
 
 /**
  * The Event class represents the events that occur
@@ -43,13 +43,6 @@ public class Event implements Comparable<Event>{
     }
 
     /**
-     * @return true if the floor button is up
-     */
-    public boolean isFloorButtonUp() {
-        return floorButtonIsUp;
-    }
-
-    /**
      * @return The current floor
      */
     public int getFloor() {
@@ -64,15 +57,27 @@ public class Event implements Comparable<Event>{
         return time;
     }
 
+    /**
+     * Setting the floor for this event
+     * @param floor the floor
+     */
     public void setFloor(Floor floor)
     {
         this.floor = floor;
     }
 
+    /**
+     * Setting the time to event for the event
+     * @param timeToEvent relative time
+     */
     public void setTimeToEvent(long timeToEvent) {
         this.timeToEvent = timeToEvent;
     }
 
+    /**
+     * Getter for the time to the event
+     * @return the time to the event
+     */
     public long getTimeToEvent() {
         return timeToEvent;
     }
@@ -89,18 +94,15 @@ public class Event implements Comparable<Event>{
                 '}';
     }
 
+    /**
+     * Compare to method for the priority queue
+     * @param o the method to compare to
+     * @return an integer representing if it is bigger or not
+     */
     @Override
     public int compareTo(Event o) {
         long thisTime = this.time.getTime();
         long anotherTime = o.time.getTime();
         return (thisTime<anotherTime ? -1  : 1);
     }
-    /*
-    @Override
-    public void run() {
-        floor.moveElevator(carButton);
-        floor.getScheduler().removeEvent(this);
-    }
-
-     */
 }
