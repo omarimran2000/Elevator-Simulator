@@ -1,5 +1,10 @@
 package ElevatorSubsystem;
 
+/**
+ * The Motor class represents
+ * the motors that move the elevators
+ * @version Feb 06, 2021
+ */
 public class Motor {
     private boolean directionsIsUp;
     private boolean isMoving;

@@ -1,5 +1,10 @@
 package ElevatorSubsystem;
 
+/**
+ * The Elevator Lamp represents the
+ * lamps that light up when an Elevator Button is pressed
+ * @version Feb 06, 2021
+ */
 public class ElevatorLamp {
     private boolean isLit;
 

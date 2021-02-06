@@ -12,7 +12,10 @@ import java.util.Queue;
 
 import static java.lang.Math.abs;
 
-
+/**
+ * The Floor class represents a single floor in the building
+ * @version Feb 06, 2021
+ */
 public abstract class Floor implements Runnable {
     private static final boolean skipDuration = true; //FIXME move to a config file.
     private final Scheduler scheduler;

@@ -1,9 +1,11 @@
 package ElevatorSubsystem;
-
 import SchedulerSubsystem.Scheduler;
-
 import java.util.ArrayList;
 
+/**
+ * The Elevator class represents a single elevator in the system
+ * @version Feb 06, 2021
+ */
 public class Elevator implements Runnable {
 
     private final Scheduler scheduler;

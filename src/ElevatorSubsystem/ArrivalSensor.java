@@ -6,6 +6,11 @@ package ElevatorSubsystem;
 
 import static java.lang.Math.abs;
 
+/**
+ * The Arrival Sensor is a sensor in the Elevator
+ * to notify the schedule that it has arrived at a floor
+ * @version Feb 06, 2021
+ */
 public class ArrivalSensor {
     //private final ScheduledExecutorService executor;
     private static final long DISTANCE_BETWEEN_FLOORS = (long) 3.5;

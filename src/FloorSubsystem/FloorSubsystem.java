@@ -11,6 +11,10 @@ import java.util.*;
 
 import static java.util.stream.Collectors.groupingBy;
 
+/**
+ * The Floor Subsystem class represents all of the floors in the building
+ * @version Feb 06, 2021
+ */
 public class FloorSubsystem {
     public static final SimpleDateFormat CSV_DATE_FORMAT = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
     private static Date START_DATE;
