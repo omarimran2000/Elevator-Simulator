@@ -46,6 +46,7 @@ public class Scheduler implements Runnable {
 
         int currentFloor = elevators.get(0).getCurrentFloorNumber();
         if(currentFloor != floorNumber) {
+            floors.get(floorNumber).turnButtonOn();
             elevators.get(0).moveToFloorNumber(floorNumber);
         } else {
             elevators.get(0).openDoors(floorNumber);
@@ -109,6 +110,10 @@ public class Scheduler implements Runnable {
 
     public Timer getTimer() {
         return timer;
+    }
+
+    public PriorityQueue<Event> getEvents(){
+        return events;
     }
 
     @Override

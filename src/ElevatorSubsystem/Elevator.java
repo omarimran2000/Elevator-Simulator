@@ -42,12 +42,11 @@ public class Elevator implements Runnable {
         currentFloorNumber = destinationFloorNumber;
 
         System.out.println("elevator arrived " + destinationFloorNumber);
+        motor.setMoving(false);
         door.setOpen(true);
         openDoors(destinationFloorNumber);
-        motor.setMoving(false);
         scheduler.elevatorArrivedAtFloorNumber(destinationFloorNumber);
 
-        motor.setMoving(false);
         notifyAll();
 
     }
