@@ -15,7 +15,6 @@ public class Main {
     public static void main(String[] args) {
         Scheduler scheduler = new Scheduler();
 
-
         try {
             Map<Integer, Floor> floors = generateFloors(scheduler, CSV_FILE_NAME);
             scheduler.setFloors(floors);

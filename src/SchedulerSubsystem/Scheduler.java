@@ -5,12 +5,18 @@ import FloorSubsystem.Floor;
 
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 public class Scheduler implements Runnable {
     public List<Elevator> elevators;
     public Map<Integer, Floor> floors;
+    private final ScheduledExecutorService executor;
+
 
     public Scheduler() {
+        executor = Executors.newSingleThreadScheduledExecutor();
 
     }
 
@@ -50,7 +56,17 @@ public class Scheduler implements Runnable {
      * @param floorNumber
      */
     public void moveElevatorToFloorNumber(int floorNumber) {
-        elevators.get(0).moveToFloorNumber(floorNumber);
+
+
+        int currentFloor = elevators.get(0).getCurrentFloorNumber();
+        if(currentFloor != floorNumber) {
+            elevators.get(0).moveToFloorNumber(floorNumber);
+        } else {
+            elevators.get(0).openDoors();
+            elevatorArrivedAtFloorNumber(floorNumber);
+        }
+
+
     }
 
     /**
@@ -58,9 +74,15 @@ public class Scheduler implements Runnable {
      * @param floorNumber The floor number
      */
     public void elevatorArrivedAtFloorNumber(int floorNumber) {
-        if (floors.get(floorNumber).hasPeopleWaiting()) {
-            moveElevatorToFloorNumber(floors.get(floorNumber).getNextElevatorButton());
-        }
+
+
+        executor.schedule(() -> {
+            closeElevatorDoors();
+            if (floors.get(floorNumber).hasPeopleWaiting()) {
+
+                moveElevatorToFloorNumber(floors.get(floorNumber).getNextElevatorButton());
+            }
+        }, 1, TimeUnit.SECONDS); // fix delay
     }
 
     /**
@@ -72,18 +94,42 @@ public class Scheduler implements Runnable {
         for (int index:floors.keySet())
         {
             count+=floors.get(index).getNumEvents();
+
+    private boolean hasEvents() {
+        return floors.values().stream().anyMatch(Floor::hasEvents);
+    }
+
+    private boolean hasPeopleWaiting() {
+        return floors.values().stream().anyMatch(Floor::hasPeopleWaiting);
+    }
+
+    private boolean hasMovingElevator() {
+        return elevators.stream().anyMatch(Elevator::isMoving);
+    }
+
+    public void shutdown() {
+        if (!hasEvents() && !hasPeopleWaiting() && !hasMovingElevator()) {
+            elevators.forEach(Elevator::shutdown);
+            floors.forEach((k, v) -> v.shutdown());
+            executor.shutdown();
         }
-        return count;
     }
 
     /**
      *
      */
+
+    public void openElevatorDoors(){
+        elevators.get(0).openDoors();
+    }
+
+    public void closeElevatorDoors() {
+
+            elevators.get(0).closeDoors();
+    }
+
+
     @Override
     public void run() {
-        while(getNumEvents()>0)
-        {
-
-        }
     }
 }
