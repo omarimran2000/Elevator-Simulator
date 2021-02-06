@@ -41,7 +41,7 @@ public class Scheduler implements Runnable {
         this.floors = floors;
     }
 
-    public void moveElevatorToFloorNumber(int floorNumber) {
+    public synchronized void moveElevatorToFloorNumber(int floorNumber) {
 
 
         int currentFloor = elevators.get(0).getCurrentFloorNumber();
@@ -55,7 +55,7 @@ public class Scheduler implements Runnable {
 
     }
 
-    public void elevatorArrivedAtFloorNumber(int floorNumber) {
+    public synchronized void elevatorArrivedAtFloorNumber(int floorNumber) {
 
         /*
         executor.schedule(() -> {
