@@ -5,12 +5,13 @@ import FloorSubsystem.Floor;
 import java.util.Date;
 import java.util.TimerTask;
 
-public class Event extends TimerTask implements Comparable<Event>{
+public class Event implements Comparable<Event>{
     private final Date time;
     private final int floorInt;
     private Floor floor;
     private final boolean floorButtonIsUp;
     private final int carButton;
+    private long timeToEvent;
 
 
     public Event(Date time, int floor, boolean floor_button_is_up, int car_button) {
@@ -41,6 +42,14 @@ public class Event extends TimerTask implements Comparable<Event>{
         this.floor = floor;
     }
 
+    public void setTimeToEvent(long timeToEvent) {
+        this.timeToEvent = timeToEvent;
+    }
+
+    public long getTimeToEvent() {
+        return timeToEvent;
+    }
+
     @Override
     public String toString() {
         return "Event{" +
@@ -53,12 +62,16 @@ public class Event extends TimerTask implements Comparable<Event>{
 
     @Override
     public int compareTo(Event o) {
-        return this.time.compareTo(o.time);
+        long thisTime = this.time.getTime();
+        long anotherTime = o.time.getTime();
+        return (thisTime<anotherTime ? -1  : 1);
     }
-
+    /*
     @Override
     public void run() {
         floor.moveElevator(carButton);
         floor.getScheduler().removeEvent(this);
     }
+
+     */
 }

@@ -6,21 +6,20 @@ import FloorSubsystem.FloorSubsystem;
 
 import java.time.*;
 import java.util.*;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
+
 
 public class Scheduler implements Runnable {
     public List<Elevator> elevators;
     public Map<Integer, Floor> floors;
    // private final ScheduledExecutorService executor;
     private PriorityQueue<Event> events;
-    private Timer timer;
+    private long timePassed;
 
 
     public Scheduler() {
         //executor = Executors.newSingleThreadScheduledExecutor();
-        timer = new Timer();
+
+        timePassed = 0;
         events = new PriorityQueue<>();
 
     }
@@ -41,32 +40,43 @@ public class Scheduler implements Runnable {
         this.floors = floors;
     }
 
-    public synchronized void moveElevatorToFloorNumber(int floorNumber) {
+    public synchronized void moveElevatorToFloorNumber(int originalFloor, int destinationFloor) {
+        while(!elevators.get(0).getIdle())
+        {
+            try{
+                wait();
 
+            }catch(InterruptedException ex)
+            {
 
-        int currentFloor = elevators.get(0).getCurrentFloorNumber();
-        if(currentFloor != floorNumber) {
-            elevators.get(0).moveToFloorNumber(floorNumber);
-        } else {
-            elevators.get(0).openDoors(floorNumber);
-            elevatorArrivedAtFloorNumber(floorNumber);
+            }
         }
 
+        int currentFloor = elevators.get(0).getCurrentFloorNumber();
+        if(currentFloor != originalFloor) {
+            elevators.get(0).moveToFloorNumber(originalFloor);
+        } else {
+            elevators.get(0).openDoors(originalFloor);
+            elevatorArrivedAtFloorNumber(originalFloor);
+        }
+        moveElevatorToDestination(destinationFloor);
 
+    }
+    public void moveElevatorToDestination(int destination)
+    {
+        int currentFloor = elevators.get(0).getCurrentFloorNumber();
+        if(currentFloor != destination) {
+            elevators.get(0).moveToFloorNumber(destination);
+        } else {
+            elevators.get(0).openDoors(destination);
+            elevatorArrivedAtFloorNumber(destination);
+        }
+        elevators.get(0).setIdle(true);
+        notifyAll();
     }
 
     public synchronized void elevatorArrivedAtFloorNumber(int floorNumber) {
 
-        /*
-        executor.schedule(() -> {
-            closeElevatorDoors();
-            if (floors.get(floorNumber).hasPeopleWaiting()) {
-
-                moveElevatorToFloorNumber(floors.get(floorNumber).getNextElevatorButton());
-            }
-        }, 1, TimeUnit.SECONDS); // fix delay
-
-         */
         floors.get(floorNumber).turnButtonOff();
         closeElevatorDoors(floorNumber);
 
@@ -98,25 +108,25 @@ public class Scheduler implements Runnable {
     }
     public void removeEvent(Event e)
     {
-        for (Floor f:floors.values())
-        {
-            if(f.getSchedule().contains(e))
-            {
-                f.getSchedule().remove(e);
-            }
-        }
+        events.remove(e);
     }
 
-    public Timer getTimer() {
-        return timer;
+    public long getTimePassed() {
+        return timePassed;
+    }
+    public Event priorityEvent(){
+        return events.peek();
     }
 
     @Override
     public void run() {
+        Date d = new Date();
+        long startTime = d.getTime();
+
         while(hasEvents())
         {
-
+            d = new Date();
+            timePassed = (d.getTime() - startTime)/1000;
         }
-        timer.cancel();
     }
 }
