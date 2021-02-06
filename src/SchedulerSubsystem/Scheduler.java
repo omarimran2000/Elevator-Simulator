@@ -14,7 +14,6 @@ import java.util.*;
 public class Scheduler implements Runnable {
     public List<Elevator> elevators;
     public Map<Integer, Floor> floors;
-   // private final ScheduledExecutorService executor;
     private PriorityQueue<Event> events;
     private long timePassed;
 
@@ -88,6 +87,11 @@ public class Scheduler implements Runnable {
         moveElevatorToDestination(destinationFloor);
 
     }
+
+    /**
+     *  Moving an elevator to the destination
+     * @param destination the destination to move it
+     */
     public void moveElevatorToDestination(int destination)
     {
         System.out.println("Elevator button "+destination+" has been pressed");
@@ -138,18 +142,36 @@ public class Scheduler implements Runnable {
             elevators.get(0).closeDoors(floor);
     }
 
+    /**
+     * Adding the event to priority queue
+     * @param e the event
+     */
     public void addToQueue(Event e)
     {
         events.add(e);
     }
+
+    /**
+     * Removing the event from the priority queue
+     * @param e the event
+     */
     public void removeEvent(Event e)
     {
         events.remove(e);
     }
 
+    /**
+     * Getting the time passed since the program has started
+     * @return the time passed
+     */
     public long getTimePassed() {
         return timePassed;
     }
+
+    /**
+     *  Getting the event with the nearest deadline
+     * @return the event
+     */
     public Event priorityEvent(){
         return events.peek();
     }
