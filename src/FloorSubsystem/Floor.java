@@ -63,6 +63,11 @@ public abstract class Floor implements Runnable {
 
         }
     }
+
+    /**
+     * Signals the scheduler to move the floor indicated by the floor's carButton
+     * @param carButton The carButton for the specified floor
+     */
     public void moveElevator(int carButton){
         scheduler.moveElevatorToFloorNumber(this.floorNumber,carButton);
 

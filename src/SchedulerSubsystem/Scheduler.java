@@ -126,6 +126,10 @@ public class Scheduler implements Runnable {
         return false;
     }
 
+    /**
+     * @param floor The Floor Number
+     */
+
     public void closeElevatorDoors(int floor) {
 
             elevators.get(0).closeDoors(floor);
