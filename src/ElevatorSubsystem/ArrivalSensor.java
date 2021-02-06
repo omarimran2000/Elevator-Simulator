@@ -1,13 +1,9 @@
 package ElevatorSubsystem;
 
-//import java.util.concurrent.Executors;
-//import java.util.concurrent.ScheduledExecutorService;
-//import java.util.concurrent.TimeUnit;
-
 import static java.lang.Math.abs;
 
 public class ArrivalSensor {
-    //private final ScheduledExecutorService executor;
+
     private static final long DISTANCE_BETWEEN_FLOORS = (long) 3.5;
     private static final long VELOCITY = (long) 1.27;
 
@@ -16,7 +12,6 @@ public class ArrivalSensor {
      * Instantiates a ScheduledExecutorService
      */
     public ArrivalSensor() {
-        //executor = Executors.newSingleThreadScheduledExecutor();
     }
 
     /**
@@ -31,13 +26,14 @@ public class ArrivalSensor {
 
 
     /**
+     * Method to move the elevator based on the time
      *
      * @param currentFloorNumber The number of the current floor
      * @param destinationFloorNumber The number of the destination floor
      */
 
     public synchronized void callOnArrival(int currentFloorNumber, int destinationFloorNumber){
-        //executor.schedule(callback, ArrivalSensor.getSecondsToTravelBetweenTwoFloors(currentFloorNumber, destinationFloorNumber), TimeUnit.SECONDS);
+
         try {
             wait(getSecondsToTravelBetweenTwoFloors(currentFloorNumber, destinationFloorNumber)*1000);
         }catch(InterruptedException ex)
@@ -46,12 +42,5 @@ public class ArrivalSensor {
         }
 
 
-    }
-
-    /**
-     * Shuts down the executor
-     */
-    public void shutdown() {
-        //executor.shutdown();
     }
 }

@@ -3,8 +3,6 @@ package FloorSubsystem;
 import SchedulerSubsystem.Event;
 import SchedulerSubsystem.Scheduler;
 
-import java.awt.*;
-import java.time.Duration;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.PriorityQueue;
@@ -14,10 +12,9 @@ import static java.lang.Math.abs;
 
 
 public abstract class Floor implements Runnable {
-    private static final boolean skipDuration = true; //FIXME move to a config file.
+
     private final Scheduler scheduler;
     private final PriorityQueue<Event> schedule;
-   // private final ScheduledExecutorService executor;
     private final FloorLamp upLamp;
     private final FloorLamp downLamp;
 
@@ -50,6 +47,9 @@ public abstract class Floor implements Runnable {
         }
     }
 
+    /**
+     * Method to run the thread
+     */
     @Override
     public void run() {
         while(scheduler.hasEvents()) {
@@ -88,9 +88,22 @@ public abstract class Floor implements Runnable {
     public boolean hasEvents() {
         return ! schedule.isEmpty();
     }
+
+    /**
+     * Abstract method for turning the button on
+     */
     public abstract void turnButtonOff();
+    /**
+     * Abstract method for turning the button off
+     */
     public abstract void turnButtonOn();
+    /**
+     * Abstract method for getting the down button
+     */
     public abstract FloorButton getBottom();
+    /**
+     * Abstract method for getting the up button
+     */
     public abstract FloorButton getTop();
 }
 
@@ -108,20 +121,30 @@ class TopFloor extends Floor {
         super(floorNumber, scheduler, schedule);
         downButton = new FloorButton();
     }
+    /**
+     *  Method for turning the down button off
+     */
     public void turnButtonOff()
     {
         downButton.setOn(false);
     }
+    /**
+     *  Method for turning the down button on
+     */
     public void turnButtonOn()
     {
         downButton.setOn(true);
     }
-
+    /**
+     *  Method for getting the down button
+     */
     @Override
     public FloorButton getBottom() {
         return downButton;
     }
-
+    /**
+     *  Method for getting the top button
+     */
     @Override
     public FloorButton getTop() {
         return null;
@@ -141,20 +164,30 @@ class BottomFloor extends Floor {
         super(floorNumber, scheduler, schedule);
         upButton = new FloorButton();
     }
+    /**
+     *  Method for turning the up button off
+     */
     public void turnButtonOff()
     {
         upButton.setOn(false);
     }
+    /**
+     *  Method for turning the up button on
+     */
     public void turnButtonOn()
     {
         upButton.setOn(true);
     }
-
+    /**
+     *  Method for getting the bottom button
+     */
     @Override
     public FloorButton getBottom() {
         return null;
     }
-
+    /**
+     *  Method for getting the up button
+     */
     @Override
     public FloorButton getTop() {
         return upButton;
@@ -176,22 +209,34 @@ class MiddleFloor extends Floor {
         upButton = new FloorButton();
         downButton = new FloorButton();
     }
+    /**
+     *  Method for turning the buttons off
+     */
     public void turnButtonOff()
     {
         downButton.setOn(false);
         upButton.setOn(false);
     }
+    /**
+     *  Method for turning the buttons on
+     */
     public void turnButtonOn()
     {
         downButton.setOn(true);
         upButton.setOn(true);
     }
-
+    /**
+     *  Method for returning the down button
+     * @return the downButton
+     */
     @Override
     public FloorButton getBottom() {
         return downButton;
     }
-
+    /**
+     * Method for returning the up button
+     * @return the upButton
+     */
     @Override
     public FloorButton getTop() {
         return upButton;
