@@ -6,18 +6,20 @@ import SchedulerSubsystem.Scheduler;
 import java.time.Duration;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.PriorityQueue;
 import java.util.Queue;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
+
+import static java.lang.Math.abs;
+
 
 public abstract class Floor implements Runnable {
     private static final boolean skipDuration = true; //FIXME move to a config file.
     private final Scheduler scheduler;
-    private final List<Event> schedule;
-    private final ScheduledExecutorService executor;
+    private final PriorityQueue<Event> schedule;
+   // private final ScheduledExecutorService executor;
     private final FloorLamp upLamp;
     private final FloorLamp downLamp;
+
     private final int floorNumber;
     private final Queue<Integer> destinationFloorNumbers;
     private int numEvents;
@@ -31,51 +33,40 @@ public abstract class Floor implements Runnable {
     public Floor(int floorNumber, Scheduler scheduler, List<Event> schedule) {
         this.floorNumber = floorNumber;
         this.scheduler = scheduler;
-        this.schedule = schedule;
-        executor = Executors.newSingleThreadScheduledExecutor();
+        this.schedule = new PriorityQueue<>();
+        this.schedule.addAll(schedule);
         upLamp = new FloorLamp();
         downLamp = new FloorLamp();
+
         destinationFloorNumbers = new LinkedList<>();
         numEvents = schedule.size();
-    }
-
-    /**
-     * Runs the specified event
-     * @param event The event to be run
-     */
-    private void runEvent(Event event) {
-        System.out.println(event.toString());
-        destinationFloorNumbers.add(event.getCarButton());
-        scheduler.moveElevatorToFloorNumber(event.getFloor());
-        numEvents--;
-    }
-
-    /**
-     * The run method
-     *
-     */
-    @Override
-    public void run() {
         for (Event event : schedule) {
-            long seconds_to_task = skipDuration ? 1 : Duration.between(FloorSubsystem.getStartDate().toInstant(), event.getTime().toInstant()).getSeconds();
-            executor.schedule(() -> this.runEvent(event), seconds_to_task, TimeUnit.SECONDS);
+            event.setFloor(this);
+            long seconds_to_task = abs(FloorSubsystem.getStartDate().getTime()- event.getTime().getTime())/1000;
+            event.setTimeToEvent(seconds_to_task);
+            scheduler.addToQueue(event);
+
         }
     }
 
-    /**
-     * Shutdown the executor
-     */
-    public void shutdown() {
-        executor.shutdown();
+    @Override
+    public void run() {
+        while(scheduler.hasEvents()) {
+            if(!schedule.isEmpty() && schedule.peek().getTimeToEvent()<=scheduler.getTimePassed()&&scheduler.priorityEvent().equals(schedule.peek()))
+            {
+                this.turnButtonOn();
+                moveElevator(schedule.peek().getCarButton());
+                scheduler.removeEvent(schedule.peek());
+                schedule.poll();
+            }
+
+        }
+    }
+    public void moveElevator(int carButton){
+        scheduler.moveElevatorToFloorNumber(this.floorNumber,carButton);
+
     }
 
-    /**
-     * Getter for the floor number
-     * @return The floor number
-     */
-    public int getFloorNumber() {
-        return floorNumber;
-    }
 
     /**
      * @return true if there are people waiting for an elevator
@@ -84,19 +75,15 @@ public abstract class Floor implements Runnable {
         return !destinationFloorNumbers.isEmpty();
     }
 
-    /**
-     * @return The next available elevator button
-     */
-    public int getNextElevatorButton() {
-        return destinationFloorNumbers.remove();
-    }
 
     /**
      * @return true if there are events
      */
     public boolean hasEvents() {
-        return numEvents != 0;
+        return ! schedule.isEmpty();
     }
+    public abstract void turnButtonOff();
+    public abstract void turnButtonOn();
 }
 
 
@@ -113,6 +100,14 @@ class TopFloor extends Floor {
         super(floorNumber, scheduler, schedule);
         downButton = new FloorButton();
     }
+    public void turnButtonOff()
+    {
+        downButton.setOn(false);
+    }
+    public void turnButtonOn()
+    {
+        downButton.setOn(true);
+    }
 }
 
 class BottomFloor extends Floor {
@@ -127,6 +122,14 @@ class BottomFloor extends Floor {
     public BottomFloor(int floorNumber, Scheduler scheduler, List<Event> schedule) {
         super(floorNumber, scheduler, schedule);
         upButton = new FloorButton();
+    }
+    public void turnButtonOff()
+    {
+        upButton.setOn(false);
+    }
+    public void turnButtonOn()
+    {
+        upButton.setOn(true);
     }
 }
 
@@ -144,5 +147,15 @@ class MiddleFloor extends Floor {
         super(floorNumber, scheduler, schedule);
         upButton = new FloorButton();
         downButton = new FloorButton();
+    }
+    public void turnButtonOff()
+    {
+        downButton.setOn(false);
+        upButton.setOn(false);
+    }
+    public void turnButtonOn()
+    {
+        downButton.setOn(true);
+        upButton.setOn(true);
     }
 }

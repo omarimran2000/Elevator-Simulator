@@ -1,6 +1,7 @@
 package FloorSubsystem;
 
 public class FloorButton {
+
     private boolean direction;
 
     /**
@@ -23,5 +24,6 @@ public class FloorButton {
      */
     public void setDirection(boolean direction){
         this.direction = direction;
+
     }
 }

@@ -2,24 +2,27 @@ package SchedulerSubsystem;
 
 import ElevatorSubsystem.Elevator;
 import FloorSubsystem.Floor;
+import FloorSubsystem.FloorSubsystem;
 
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
+import java.time.*;
+import java.util.*;
+
 
 public class Scheduler implements Runnable {
-    private List<Elevator> elevators;
-    private Map<Integer, Floor> floors;
-    private final ScheduledExecutorService executor;
+    public List<Elevator> elevators;
+    public Map<Integer, Floor> floors;
+   // private final ScheduledExecutorService executor;
+    private PriorityQueue<Event> events;
+    private long timePassed;
 
 
     /**
      * Constructor for Scheduler
      */
     public Scheduler() {
-        executor = Executors.newSingleThreadScheduledExecutor();
+        timePassed = 0;
+        events = new PriorityQueue<>();
+
     }
 
     /**
@@ -58,14 +61,40 @@ public class Scheduler implements Runnable {
      * Moves the elevator car to the requested floor
      * @param floorNumber The destination floor
      */
-    public void moveElevatorToFloorNumber(int floorNumber) {
-        int currentFloor = elevators.get(0).getCurrentFloorNumber();
-        if (currentFloor != floorNumber) {
-            elevators.get(0).moveToFloorNumber(floorNumber);
-        } else {
-            elevators.get(0).openDoors();
-            elevatorArrivedAtFloorNumber(floorNumber);
+    public synchronized void moveElevatorToFloorNumber(int originalFloor, int destinationFloor) {
+        while(!elevators.get(0).getIdle())
+        {
+            try{
+                wait();
+
+            }catch(InterruptedException ex)
+            {
+
+            }
         }
+
+        int currentFloor = elevators.get(0).getCurrentFloorNumber();
+        if(currentFloor != originalFloor) {
+            elevators.get(0).moveToFloorNumber(originalFloor);
+
+        } else {
+            elevators.get(0).openDoors(originalFloor);
+            elevatorArrivedAtFloorNumber(originalFloor);
+        }
+        moveElevatorToDestination(destinationFloor);
+
+    }
+    public void moveElevatorToDestination(int destination)
+    {
+        int currentFloor = elevators.get(0).getCurrentFloorNumber();
+        if(currentFloor != destination) {
+            elevators.get(0).moveToFloorNumber(destination);
+        } else {
+            elevators.get(0).openDoors(destination);
+            elevatorArrivedAtFloorNumber(destination);
+        }
+        elevators.get(0).setIdle(true);
+        notifyAll();
     }
 
     /**
@@ -76,16 +105,25 @@ public class Scheduler implements Runnable {
             closeElevatorDoors();
             if (floors.get(floorNumber).hasPeopleWaiting()) {
 
-                moveElevatorToFloorNumber(floors.get(floorNumber).getNextElevatorButton());
-            }
-        }, 1, TimeUnit.SECONDS); // fix delay
+    public synchronized void elevatorArrivedAtFloorNumber(int floorNumber) {
+
+        floors.get(floorNumber).turnButtonOff();
+        closeElevatorDoors(floorNumber);
+
     }
 
     /**
      * @return true if there are events waiting to be run
      */
-    private boolean hasEvents() {
-        return floors.values().stream().anyMatch(Floor::hasEvents);
+    public boolean hasEvents() {
+        for(Floor f:floors.values())
+        {
+            if (f.hasEvents())
+            {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
@@ -95,43 +133,39 @@ public class Scheduler implements Runnable {
         return floors.values().stream().anyMatch(Floor::hasPeopleWaiting);
     }
 
-    /**
-     * @return true if there is an elevator moving in the system
-     */
-    private boolean hasMovingElevator() {
-        return elevators.stream().anyMatch(Elevator::isMoving);
+    public void closeElevatorDoors(int floor) {
+
+            elevators.get(0).closeDoors(floor);
     }
 
-    /**
-     * Shutdown the threads
-     */
-    public void shutdown() {
-        if (!hasEvents() && !hasPeopleWaiting() && !hasMovingElevator()) {
-            elevators.forEach(Elevator::shutdown);
-            floors.forEach((k, v) -> v.shutdown());
-            executor.shutdown();
-        }
+    public void addToQueue(Event e)
+    {
+        events.add(e);
+    }
+    public void removeEvent(Event e)
+    {
+        events.remove(e);
     }
 
-    /**
-     * Opens the elevator doors
-     */
-    public void openElevatorDoors() {
-        elevators.get(0).openDoors();
+    public long getTimePassed() {
+        return timePassed;
     }
-
-    /**
-     * Closes the elevator doors
-     */
-    public void closeElevatorDoors() {
-        elevators.get(0).closeDoors();
+    public Event priorityEvent(){
+        return events.peek();
     }
-
 
     /**
      * The run method
      */
     @Override
     public void run() {
+        Date d = new Date();
+        long startTime = d.getTime();
+
+        while(hasEvents())
+        {
+            d = new Date();
+            timePassed = (d.getTime() - startTime)/1000;
+        }
     }
 }
