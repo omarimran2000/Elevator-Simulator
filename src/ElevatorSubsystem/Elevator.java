@@ -52,10 +52,16 @@ public class Elevator implements Runnable {
 
     }
     public void openDoors(int floor){
+
         System.out.println("doors open at floor "+floor);
     }
 
-    public void closeDoors(int floor){
+    public synchronized void closeDoors(int floor){
+        try {
+            wait(WAIT_TIME * 1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         System.out.println("doors closed at floor "+floor);
         door.setOpen(false);
     }
