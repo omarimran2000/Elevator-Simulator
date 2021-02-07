@@ -19,12 +19,11 @@ class CommunicationTest {
     @Test
     void CommsTest() throws  ParseException {
         Scheduler scheduler = new Scheduler();
-        FloorSubsystem floorSubsystem = new FloorSubsystem();
 
         List<Event> events = new ArrayList<>();
         events.add(new Event(CSV_DATE_FORMAT.parse("01-01-2021 14:00:05"),1,true,2));
 
-        Map<Integer, Floor> floors = floorSubsystem.generateFloors(scheduler, events);
+        Map<Integer, Floor> floors = FloorSubsystem.generateFloors(scheduler, events);
         scheduler.setFloors(floors);
 
         Elevator elevator = new Elevator(scheduler);
