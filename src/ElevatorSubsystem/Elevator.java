@@ -92,8 +92,8 @@ public class Elevator implements Runnable {
         System.out.println("doors closed at floor "+floor);
 
         door.setOpen(false);
-        buttons.get(floor-1).setOn(false);
-        elevatorLamps.get(floor-1).setLamp(false);
+        buttons.get(floor).setOn(false);
+        elevatorLamps.get(floor).setLamp(false);
     }
 
     /**
