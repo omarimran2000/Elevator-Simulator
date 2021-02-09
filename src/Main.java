@@ -11,6 +11,7 @@ import static FloorSubsystem.FloorSubsystem.generateFloors;
 
 /**
  * This is the main class that starts the threads
+ *
  * @version Feb 06, 2021
  */
 public class Main {
@@ -19,6 +20,7 @@ public class Main {
     /**
      * Initializes the map of floors, the shceduler and the elevator
      * Starts the threads
+     *
      * @param args
      */
     public static void main(String[] args) {

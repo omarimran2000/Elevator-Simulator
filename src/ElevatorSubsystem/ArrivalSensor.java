@@ -5,6 +5,7 @@ import static java.lang.Math.abs;
 /**
  * The Arrival Sensor is a sensor in the Elevator
  * to notify the schedule that it has arrived at a floor
+ *
  * @version Feb 06, 2021
  */
 public class ArrivalSensor {
@@ -21,28 +22,28 @@ public class ArrivalSensor {
 
     /**
      * Method to determine travel time between two floors
-     * @param currentFloorNumber The current floor
+     *
+     * @param currentFloorNumber     The current floor
      * @param destinationFloorNumber The destination floor
      * @return The time in seconds to travel between the two floors
      */
     public static long getSecondsToTravelBetweenTwoFloors(int currentFloorNumber, int destinationFloorNumber) {
-        return (abs(destinationFloorNumber - currentFloorNumber)*DISTANCE_BETWEEN_FLOORS)/VELOCITY;
+        return (abs(destinationFloorNumber - currentFloorNumber) * DISTANCE_BETWEEN_FLOORS) / VELOCITY;
     }
 
 
     /**
      * Method to move the elevator based on the time
      *
-     * @param currentFloorNumber The number of the current floor
+     * @param currentFloorNumber     The number of the current floor
      * @param destinationFloorNumber The number of the destination floor
      */
 
-    public synchronized void callOnArrival(int currentFloorNumber, int destinationFloorNumber){
+    public synchronized void callOnArrival(int currentFloorNumber, int destinationFloorNumber) {
 
         try {
-            wait(getSecondsToTravelBetweenTwoFloors(currentFloorNumber, destinationFloorNumber)*1000);
-        }catch(InterruptedException ex)
-        {
+            wait(getSecondsToTravelBetweenTwoFloors(currentFloorNumber, destinationFloorNumber) * 1000);
+        } catch (InterruptedException ex) {
             ex.getStackTrace();
         }
 
