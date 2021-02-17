@@ -1,5 +1,7 @@
 package ElevatorSubsystem;
 
+import FloorSubsystem.Floor;
+
 import static java.lang.Math.abs;
 
 /**
@@ -47,5 +49,25 @@ public class ArrivalSensor {
         }
 
 
+    }
+    public boolean isRequest(Floor floor, boolean directionUp){
+        if(directionUp)
+        {
+            try {
+                return floor.getTop().isOn();
+            }catch(NullPointerException np)
+            {
+                return false;
+            }
+        }
+        else
+        {
+            try {
+                return floor.getBottom().isOn();
+            }catch(NullPointerException np)
+            {
+                return false;
+            }
+        }
     }
 }

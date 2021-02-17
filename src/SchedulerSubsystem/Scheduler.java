@@ -83,7 +83,7 @@ public class Scheduler implements Runnable {
             elevators.get(0).moveToFloorNumber(originalFloor);
 
         } else {
-            elevators.get(0).openDoors(originalFloor);
+            //elevators.get(0).openDoors(originalFloor);
             elevatorArrivedAtFloorNumber(originalFloor);
         }
         moveElevatorToDestination(destinationFloor);
@@ -105,7 +105,7 @@ public class Scheduler implements Runnable {
        if(currentFloor != destination) {
             elevators.get(0).moveToFloorNumber(destination);
         } else {
-            elevators.get(0).openDoors(destination);
+            //elevators.get(0).openDoors(destination);
             elevatorArrivedAtFloorNumber(destination);
         }
 
@@ -119,7 +119,6 @@ public class Scheduler implements Runnable {
 
     public synchronized void elevatorArrivedAtFloorNumber(int floorNumber) {
 
-        floors.get(floorNumber).turnButtonOff();
         closeElevatorDoors(floorNumber);
 
     }

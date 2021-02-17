@@ -101,15 +101,23 @@ public class Elevator implements Runnable {
         System.out.println("Moving elevator to " + currentFloorNumber);
         arrivalSensor.callOnArrival(originalFloor, currentFloorNumber);
         System.out.println("elevator arrived at " + currentFloorNumber);
-        motor.setMoving(false);
-        door.setOpen(true);
-        openDoors(currentFloorNumber);
-        scheduler.elevatorArrivedAtFloorNumber(currentFloorNumber);
-        setIdle(true);
+        if(arrivalSensor.isRequest(scheduler.floors.get(currentFloorNumber),motor.directionsIsUp())) {
+            motor.setMoving(false);
+            openDoors(currentFloorNumber, motor.directionsIsUp());
+            scheduler.elevatorArrivedAtFloorNumber(currentFloorNumber);
+            setIdle(true);
+        }
     }
 
-    public void openDoors(int floor){
-
+    public void openDoors(int floor,boolean isUp){
+        door.setOpen(true);
+        if(isUp) {
+            scheduler.floors.get(floor).turnUpButtonOff();
+        }
+        else
+        {
+            scheduler.floors.get(floor).turnDownButtonOff();
+        }
         System.out.println("doors open at floor "+floor);
     }
 

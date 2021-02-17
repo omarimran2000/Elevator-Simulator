@@ -58,6 +58,14 @@ public class Event implements Comparable<Event>{
     }
 
     /**
+     * Getter for floor button up
+     * @return is floor button up
+     */
+    public boolean isFloorButtonIsUp() {
+        return floorButtonIsUp;
+    }
+
+    /**
      * Setting the floor for this event
      * @param floor the floor
      */

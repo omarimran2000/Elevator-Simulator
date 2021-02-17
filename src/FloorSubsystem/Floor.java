@@ -23,7 +23,6 @@ public abstract class Floor implements Runnable {
 
     private final int floorNumber;
     private final Queue<Integer> destinationFloorNumbers;
-    private int numEvents;
 
     /**
      * Constructor
@@ -40,7 +39,6 @@ public abstract class Floor implements Runnable {
         downLamp = new FloorLamp();
 
         destinationFloorNumbers = new LinkedList<>();
-        numEvents = schedule.size();
         for (Event event : schedule) {
             event.setFloor(this);
             long seconds_to_task = abs(FloorSubsystem.getStartDate().getTime()- event.getTime().getTime())/1000;
@@ -56,12 +54,25 @@ public abstract class Floor implements Runnable {
     @Override
     public void run() {
         while(scheduler.hasEvents()) {
-            if(!schedule.isEmpty() && schedule.peek().getTimeToEvent()<=scheduler.getTimePassed()&&scheduler.priorityEvent().equals(schedule.peek()))
+            if(!schedule.isEmpty() && schedule.peek().getTimeToEvent()<=scheduler.getTimePassed())
             {
-                this.turnButtonOn();
+                //this.turnButtonOn();
+                if(schedule.peek().isFloorButtonIsUp())
+                {
+                    turnUpButtonOn();
+                }
+                else
+                {
+                    turnDownButtonOn();
+                }
+                while(! scheduler.priorityEvent().equals(schedule.peek()))
+                {
+
+                }
                 moveElevator(schedule.peek().getCarButton());
                 scheduler.removeEvent(schedule.peek());
                 schedule.poll();
+
             }
 
         }
@@ -93,13 +104,21 @@ public abstract class Floor implements Runnable {
     }
 
     /**
-     * Abstract method for turning the button on
+     * Abstract method for turning the up button off
      */
-    public abstract void turnButtonOff();
+    public abstract void turnUpButtonOff();
     /**
-     * Abstract method for turning the button off
+     * Abstract method for turning the up button on
      */
-    public abstract void turnButtonOn();
+    public abstract void turnUpButtonOn();
+    /**
+     * Abstract method for turning the down button off
+     */
+    public abstract void turnDownButtonOff();
+    /**
+     * Abstract method for turning the down button on
+     */
+    public abstract void turnDownButtonOn();
     /**
      * Abstract method for getting the down button
      */
@@ -124,17 +143,28 @@ class TopFloor extends Floor {
         super(floorNumber, scheduler, schedule);
         downButton = new FloorButton();
     }
+
+    @Override
+    public void turnUpButtonOff() {
+
+    }
+
+    @Override
+    public void turnUpButtonOn() {
+
+    }
+
     /**
      *  Method for turning the down button off
      */
-    public void turnButtonOff()
+    public void turnDownButtonOff()
     {
         downButton.setOn(false);
     }
     /**
      *  Method for turning the down button on
      */
-    public void turnButtonOn()
+    public void turnDownButtonOn()
     {
         downButton.setOn(true);
     }
@@ -170,17 +200,28 @@ class BottomFloor extends Floor {
     /**
      *  Method for turning the up button off
      */
-    public void turnButtonOff()
+    public void turnUpButtonOff()
     {
         upButton.setOn(false);
     }
     /**
      *  Method for turning the up button on
      */
-    public void turnButtonOn()
+    public void turnUpButtonOn()
     {
         upButton.setOn(true);
     }
+
+    @Override
+    public void turnDownButtonOff() {
+
+    }
+
+    @Override
+    public void turnDownButtonOn() {
+
+    }
+
     /**
      *  Method for getting the bottom button
      */
@@ -213,19 +254,31 @@ class MiddleFloor extends Floor {
         downButton = new FloorButton();
     }
     /**
-     *  Method for turning the buttons off
+     *  Method for turning the down button on
      */
-    public void turnButtonOff()
+    public void turnDownButtonOff()
     {
         downButton.setOn(false);
+    }
+    /**
+     *  Method for turning the down button off
+     */
+    public void turnDownButtonOn()
+    {
+        downButton.setOn(true);
+    }
+    /**
+     *  Method for turning the up button off
+     */
+    public void turnUpButtonOff()
+    {
         upButton.setOn(false);
     }
     /**
-     *  Method for turning the buttons on
+     *  Method for turning the up button on
      */
-    public void turnButtonOn()
+    public void turnUpButtonOn()
     {
-        downButton.setOn(true);
         upButton.setOn(true);
     }
     /**
