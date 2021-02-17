@@ -77,6 +77,8 @@ public class Scheduler implements Runnable {
         }
 
         int currentFloor = elevators.get(0).getCurrentFloorNumber();
+
+
         if(currentFloor != originalFloor) {
             elevators.get(0).moveToFloorNumber(originalFloor);
 
@@ -98,12 +100,15 @@ public class Scheduler implements Runnable {
         elevators.get(0).getButtons().get(destination).setOn(false);
         elevators.get(0).getElevatorLamps().get(destination).setLamp(false);
         int currentFloor = elevators.get(0).getCurrentFloorNumber();
-        if(currentFloor != destination) {
+
+
+       if(currentFloor != destination) {
             elevators.get(0).moveToFloorNumber(destination);
         } else {
             elevators.get(0).openDoors(destination);
             elevatorArrivedAtFloorNumber(destination);
         }
+
         elevators.get(0).setIdle(true);
         notifyAll();
     }

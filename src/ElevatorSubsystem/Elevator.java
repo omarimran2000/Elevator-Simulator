@@ -47,32 +47,65 @@ public class Elevator implements Runnable {
      *
      * @param destinationFloorNumber The destination floor
      */
-    public synchronized void moveToFloorNumber(int destinationFloorNumber){
-        while(motor.isMoving())
-        {
+    public synchronized void moveToFloorNumber(int destinationFloorNumber) {
+        while (motor.isMoving()) {
             try {
                 wait();
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
         }
+
         idle = false;
 
-        motor.setDirectionsIsUp(destinationFloorNumber > currentFloorNumber);
-        System.out.println("Moving elevator to "+destinationFloorNumber);
-        motor.setMoving(true);
-
-        arrivalSensor.callOnArrival(currentFloorNumber,destinationFloorNumber);
-        currentFloorNumber = destinationFloorNumber;
-
-        System.out.println("elevator arrived " + destinationFloorNumber);
+        while(destinationFloorNumber != currentFloorNumber){
+            idle = false;
+            motor.setMoving(true);
+            motor.setDirectionsIsUp(destinationFloorNumber > currentFloorNumber);
+            moveFloor();
+        }
         motor.setMoving(false);
-        door.setOpen(true);
-        openDoors(destinationFloorNumber);
-        scheduler.elevatorArrivedAtFloorNumber(destinationFloorNumber);
-
+        idle = true;
         notifyAll();
 
+   /*     if (destinationFloorNumber != currentFloorNumber) {
+            motor.setDirectionsIsUp(destinationFloorNumber > currentFloorNumber);
+
+
+            //  System.out.println("Moving elevator to "+destinationFloorNumber);
+            motor.setMoving(true);
+
+            arrivalSensor.callOnArrival(currentFloorNumber, destinationFloorNumber);
+            currentFloorNumber = destinationFloorNumber;
+
+            System.out.println("elevator arrived " + destinationFloorNumber);
+            motor.setMoving(false);
+            door.setOpen(true);
+            openDoors(destinationFloorNumber);
+            scheduler.elevatorArrivedAtFloorNumber(destinationFloorNumber);
+
+            notifyAll();
+
+        }
+        */
+
+    }
+
+    public void moveFloor(){
+        int originalFloor = currentFloorNumber;
+        if(motor.directionsIsUp()){
+            currentFloorNumber += 1;
+        } else {
+            currentFloorNumber -= 1;
+        }
+        System.out.println("Moving elevator to " + currentFloorNumber);
+        arrivalSensor.callOnArrival(originalFloor, currentFloorNumber);
+        System.out.println("elevator arrived at " + currentFloorNumber);
+        motor.setMoving(false);
+        door.setOpen(true);
+        openDoors(currentFloorNumber);
+        scheduler.elevatorArrivedAtFloorNumber(currentFloorNumber);
+        setIdle(true);
     }
 
     public void openDoors(int floor){
