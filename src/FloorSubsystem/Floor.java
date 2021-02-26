@@ -71,9 +71,6 @@ public abstract class Floor implements Runnable {
                     return;
                 }
 
-
-
-
                 System.out.println(Thread.currentThread().getName());
                 moveElevator(schedule.peek().getCarButton());
                 scheduler.removeEvent(schedule.peek());
