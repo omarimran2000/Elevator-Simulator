@@ -1,7 +1,5 @@
 package SchedulerSubsystem;
 
-import FloorSubsystem.Floor;
-
 import java.util.Date;
 
 
@@ -12,7 +10,7 @@ import java.util.Date;
  */
 public class Event implements Comparable<Event> {
     private final Date time;
-    private final int floorInt;
+    private final int floorNumber;
     private final boolean floorButtonIsUp;
     private final int carButton;
     private long timeToEvent;
@@ -22,13 +20,13 @@ public class Event implements Comparable<Event> {
      * The user presses the button on the floor to request an elevator then enters the elevator and requests a new floor
      *
      * @param time               The at which the user requests the elevator
-     * @param floor              The floor where the user starts
+     * @param floorNumber        The floor where the user starts
      * @param floor_button_is_up The direction of the elevator
      * @param car_button         The button pressed inside the elevator
      */
-    public Event(Date time, int floor, boolean floor_button_is_up, int car_button) {
+    public Event(Date time, int floorNumber, boolean floor_button_is_up, int car_button) {
         this.time = time;
-        this.floorInt = floor;
+        this.floorNumber = floorNumber;
         this.floorButtonIsUp = floor_button_is_up;
         this.carButton = car_button;
 
@@ -47,16 +45,8 @@ public class Event implements Comparable<Event> {
     /**
      * @return The current floor
      */
-    public int getFloor() {
-        return floorInt;
-    }
-
-    /**
-     * Setting the floor for this event
-     *
-     * @param floor the floor
-     */
-    public void setFloor(Floor floor) {
+    public int getFloorNumber() {
+        return floorNumber;
     }
 
     /**
@@ -102,7 +92,7 @@ public class Event implements Comparable<Event> {
     public String toString() {
         return "Event{" +
                 "time=" + time +
-                ", floor=" + floorInt +
+                ", floorNumber=" + floorNumber +
                 ", floorButtonIsUp=" + floorButtonIsUp +
                 ", carButton=" + carButton +
                 '}';

@@ -1,7 +1,5 @@
 package ElevatorSubsystem;
 
-import FloorSubsystem.Floor;
-
 import static java.lang.Math.abs;
 
 /**
@@ -10,16 +8,21 @@ import static java.lang.Math.abs;
  *
  * @version Feb 06, 2021
  */
-public class ArrivalSensor {
-
+public class ArrivalSensor implements Runnable {
     private static final long DISTANCE_BETWEEN_FLOORS = (long) 3.5;
     private static final long VELOCITY = (long) 1.27;
+    private final Elevator elevator;
+    private boolean run;
 
     /**
      * Constructor for ArrivalSensor
      * Instantiates a ScheduledExecutorService
+     *
+     * @param elevator
      */
-    public ArrivalSensor() {
+    public ArrivalSensor(Elevator elevator) {
+        this.elevator = elevator;
+        run = false;
     }
 
     /**
@@ -34,38 +37,30 @@ public class ArrivalSensor {
     }
 
 
-    /**
-     * Method to move the elevator based on the time
-     *
-     * @param currentFloorNumber     The number of the current floor
-     * @param destinationFloorNumber The number of the destination floor
-     */
-
-    public synchronized void callOnArrival(int currentFloorNumber, int destinationFloorNumber) {
-        try {
-            wait(getSecondsToTravelBetweenTwoFloors(currentFloorNumber, destinationFloorNumber) * 1000);
-        } catch (InterruptedException ex) {
-            ex.getStackTrace();
-        }
-
-
-    }
-
-    public boolean isRequest(Floor floor, boolean directionUp) {
-        if (directionUp) {
-            try {
-                return floor.getTop().isOn();
-            } catch (NullPointerException np) {
-                return false;
-            }
-        } else {
-            try {
-                return floor.getBottom().isOn();
-            } catch (NullPointerException np) {
-                return false;
-            }
-        }
+    public boolean isRunning() {
+        return run;
     }
 
 
+    public void shutDown() {
+        run = false;
+    }
+
+    @Override
+    public void run() {
+        run = true;
+        while (run) {
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            //FIXME add physics
+            if (elevator.stopForNextFloor()) {
+                elevator.atFloor();
+            } else {
+                elevator.passFloor();
+            }
+        }
+    }
 }

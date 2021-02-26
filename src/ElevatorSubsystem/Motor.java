@@ -7,14 +7,14 @@ package ElevatorSubsystem;
  * @version Feb 06, 2021
  */
 public class Motor {
-    private boolean directionsIsUp;
+    private boolean directionIsUp;
     private boolean isMoving;
 
     /**
      * Constructor for Motor
      */
     public Motor() {
-        this.directionsIsUp = false;
+        this.directionIsUp = true;
         isMoving = true;
     }
 
@@ -23,15 +23,15 @@ public class Motor {
      *
      * @param directionsIsUp The direction - true for up, false for down
      */
-    public void setDirectionsIsUp(boolean directionsIsUp) {
-        this.directionsIsUp = directionsIsUp;
+    public void setDirectionIsUp(boolean directionsIsUp) {
+        this.directionIsUp = directionsIsUp;
     }
 
     /**
      * @return true if the direction is up
      */
-    public boolean directionsIsUp() {
-        return directionsIsUp;
+    public boolean directionIsUp() {
+        return directionIsUp;
     }
 
     /**

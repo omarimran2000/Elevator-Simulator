@@ -4,6 +4,7 @@ import SchedulerSubsystem.Scheduler;
 
 import java.io.FileNotFoundException;
 import java.text.ParseException;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
@@ -28,14 +29,13 @@ public class Main {
         try {
             Map<Integer, Floor> floors = generateFloors(scheduler, CSV_FILE_NAME);
             scheduler.setFloors(floors);
+            Elevator elevator = new Elevator(1,scheduler, floors.keySet().stream().max(Comparator.comparingInt(k -> k)).orElseThrow());
+            scheduler.setElevators(List.of(elevator));
             floors.forEach((floorNumber, floor) -> new Thread(floor, "Floor " + floorNumber).start());
+            new Thread(elevator, "Elevator 1").start();
         } catch (FileNotFoundException | ParseException e) {
             e.printStackTrace();
         }
-
-        Elevator elevator = new Elevator(scheduler);
-        scheduler.setElevators(List.of(elevator));
-        new Thread(elevator, "Elevator 1").start();
         new Thread(scheduler, "Scheduler").start();
     }
 

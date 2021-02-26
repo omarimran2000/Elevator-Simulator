@@ -3,10 +3,7 @@ package FloorSubsystem;
 import SchedulerSubsystem.Event;
 import SchedulerSubsystem.Scheduler;
 
-import java.util.LinkedList;
-import java.util.List;
-import java.util.PriorityQueue;
-import java.util.Queue;
+import java.util.*;
 
 import static java.lang.Math.abs;
 
@@ -19,6 +16,8 @@ public abstract class Floor implements Runnable {
 
     private final Scheduler scheduler;
     private final PriorityQueue<Event> schedule;
+    private final Set<Integer> waitingPeopleUp;
+    private final Set<Integer> waitingPeopleDown;
     private final FloorLamp upLamp;
     private final FloorLamp downLamp;
 
@@ -41,13 +40,9 @@ public abstract class Floor implements Runnable {
         downLamp = new FloorLamp();
 
         destinationFloorNumbers = new LinkedList<>();
-        for (Event event : schedule) {
-            event.setFloor(this);
-            long seconds_to_task = abs(FloorSubsystem.getStartDate().getTime() - event.getTime().getTime()) / 1000;
-            event.setTimeToEvent(seconds_to_task);
-            scheduler.addToQueue(event);
-
-        }
+        schedule.forEach(event -> event.setTimeToEvent(abs(FloorSubsystem.START_DATE.getTime() - event.getTime().getTime()) / 1000));
+        waitingPeopleUp = new HashSet<>();
+        waitingPeopleDown = new HashSet<>();
     }
 
     /**
@@ -55,45 +50,35 @@ public abstract class Floor implements Runnable {
      */
     @Override
     public void run() {
-        while (scheduler.hasEvents()) {
-            if (!schedule.isEmpty() && schedule.peek().getTimeToEvent() <= scheduler.getTimePassed()) {
-                //this.turnButtonOn();
-                if (schedule.peek().isFloorButtonIsUp()) {
+        //currentTimeMillis use the time Of the underlying operating system and therefore will be adjusted automatically using NTP.
+        long startTime = System.currentTimeMillis();
+        while (!schedule.isEmpty()) {
+            if (System.currentTimeMillis() - startTime >= schedule.peek().getTimeToEvent()) {
+                Event event = schedule.remove();
+                if (event.isFloorButtonIsUp()) {
                     turnUpButtonOn();
+                    waitingPeopleUp.add(event.getCarButton());
                 } else {
                     turnDownButtonOn();
+                    waitingPeopleDown.add(event.getCarButton());
                 }
-
-
-                while (!schedule.isEmpty() && !scheduler.priorityEvent().equals(schedule.peek())) {
-
-                }
-                if (schedule.isEmpty()) {
-                    return;
-                }
-
-
-                System.out.println(Thread.currentThread().getName());
-                moveElevator(schedule.peek().getCarButton());
-                scheduler.removeEvent(schedule.peek());
-                schedule.poll();
-
+                scheduler.handleFloorButton(this.floorNumber, event.isFloorButtonIsUp());
             }
-
         }
-
     }
 
-    /**
-     * Signals the scheduler to move the floor indicated by the floor's carButton
-     *
-     * @param carButton The carButton for the specified floor
-     */
-    public void moveElevator(int carButton) {
-        scheduler.moveElevatorToFloorNumber(this.floorNumber, carButton);
 
+    public Set<Integer> getWaitingPeopleUp() {
+        Set<Integer> waitingPeople = Set.copyOf(waitingPeopleUp);
+        waitingPeopleUp.clear();
+        return waitingPeople;
     }
 
+    public Set<Integer> getWaitingPeopleDown() {
+        Set<Integer> waitingPeople = Set.copyOf(waitingPeopleDown);
+        waitingPeopleDown.clear();
+        return waitingPeople;
+    }
 
     /**
      * @return true if there are people waiting for an elevator

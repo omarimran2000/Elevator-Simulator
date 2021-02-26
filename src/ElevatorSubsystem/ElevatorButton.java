@@ -7,7 +7,7 @@ package ElevatorSubsystem;
  * @version Feb 06, 2021
  */
 public class ElevatorButton {
-    private int floor;
+    private final int floor;
     private boolean on;
 
     /**

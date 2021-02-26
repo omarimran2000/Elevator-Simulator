@@ -16,12 +16,18 @@ public class Door {
     }
 
     /**
-     * Opens or closes the door
-     *
-     * @param isOpen The state of the door
+     * Open the door
      */
-    public void setOpen(boolean isOpen) {
-        this.isOpen = isOpen;
+    public void open() {
+        System.out.println("Opening elevator door");
+        this.isOpen = true;
+    }
+    /**
+     * Close the door
+     */
+    public void close() {
+        System.out.println("Closing elevator door");
+        this.isOpen = false;
     }
 
 }

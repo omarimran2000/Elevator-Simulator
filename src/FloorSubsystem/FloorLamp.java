@@ -21,7 +21,7 @@ public class FloorLamp {
      * @return true if the lamp is lit
      */
     public boolean isLit() {
-        return isLit();
+        return isLit;
     }
 
     /**

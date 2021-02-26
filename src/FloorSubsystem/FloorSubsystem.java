@@ -18,7 +18,7 @@ import static java.util.stream.Collectors.groupingBy;
  */
 public class FloorSubsystem {
     public static final SimpleDateFormat CSV_DATE_FORMAT = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
-    private static Date START_DATE;
+    public static Date START_DATE;
 
     static {
         try {
@@ -36,7 +36,7 @@ public class FloorSubsystem {
     public static Map<Integer, Floor> generateFloors(Scheduler scheduler, List<Event> schedule) {
         Map<Integer, Floor> floors = new HashMap<>();
 
-        Map<Integer, List<Event>> schedule_by_floor = schedule.stream().collect(groupingBy(Event::getFloor));
+        Map<Integer, List<Event>> schedule_by_floor = schedule.stream().collect(groupingBy(Event::getFloorNumber));
 
         int max_floor_number = 0;
 
@@ -87,14 +87,5 @@ public class FloorSubsystem {
 
         scanner.close();
         return schedule;
-    }
-
-    /**
-     * Getter for the start date
-     *
-     * @return The start date
-     */
-    public static Date getStartDate() {
-        return START_DATE;
     }
 }

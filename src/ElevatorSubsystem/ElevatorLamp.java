@@ -7,12 +7,20 @@ package ElevatorSubsystem;
  * @version Feb 06, 2021
  */
 public class ElevatorLamp {
+    private final int elevatorNumber;
+    private final int floorNumber;
     private boolean isLit;
+
 
     /**
      * Constructor for ElevatorLamp
+     *
+     * @param elevatorNumber
+     * @param floorNumber
      */
-    public ElevatorLamp() {
+    public ElevatorLamp(int elevatorNumber, int floorNumber) {
+        this.elevatorNumber = elevatorNumber;
+        this.floorNumber = floorNumber;
         isLit = false;
     }
 
@@ -23,6 +31,7 @@ public class ElevatorLamp {
      */
     public void setLamp(boolean lit) {
         isLit = lit;
+        System.out.println("Elevator " + elevatorNumber + " floor " + floorNumber + " lamp is now " + (isLit ? "on" : "off"));
     }
 
     /**
@@ -31,7 +40,7 @@ public class ElevatorLamp {
      * @return true is the lamp is on
      */
     public boolean isLit() {
-        return isLit();
+        return isLit;
     }
 
 }
