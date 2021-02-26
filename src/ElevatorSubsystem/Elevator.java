@@ -16,19 +16,21 @@ import static java.lang.Math.abs;
  */
 public class Elevator implements Runnable {
 
-    private static final long WAIT_TIME = (long) 9.175;
-    private final Scheduler scheduler;
+    private State state;
 
-    private final Door door;
-    private final ArrivalSensor arrivalSensor;
-    private final Motor motor;
-    private final Map<Integer, ElevatorButton> buttons;
-    private final Map<Integer, ElevatorLamp> lamps;
+    protected static final long WAIT_TIME = (long) 9.175;
+    protected final Scheduler scheduler;
 
-    private final Set<Integer> destinationsInPath;
-    private final Set<Integer> destinationsOutOfPath;
-    private final int maxFloors;
-    private int currentFloorNumber;
+    protected final Door door;
+    protected final ArrivalSensor arrivalSensor;
+    protected final Motor motor;
+    protected final Map<Integer, ElevatorButton> buttons;
+    protected final Map<Integer, ElevatorLamp> lamps;
+
+    protected final Set<Integer> destinationsInPath;
+    protected final Set<Integer> destinationsOutOfPath;
+    protected final int maxFloors;
+    protected int currentFloorNumber;
 
     /**
      * Constructor for Elevator
@@ -44,7 +46,7 @@ public class Elevator implements Runnable {
         buttons = new HashMap<>();
         lamps = new HashMap<>();
         currentFloorNumber = 0;
-        motor.setMoving(false);
+        state = new ElevatorNotMoving();
 
         for (int i = 1; i <= maxFloors; i++) {
             buttons.put(i, new ElevatorButton(i));
@@ -71,11 +73,7 @@ public class Elevator implements Runnable {
     }
 
     public int distanceTheFloor(int floorNumber, boolean isUp) {
-        return abs(floorNumber - currentFloorNumber) +
-                (isUp == motor.directionIsUp() ? isUp ?
-                        maxFloors - currentFloorNumber :
-                        currentFloorNumber :
-                        0);
+        return state.handleDistanceTheFloor(floorNumber, isUp);
     }
 
     private void setLamps() {
@@ -84,24 +82,14 @@ public class Elevator implements Runnable {
             previousLamp.setLamp(false);
         }
         lamps.get(currentFloorNumber).setLamp(true);
-
     }
 
     public synchronized void addDestination(int floorNumber, boolean isUp) {
-        if (!arrivalSensor.isRunning()) {
-            new Thread(arrivalSensor).start();
-        }
-        if (isUp == motor.directionIsUp() &&
-                (motor.directionIsUp() && floorNumber > currentFloorNumber ||
-                        !motor.directionIsUp() && floorNumber < currentFloorNumber)) {
-            destinationsInPath.add(floorNumber);
-        } else {
-            destinationsOutOfPath.add(floorNumber);
-        }
+        state.handleAddDestination(floorNumber, isUp);
     }
 
     public synchronized boolean stopForNextFloor() {
-        return destinationsInPath.contains(motor.directionIsUp() ? ++currentFloorNumber : --currentFloorNumber);
+        return state.handleStopForNextFloor();
     }
 
     public synchronized void passFloor() {
@@ -111,34 +99,146 @@ public class Elevator implements Runnable {
 
 
     public synchronized void atFloor() {
-        setLamps();
-        System.out.println("Elevator stopped at floor " + currentFloorNumber);
-        motor.setMoving(false);
-        door.open();
-        destinationsInPath.remove(currentFloorNumber);
-        destinationsInPath.addAll(motor.directionIsUp() ?
-                scheduler.getWaitingPeopleUp(currentFloorNumber) :
-                scheduler.getWaitingPeopleDown(currentFloorNumber));
-        try {
-            Thread.sleep(WAIT_TIME * 1000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        door.close();
-        if (destinationsInPath.isEmpty()) {
-            if (!destinationsOutOfPath.isEmpty()) {
-                motor.setDirectionIsUp(!motor.directionIsUp());
-                destinationsInPath.addAll(destinationsOutOfPath);
-                destinationsOutOfPath.clear();
+        state.handleAtFloor();
+    }
 
-                //Handle the edge case when the elevator is turning around on the floor where it needs to pick up someone.
-                if (destinationsInPath.contains(currentFloorNumber)) {
-                    atFloor();
+    interface State {
+        int handleDistanceTheFloor(int floorNumber, boolean isUp);
+
+        void handleAddDestination(int floorNumber, boolean isUp);
+
+        boolean handleStopForNextFloor();
+
+        void handleAtFloor();
+    }
+
+    class ElevatorNotMoving implements State {
+        public int handleDistanceTheFloor(int floorNumber, boolean isUp) {
+            return abs(floorNumber - currentFloorNumber);
+        }
+
+        public synchronized void handleAddDestination(int floorNumber, boolean isUp) {
+            new Thread(arrivalSensor).start();
+            destinationsInPath.add(floorNumber);
+            state = floorNumber > currentFloorNumber ? new ElevatorMovingUp() : new ElevatorMovingDown();
+        }
+
+        @Override
+        public boolean handleStopForNextFloor() {
+            throw new RuntimeException();
+        }
+
+        @Override
+        public void handleAtFloor() {
+            throw new RuntimeException();
+        }
+    }
+
+    abstract class MovingState implements State {
+        abstract protected Set<Integer> getWaitingPeople();
+
+        abstract protected void ChangeDirectionOfTravel();
+
+        @Override
+        public void handleAtFloor() {
+            setLamps();
+            System.out.println("Elevator stopped at floor " + currentFloorNumber);
+            motor.setMoving(false);
+            door.open();
+            destinationsInPath.remove(currentFloorNumber);
+            destinationsInPath.addAll(getWaitingPeople());
+            try {
+                Thread.sleep(WAIT_TIME * 1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            door.close();
+            if (destinationsInPath.isEmpty()) {
+                if (!destinationsOutOfPath.isEmpty()) {
+                    ChangeDirectionOfTravel();
+                    destinationsInPath.addAll(destinationsOutOfPath);
+                    destinationsOutOfPath.clear();
+
+                    //Handle the edge case when the elevator is turning around on the floor where it needs to pick up someone.
+                    if (destinationsInPath.contains(currentFloorNumber)) {
+                        atFloor();
+                    }
+                } else {
+                    arrivalSensor.shutDown();
+                    state = new ElevatorNotMoving();
                 }
+            }
+            motor.setMoving(true);
+        }
+    }
+
+    class ElevatorMovingUp extends MovingState {
+        @Override
+        public int handleDistanceTheFloor(int floorNumber, boolean isUp) {
+            return abs(floorNumber - currentFloorNumber) +
+                    (isUp ? maxFloors - currentFloorNumber : 0);
+        }
+
+        @Override
+        public void handleAddDestination(int floorNumber, boolean isUp) {
+            if (arrivalSensor.isNotRunning()) {
+                new Thread(arrivalSensor).start();
+            }
+            if (isUp && floorNumber > currentFloorNumber) {
+                destinationsInPath.add(floorNumber);
             } else {
-                arrivalSensor.shutDown();
+                destinationsOutOfPath.add(floorNumber);
             }
         }
-        motor.setMoving(true);
+
+        @Override
+        public boolean handleStopForNextFloor() {
+            return destinationsInPath.contains(++currentFloorNumber);
+        }
+
+        @Override
+        protected Set<Integer> getWaitingPeople() {
+            return scheduler.getWaitingPeopleUp(currentFloorNumber);
+        }
+
+        @Override
+        protected void ChangeDirectionOfTravel() {
+            state = new ElevatorMovingDown();
+        }
+    }
+
+    private class ElevatorMovingDown extends MovingState {
+        @Override
+        public int handleDistanceTheFloor(int floorNumber, boolean isUp) {
+            return abs(floorNumber - currentFloorNumber) + currentFloorNumber;
+        }
+
+        @Override
+        public void handleAddDestination(int floorNumber, boolean isUp) {
+            if (arrivalSensor.isNotRunning()) {
+                new Thread(arrivalSensor).start();
+            }
+            if (!isUp && floorNumber < currentFloorNumber) {
+                destinationsInPath.add(floorNumber);
+            } else {
+                destinationsOutOfPath.add(floorNumber);
+            }
+        }
+
+        @Override
+        public boolean handleStopForNextFloor() {
+            return destinationsInPath.contains(--currentFloorNumber);
+        }
+
+        @Override
+        protected Set<Integer> getWaitingPeople() {
+            return scheduler.getWaitingPeopleDown(currentFloorNumber);
+        }
+
+        @Override
+        protected void ChangeDirectionOfTravel() {
+            state = new ElevatorMovingUp();
+        }
     }
 }
+

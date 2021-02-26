@@ -37,8 +37,8 @@ public class ArrivalSensor implements Runnable {
     }
 
 
-    public boolean isRunning() {
-        return run;
+    public boolean isNotRunning() {
+        return !run;
     }
 
 
