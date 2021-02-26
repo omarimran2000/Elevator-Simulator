@@ -40,7 +40,7 @@ public abstract class Floor implements Runnable {
         downLamp = new FloorLamp();
 
         destinationFloorNumbers = new LinkedList<>();
-        schedule.forEach(event -> event.setTimeToEvent(abs(FloorSubsystem.START_DATE.getTime() - event.getTime().getTime()) / 1000));
+        schedule.forEach(event -> event.setTimeToEvent(abs(FloorSubsystem.START_DATE.getTime() - event.getTime().getTime())));
         waitingPeopleUp = new HashSet<>();
         waitingPeopleDown = new HashSet<>();
     }
