@@ -1,6 +1,7 @@
 package ElevatorSubsystem;
 
 import SchedulerSubsystem.Scheduler;
+import util.Config;
 
 import java.util.ArrayList;
 
@@ -18,6 +19,7 @@ public class Elevator implements Runnable {
     private final Motor motor;
     private final ArrayList<ElevatorButton> buttons;
     private final ArrayList<ElevatorLamp> elevatorLamps;
+    private final Config config;
     private boolean idle;
     private int currentFloorNumber;
 
@@ -25,12 +27,14 @@ public class Elevator implements Runnable {
      * Constructor for Elevator
      *
      * @param scheduler The system scheduler
+     * @param config    The application configuration file loader
      */
-    public Elevator(Scheduler scheduler) {
+    public Elevator(Scheduler scheduler, Config config) {
+        this.config = config;
         idle = true;
         this.scheduler = scheduler;
         door = new Door();
-        arrivalSensor = new ArrivalSensor();
+        arrivalSensor = new ArrivalSensor(config);
         motor = new Motor();
         buttons = new ArrayList<>();
         elevatorLamps = new ArrayList<>();
@@ -86,7 +90,7 @@ public class Elevator implements Runnable {
      */
     public synchronized void closeDoors(int floor) {
         try {
-            wait(WAIT_TIME * 1000);
+            wait(config.getIntProperty("waitTime"));
         } catch (InterruptedException e) {
             e.printStackTrace();
         }

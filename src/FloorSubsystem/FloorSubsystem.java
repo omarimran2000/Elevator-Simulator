@@ -2,6 +2,7 @@ package FloorSubsystem;
 
 import SchedulerSubsystem.Event;
 import SchedulerSubsystem.Scheduler;
+import util.Config;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -65,25 +66,27 @@ public class FloorSubsystem {
      * @throws FileNotFoundException
      * @throws ParseException
      */
-    public static Map<Integer, Floor> generateFloors(Scheduler scheduler, String schedule_filename) throws FileNotFoundException, ParseException {
-        return generateFloors(scheduler, FloorSubsystem.readCSV(schedule_filename));
+    public static Map<Integer, Floor> generateFloors(Config config, Scheduler scheduler, String schedule_filename) throws FileNotFoundException, ParseException {
+        return generateFloors(scheduler, FloorSubsystem.readCSV(config, schedule_filename));
     }
 
     /**
      * Reads the input file and schedules the events
      *
      * @param filename The input file
+     * @param config
      * @return The scheduled list of events
      * @throws FileNotFoundException
      * @throws ParseException
      */
-    public static List<Event> readCSV(String filename) throws FileNotFoundException, ParseException {
+    public static List<Event> readCSV(Config config, String filename) throws FileNotFoundException, ParseException {
         List<Event> schedule = new ArrayList<>();
         Scanner scanner = new Scanner(new File(filename));
+        SimpleDateFormat csvDateFormat = new SimpleDateFormat(config.getProperty("dateFormatPattern"));
 
         while (scanner.hasNext()) {
             String[] line = scanner.nextLine().split(",");
-            schedule.add(new Event(Duration.between(START_DATE.toInstant(), CSV_DATE_FORMAT.parse(line[0]).toInstant()).toSeconds(), Integer.parseInt(line[1]), line[2].equalsIgnoreCase("up"), Integer.parseInt(line[3])));
+            schedule.add(new Event(Duration.between(csvDateFormat.parse(config.getProperty("startDate")).toInstant(), CSV_DATE_FORMAT.parse(line[0]).toInstant()).toSeconds(), Integer.parseInt(line[1]), line[2].equalsIgnoreCase("up"), Integer.parseInt(line[3])));
         }
 
         scanner.close();
