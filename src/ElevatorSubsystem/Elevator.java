@@ -1,6 +1,14 @@
 package ElevatorSubsystem;
+import FloorSubsystem.Floor;
+import SchedulerSubsystem.Event;
 import SchedulerSubsystem.Scheduler;
+
+import java.awt.*;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.PriorityQueue;
 
 /**
  * The Elevator class represents a single elevator in the system
@@ -15,6 +23,7 @@ public class Elevator implements Runnable {
     private boolean idle;
     private final ArrayList<ElevatorButton> buttons;
     private final ArrayList<ElevatorLamp> elevatorLamps;
+    private ArrayList<Floor> destinationFloors;
     private int currentFloorNumber;
     private static final long WAIT_TIME = (long) 9.175;
 
@@ -31,6 +40,7 @@ public class Elevator implements Runnable {
         motor = new Motor();
         buttons = new ArrayList<>();
         elevatorLamps = new ArrayList<>();
+        destinationFloors = new ArrayList<>();
         currentFloorNumber = 0;
         motor.setMoving(false);
 
@@ -57,14 +67,24 @@ public class Elevator implements Runnable {
         }
 
         idle = false;
+        Floor destination = scheduler.floors.get(destinationFloorNumber);
+        //destinationFloors.add(destination);
 
-        while(destinationFloorNumber != currentFloorNumber){
+
+        while(currentFloorNumber != destinationFloorNumber){
+
             idle = false;
             motor.setMoving(true);
             motor.setDirectionsIsUp(destinationFloorNumber > currentFloorNumber);
-            moveFloor();
+
+            moveFloor(destinationFloorNumber);
+
+
         }
+
+
         motor.setMoving(false);
+        door.setOpen(true);
         idle = true;
         notifyAll();
 
@@ -91,8 +111,10 @@ public class Elevator implements Runnable {
 
     }
 
-    public void moveFloor(){
+    public synchronized void moveFloor(int finalDestination){
         int originalFloor = currentFloorNumber;
+
+
         if(motor.directionsIsUp()){
             currentFloorNumber += 1;
         } else {
@@ -100,14 +122,69 @@ public class Elevator implements Runnable {
         }
         System.out.println("Moving elevator to " + currentFloorNumber);
         arrivalSensor.callOnArrival(originalFloor, currentFloorNumber);
-        System.out.println("elevator arrived at " + currentFloorNumber);
+
+
+        if(currentFloorNumber == finalDestination || destinationFloors.contains(scheduler.floors.get(currentFloorNumber))){
+            System.out.println("elevator arrived at " + currentFloorNumber);
+           // motor.setMoving(false);
+           // idle = true;
+           // door.setOpen(true);
+            openDoors(finalDestination, motor.directionsIsUp());
+            scheduler.elevatorArrivedAtFloorNumber(currentFloorNumber);
+
+            //Floor floor = scheduler.floors.get(currentFloorNumber);
+
+         /*   if(originalFloor != 0 && !destinationFloors.contains(scheduler.floors.get(currentFloorNumber))){
+
+                int floorNum = scheduler.priorityEvent().getFloor();
+                scheduler.floors.get(floorNum).getSchedule().poll();
+                scheduler.removeEvent(scheduler.priorityEvent());
+                return;
+
+*/
+            if(originalFloor != 0 && destinationFloors.contains(scheduler.floors.get(currentFloorNumber))){
+                destinationFloors.remove(scheduler.floors.get(currentFloorNumber));
+            }
+
+
+
+
+        }
+
+
         if(arrivalSensor.isRequest(scheduler.floors.get(currentFloorNumber),motor.directionsIsUp())) {
-            motor.setMoving(false);
+
+
+            System.out.println("elevator arrived at " + currentFloorNumber);
+           // motor.setMoving(false);
+           // idle = true;
+           // door.setOpen(true);
             openDoors(currentFloorNumber, motor.directionsIsUp());
             scheduler.elevatorArrivedAtFloorNumber(currentFloorNumber);
-            setIdle(true);
+            Floor floor = scheduler.floors.get(currentFloorNumber);
+            int dest = floor.getSchedule().peek().getCarButton();
+            System.out.println(destinationFloors.contains(scheduler.floors.get(dest)));
+            if(finalDestination != dest) {
+                destinationFloors.add(scheduler.floors.get(dest));
+
+                scheduler.removeEvent(floor.getSchedule().peek());
+                scheduler.moveElevatorToFloorNumber(currentFloorNumber, dest);
+            } else {
+
+                scheduler.removeEvent(floor.getSchedule().peek());
+            }
+
+            floor.getSchedule().poll();
+
+
+
+
         }
+
+
+
     }
+
 
     public void openDoors(int floor,boolean isUp){
         door.setOpen(true);
@@ -141,7 +218,7 @@ public class Elevator implements Runnable {
      * Getter for the current floor number
      * @return The current floor number
      */
-    public int getCurrentFloorNumber() {
+    public synchronized int getCurrentFloorNumber() {
         return currentFloorNumber;
     }
 

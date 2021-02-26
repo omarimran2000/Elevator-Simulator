@@ -26,9 +26,10 @@ public abstract class Floor implements Runnable {
 
     /**
      * Constructor
+     *
      * @param floorNumber
      * @param scheduler
-     * @param schedule A list of events
+     * @param schedule    A list of events
      */
     public Floor(int floorNumber, Scheduler scheduler, List<Event> schedule) {
         this.floorNumber = floorNumber;
@@ -41,7 +42,7 @@ public abstract class Floor implements Runnable {
         destinationFloorNumbers = new LinkedList<>();
         for (Event event : schedule) {
             event.setFloor(this);
-            long seconds_to_task = abs(FloorSubsystem.getStartDate().getTime()- event.getTime().getTime())/1000;
+            long seconds_to_task = abs(FloorSubsystem.getStartDate().getTime() - event.getTime().getTime()) / 1000;
             event.setTimeToEvent(seconds_to_task);
             scheduler.addToQueue(event);
 
@@ -53,22 +54,27 @@ public abstract class Floor implements Runnable {
      */
     @Override
     public void run() {
-        while(scheduler.hasEvents()) {
-            if(!schedule.isEmpty() && schedule.peek().getTimeToEvent()<=scheduler.getTimePassed())
-            {
+        while (scheduler.hasEvents()) {
+            if (!schedule.isEmpty() && schedule.peek().getTimeToEvent() <= scheduler.getTimePassed()) {
                 //this.turnButtonOn();
-                if(schedule.peek().isFloorButtonIsUp())
-                {
+                if (schedule.peek().isFloorButtonIsUp()) {
                     turnUpButtonOn();
-                }
-                else
-                {
+                } else {
                     turnDownButtonOn();
                 }
-                while(! scheduler.priorityEvent().equals(schedule.peek()))
-                {
+
+
+                while (!schedule.isEmpty() && !scheduler.priorityEvent().equals(schedule.peek())) {
 
                 }
+                if(schedule.isEmpty()){
+                    return;
+                }
+
+
+
+
+                System.out.println(Thread.currentThread().getName());
                 moveElevator(schedule.peek().getCarButton());
                 scheduler.removeEvent(schedule.peek());
                 schedule.poll();
@@ -76,14 +82,16 @@ public abstract class Floor implements Runnable {
             }
 
         }
+
     }
 
     /**
      * Signals the scheduler to move the floor indicated by the floor's carButton
+     *
      * @param carButton The carButton for the specified floor
      */
-    public void moveElevator(int carButton){
-        scheduler.moveElevatorToFloorNumber(this.floorNumber,carButton);
+    public void moveElevator(int carButton) {
+        scheduler.moveElevatorToFloorNumber(this.floorNumber, carButton);
 
     }
 
@@ -95,38 +103,54 @@ public abstract class Floor implements Runnable {
         return !destinationFloorNumbers.isEmpty();
     }
 
+    public int getFloorNumber() {
+        return floorNumber;
+    }
+
 
     /**
      * @return true if there are events
      */
     public boolean hasEvents() {
-        return ! schedule.isEmpty();
+        return !schedule.isEmpty();
+    }
+
+    public PriorityQueue<Event> getSchedule() {
+        return schedule;
     }
 
     /**
      * Abstract method for turning the up button off
      */
     public abstract void turnUpButtonOff();
+
     /**
      * Abstract method for turning the up button on
      */
     public abstract void turnUpButtonOn();
+
     /**
      * Abstract method for turning the down button off
      */
     public abstract void turnDownButtonOff();
+
     /**
      * Abstract method for turning the down button on
      */
     public abstract void turnDownButtonOn();
+
     /**
      * Abstract method for getting the down button
      */
     public abstract FloorButton getBottom();
+
     /**
      * Abstract method for getting the up button
      */
     public abstract FloorButton getTop();
+
+
+
 }
 
 
@@ -182,6 +206,8 @@ class TopFloor extends Floor {
     public FloorButton getTop() {
         return null;
     }
+
+
 }
 
 class BottomFloor extends Floor {
@@ -238,7 +264,7 @@ class BottomFloor extends Floor {
     }
 }
 
-class MiddleFloor extends Floor {
+class MiddleFloor extends Floor  {
     private final FloorButton upButton;
     private final FloorButton downButton;
 
@@ -297,4 +323,7 @@ class MiddleFloor extends Floor {
     public FloorButton getTop() {
         return upButton;
     }
+
+
+
 }

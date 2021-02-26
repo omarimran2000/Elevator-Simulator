@@ -6,6 +6,7 @@ import java.io.FileNotFoundException;
 import java.text.ParseException;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import static FloorSubsystem.FloorSubsystem.generateFloors;
 
@@ -21,7 +22,7 @@ public class Main {
      * Starts the threads
      * @param args
      */
-    public static void main(String[] args) {
+    public static void main(String[] args) throws InterruptedException {
         Scheduler scheduler = new Scheduler();
         try {
             Map<Integer, Floor> floors = generateFloors(scheduler, CSV_FILE_NAME);
@@ -35,5 +36,22 @@ public class Main {
         scheduler.setElevators(List.of(elevator));
         new Thread(elevator, "Elevator 1").start();
         new Thread(scheduler, "Scheduler").start();
+
+/*
+        int threadCount = 0;
+        while(true) {
+            Set<Thread> threadSet = Thread.getAllStackTraces().keySet();
+            for (Thread t : threadSet) {
+                if (t.getThreadGroup() == Thread.currentThread().getThreadGroup()) {
+                    System.out.println("Thread :" + t + ":" + "state:" + t.getState());
+                    ++threadCount;
+                }
+            }
+            Thread.sleep(5000);
+        }
+
+*/
+
     }
+
 }

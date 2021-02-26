@@ -18,12 +18,14 @@ public class Scheduler implements Runnable {
     private long timePassed;
 
 
+
     /**
      * Constructor for Scheduler
      */
     public Scheduler() {
         timePassed = 0;
         events = new PriorityQueue<>();
+
 
     }
 
@@ -68,6 +70,7 @@ public class Scheduler implements Runnable {
         while(!elevators.get(0).getIdle())
         {
             try{
+                System.out.println("Thread waiting: " + Thread.currentThread().getName());
                 wait();
 
             }catch(InterruptedException ex)
@@ -76,17 +79,19 @@ public class Scheduler implements Runnable {
             }
         }
 
-        int currentFloor = elevators.get(0).getCurrentFloorNumber();
+        //int currentFloor = elevators.get(0).getCurrentFloorNumber();
 
+        System.out.println("original: " + originalFloor);
+        while(elevators.get(0).getCurrentFloorNumber() != originalFloor) {
 
-        if(currentFloor != originalFloor) {
             elevators.get(0).moveToFloorNumber(originalFloor);
 
-        } else {
-            //elevators.get(0).openDoors(originalFloor);
-            elevatorArrivedAtFloorNumber(originalFloor);
         }
         moveElevatorToDestination(destinationFloor);
+
+
+       // elevatorArrivedAtFloorNumber(originalFloor);
+
 
     }
 
@@ -94,24 +99,26 @@ public class Scheduler implements Runnable {
      *  Moving an elevator to the destination
      * @param destination the destination to move it
      */
-    public void moveElevatorToDestination(int destination)
+    public synchronized void moveElevatorToDestination(int destination)
     {
         System.out.println("Elevator button "+destination+" has been pressed");
         elevators.get(0).getButtons().get(destination).setOn(false);
         elevators.get(0).getElevatorLamps().get(destination).setLamp(false);
-        int currentFloor = elevators.get(0).getCurrentFloorNumber();
+       // int currentFloor = elevators.get(0).getCurrentFloorNumber();
 
 
-       if(currentFloor != destination) {
+       if(elevators.get(0).getCurrentFloorNumber() != destination) {
             elevators.get(0).moveToFloorNumber(destination);
         } else {
-            //elevators.get(0).openDoors(destination);
-            elevatorArrivedAtFloorNumber(destination);
-        }
+           //elevators.get(0).openDoors(destination);
+           elevatorArrivedAtFloorNumber(destination);
+       }
 
         elevators.get(0).setIdle(true);
         notifyAll();
     }
+
+
 
     /**
      * @param floorNumber The floor number
@@ -121,7 +128,16 @@ public class Scheduler implements Runnable {
 
         closeElevatorDoors(floorNumber);
 
+
     }
+
+
+
+
+
+
+
+
 
     /**
      * @return true if there are events waiting to be run
