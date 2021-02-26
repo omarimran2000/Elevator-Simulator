@@ -2,6 +2,7 @@ package ElevatorSubsystem;
 
 /**
  * The Door class represents the elevator doors
+ *
  * @version Feb 06, 2021
  */
 public class Door {
@@ -10,16 +11,23 @@ public class Door {
     /**
      * Constructor for Door
      */
-    public Door(){
+    public Door() {
         isOpen = false;
     }
 
     /**
-     * Opens or closes the door
-     * @param isOpen The state of the door
+     * Open the door
      */
-    public void setOpen(boolean isOpen){
-        this.isOpen = isOpen;
+    public void open() {
+        System.out.println("Opening elevator door");
+        this.isOpen = true;
+    }
+    /**
+     * Close the door
+     */
+    public void close() {
+        System.out.println("Closing elevator door");
+        this.isOpen = false;
     }
 
 }

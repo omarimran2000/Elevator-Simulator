@@ -3,21 +3,21 @@ package FloorSubsystem;
 import SchedulerSubsystem.Event;
 import SchedulerSubsystem.Scheduler;
 
-import java.util.LinkedList;
-import java.util.List;
-import java.util.PriorityQueue;
-import java.util.Queue;
+import java.util.*;
 
 import static java.lang.Math.abs;
 
 /**
  * The Floor class represents a single floor in the building
+ *
  * @version Feb 06, 2021
  */
 public abstract class Floor implements Runnable {
 
     private final Scheduler scheduler;
     private final PriorityQueue<Event> schedule;
+    private final Set<Integer> waitingPeopleUp;
+    private final Set<Integer> waitingPeopleDown;
     private final FloorLamp upLamp;
     private final FloorLamp downLamp;
 
@@ -40,13 +40,9 @@ public abstract class Floor implements Runnable {
         downLamp = new FloorLamp();
 
         destinationFloorNumbers = new LinkedList<>();
-        for (Event event : schedule) {
-            event.setFloor(this);
-            long seconds_to_task = abs(FloorSubsystem.getStartDate().getTime() - event.getTime().getTime()) / 1000;
-            event.setTimeToEvent(seconds_to_task);
-            scheduler.addToQueue(event);
-
-        }
+        schedule.forEach(event -> event.setTimeToEvent(abs(FloorSubsystem.START_DATE.getTime() - event.getTime().getTime()) / 1000));
+        waitingPeopleUp = new HashSet<>();
+        waitingPeopleDown = new HashSet<>();
     }
 
     /**
@@ -54,44 +50,35 @@ public abstract class Floor implements Runnable {
      */
     @Override
     public void run() {
-        while (scheduler.hasEvents()) {
-            if (!schedule.isEmpty() && schedule.peek().getTimeToEvent() <= scheduler.getTimePassed()) {
-                //this.turnButtonOn();
-                if (schedule.peek().isFloorButtonIsUp()) {
+        //currentTimeMillis use the time Of the underlying operating system and therefore will be adjusted automatically using NTP.
+        long startTime = System.currentTimeMillis();
+        while (!schedule.isEmpty()) {
+            if (System.currentTimeMillis() - startTime >= schedule.peek().getTimeToEvent()) {
+                Event event = schedule.remove();
+                if (event.isFloorButtonIsUp()) {
                     turnUpButtonOn();
+                    waitingPeopleUp.add(event.getCarButton());
                 } else {
                     turnDownButtonOn();
+                    waitingPeopleDown.add(event.getCarButton());
                 }
-
-
-                while (!schedule.isEmpty() && !scheduler.priorityEvent().equals(schedule.peek())) {
-
-                }
-                if(schedule.isEmpty()){
-                    return;
-                }
-
-                System.out.println(Thread.currentThread().getName());
-                moveElevator(schedule.peek().getCarButton());
-                scheduler.removeEvent(schedule.peek());
-                schedule.poll();
-
+                scheduler.handleFloorButton(this.floorNumber, event.isFloorButtonIsUp());
             }
-
         }
-
     }
 
-    /**
-     * Signals the scheduler to move the floor indicated by the floor's carButton
-     *
-     * @param carButton The carButton for the specified floor
-     */
-    public void moveElevator(int carButton) {
-        scheduler.moveElevatorToFloorNumber(this.floorNumber, carButton);
 
+    public Set<Integer> getWaitingPeopleUp() {
+        Set<Integer> waitingPeople = Set.copyOf(waitingPeopleUp);
+        waitingPeopleUp.clear();
+        return waitingPeople;
     }
 
+    public Set<Integer> getWaitingPeopleDown() {
+        Set<Integer> waitingPeople = Set.copyOf(waitingPeopleDown);
+        waitingPeopleDown.clear();
+        return waitingPeople;
+    }
 
     /**
      * @return true if there are people waiting for an elevator
@@ -147,7 +134,6 @@ public abstract class Floor implements Runnable {
     public abstract FloorButton getTop();
 
 
-
 }
 
 
@@ -156,9 +142,10 @@ class TopFloor extends Floor {
 
     /**
      * Constructor for TopFloor
+     *
      * @param floorNumber The floor number
-     * @param scheduler The scheduler
-     * @param schedule The list of scheduled events
+     * @param scheduler   The scheduler
+     * @param schedule    The list of scheduled events
      */
     public TopFloor(int floorNumber, Scheduler scheduler, List<Event> schedule) {
         super(floorNumber, scheduler, schedule);
@@ -176,28 +163,29 @@ class TopFloor extends Floor {
     }
 
     /**
-     *  Method for turning the down button off
+     * Method for turning the down button off
      */
-    public void turnDownButtonOff()
-    {
+    public void turnDownButtonOff() {
         downButton.setOn(false);
     }
+
     /**
-     *  Method for turning the down button on
+     * Method for turning the down button on
      */
-    public void turnDownButtonOn()
-    {
+    public void turnDownButtonOn() {
         downButton.setOn(true);
     }
+
     /**
-     *  Method for getting the down button
+     * Method for getting the down button
      */
     @Override
     public FloorButton getBottom() {
         return downButton;
     }
+
     /**
-     *  Method for getting the top button
+     * Method for getting the top button
      */
     @Override
     public FloorButton getTop() {
@@ -212,26 +200,27 @@ class BottomFloor extends Floor {
 
     /**
      * Constructor for BottomFloor
+     *
      * @param floorNumber The floor number
-     * @param scheduler The scheduler
-     * @param schedule The list of scheduled events
+     * @param scheduler   The scheduler
+     * @param schedule    The list of scheduled events
      */
     public BottomFloor(int floorNumber, Scheduler scheduler, List<Event> schedule) {
         super(floorNumber, scheduler, schedule);
         upButton = new FloorButton();
     }
+
     /**
-     *  Method for turning the up button off
+     * Method for turning the up button off
      */
-    public void turnUpButtonOff()
-    {
+    public void turnUpButtonOff() {
         upButton.setOn(false);
     }
+
     /**
-     *  Method for turning the up button on
+     * Method for turning the up button on
      */
-    public void turnUpButtonOn()
-    {
+    public void turnUpButtonOn() {
         upButton.setOn(true);
     }
 
@@ -246,14 +235,15 @@ class BottomFloor extends Floor {
     }
 
     /**
-     *  Method for getting the bottom button
+     * Method for getting the bottom button
      */
     @Override
     public FloorButton getBottom() {
         return null;
     }
+
     /**
-     *  Method for getting the up button
+     * Method for getting the up button
      */
     @Override
     public FloorButton getTop() {
@@ -261,66 +251,70 @@ class BottomFloor extends Floor {
     }
 }
 
-class MiddleFloor extends Floor  {
+class MiddleFloor extends Floor {
     private final FloorButton upButton;
     private final FloorButton downButton;
 
     /**
      * Constructor for MiddleFloor
+     *
      * @param floorNumber The floor number
-     * @param scheduler The scheduler
-     * @param schedule The list of scheduled events
+     * @param scheduler   The scheduler
+     * @param schedule    The list of scheduled events
      */
     public MiddleFloor(int floorNumber, Scheduler scheduler, List<Event> schedule) {
         super(floorNumber, scheduler, schedule);
         upButton = new FloorButton();
         downButton = new FloorButton();
     }
+
     /**
-     *  Method for turning the down button on
+     * Method for turning the down button on
      */
-    public void turnDownButtonOff()
-    {
+    public void turnDownButtonOff() {
         downButton.setOn(false);
     }
+
     /**
-     *  Method for turning the down button off
+     * Method for turning the down button off
      */
-    public void turnDownButtonOn()
-    {
+    public void turnDownButtonOn() {
         downButton.setOn(true);
     }
+
     /**
-     *  Method for turning the up button off
+     * Method for turning the up button off
      */
-    public void turnUpButtonOff()
-    {
+    public void turnUpButtonOff() {
         upButton.setOn(false);
     }
+
     /**
-     *  Method for turning the up button on
+     * Method for turning the up button on
      */
-    public void turnUpButtonOn()
-    {
+    public void turnUpButtonOn() {
         upButton.setOn(true);
     }
+
     /**
-     *  Method for returning the down button
+     * Method for returning the down button
+     *
      * @return the downButton
      */
     @Override
     public FloorButton getBottom() {
         return downButton;
     }
+
     /**
      * Method for returning the up button
+     *
      * @return the upButton
      */
     @Override
     public FloorButton getTop() {
         return upButton;
     }
-
 
 
 }

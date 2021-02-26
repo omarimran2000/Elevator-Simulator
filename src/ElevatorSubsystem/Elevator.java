@@ -1,242 +1,68 @@
 package ElevatorSubsystem;
-import FloorSubsystem.Floor;
-import SchedulerSubsystem.Event;
+
 import SchedulerSubsystem.Scheduler;
 
-import java.awt.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.PriorityQueue;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+
+import static java.lang.Math.abs;
 
 /**
  * The Elevator class represents a single elevator in the system
+ *
  * @version Feb 06, 2021
  */
 public class Elevator implements Runnable {
 
-    private final Scheduler scheduler;
-    private final Door door;
-    private final ArrivalSensor arrivalSensor;
-    private final Motor motor;
-    private boolean idle;
-    private final ArrayList<ElevatorButton> buttons;
-    private final ArrayList<ElevatorLamp> elevatorLamps;
-    private ArrayList<Floor> destinationFloors;
-    private int currentFloorNumber;
-    private static final long WAIT_TIME = (long) 9.175;
+    private State state;
+
+    protected static final long WAIT_TIME = (long) 9.175;
+    protected final Scheduler scheduler;
+
+    protected final Door door;
+    protected final ArrivalSensor arrivalSensor;
+    protected final Motor motor;
+    protected final Map<Integer, ElevatorButton> buttons;
+    protected final Map<Integer, ElevatorLamp> lamps;
+
+    protected final Set<Integer> destinationsInPath;
+    protected final Set<Integer> destinationsOutOfPath;
+    protected final int maxFloors;
+    protected int currentFloorNumber;
 
     /**
      * Constructor for Elevator
      *
      * @param scheduler The system scheduler
      */
-    public Elevator(Scheduler scheduler) {
-        idle = true;
+    public Elevator(int elevatorNumber, Scheduler scheduler, int maxFloors) {
         this.scheduler = scheduler;
+        this.maxFloors = maxFloors;
         door = new Door();
-        arrivalSensor = new ArrivalSensor();
+        arrivalSensor = new ArrivalSensor(this);
         motor = new Motor();
-        buttons = new ArrayList<>();
-        elevatorLamps = new ArrayList<>();
-        destinationFloors = new ArrayList<>();
+        buttons = new HashMap<>();
+        lamps = new HashMap<>();
         currentFloorNumber = 0;
-        motor.setMoving(false);
+        state = new ElevatorNotMoving();
 
-        for(int i=0;i<scheduler.floors.values().size();i++)
-        {
-            buttons.add(new ElevatorButton(i+1));
-            elevatorLamps.add(new ElevatorLamp());
+        for (int i = 1; i <= maxFloors; i++) {
+            buttons.put(i, new ElevatorButton(i));
+            lamps.put(i, new ElevatorLamp(elevatorNumber, i));
         }
-    }
-
-
-    /**
-     * Moves the elevator to the specified floor and notifies the scheduler
-     *
-     * @param destinationFloorNumber The destination floor
-     */
-    public synchronized void moveToFloorNumber(int destinationFloorNumber) {
-        while (motor.isMoving()) {
-            try {
-                wait();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
-
-        idle = false;
-        Floor destination = scheduler.floors.get(destinationFloorNumber);
-        //destinationFloors.add(destination);
-
-
-        while(currentFloorNumber != destinationFloorNumber){
-
-            idle = false;
-            motor.setMoving(true);
-            motor.setDirectionsIsUp(destinationFloorNumber > currentFloorNumber);
-
-            moveFloor(destinationFloorNumber);
-
-
-        }
-
-
-        motor.setMoving(false);
-        door.setOpen(true);
-        idle = true;
-        notifyAll();
-
-   /*     if (destinationFloorNumber != currentFloorNumber) {
-            motor.setDirectionsIsUp(destinationFloorNumber > currentFloorNumber);
-
-
-            //  System.out.println("Moving elevator to "+destinationFloorNumber);
-            motor.setMoving(true);
-
-            arrivalSensor.callOnArrival(currentFloorNumber, destinationFloorNumber);
-            currentFloorNumber = destinationFloorNumber;
-
-            System.out.println("elevator arrived " + destinationFloorNumber);
-            motor.setMoving(false);
-            door.setOpen(true);
-            openDoors(destinationFloorNumber);
-            scheduler.elevatorArrivedAtFloorNumber(destinationFloorNumber);
-
-            notifyAll();
-
-        }
-        */
-
-    }
-
-    public synchronized void moveFloor(int finalDestination){
-        int originalFloor = currentFloorNumber;
-
-
-        if(motor.directionsIsUp()){
-            currentFloorNumber += 1;
-        } else {
-            currentFloorNumber -= 1;
-        }
-        System.out.println("Moving elevator to " + currentFloorNumber);
-        arrivalSensor.callOnArrival(originalFloor, currentFloorNumber);
-
-
-        if(currentFloorNumber == finalDestination || destinationFloors.contains(scheduler.floors.get(currentFloorNumber))){
-            System.out.println("elevator arrived at " + currentFloorNumber);
-           // motor.setMoving(false);
-           // idle = true;
-           // door.setOpen(true);
-            openDoors(finalDestination, motor.directionsIsUp());
-            scheduler.elevatorArrivedAtFloorNumber(currentFloorNumber);
-
-            //Floor floor = scheduler.floors.get(currentFloorNumber);
-
-         /*   if(originalFloor != 0 && !destinationFloors.contains(scheduler.floors.get(currentFloorNumber))){
-
-                int floorNum = scheduler.priorityEvent().getFloor();
-                scheduler.floors.get(floorNum).getSchedule().poll();
-                scheduler.removeEvent(scheduler.priorityEvent());
-                return;
-
-*/
-            if(originalFloor != 0 && destinationFloors.contains(scheduler.floors.get(currentFloorNumber))){
-                destinationFloors.remove(scheduler.floors.get(currentFloorNumber));
-            }
-
-
-
-
-        }
-
-
-        if(arrivalSensor.isRequest(scheduler.floors.get(currentFloorNumber),motor.directionsIsUp())) {
-
-
-            System.out.println("elevator arrived at " + currentFloorNumber);
-           // motor.setMoving(false);
-           // idle = true;
-           // door.setOpen(true);
-            openDoors(currentFloorNumber, motor.directionsIsUp());
-            scheduler.elevatorArrivedAtFloorNumber(currentFloorNumber);
-            Floor floor = scheduler.floors.get(currentFloorNumber);
-            int dest = floor.getSchedule().peek().getCarButton();
-            System.out.println(destinationFloors.contains(scheduler.floors.get(dest)));
-            if(finalDestination != dest) {
-                destinationFloors.add(scheduler.floors.get(dest));
-
-                scheduler.removeEvent(floor.getSchedule().peek());
-                scheduler.moveElevatorToFloorNumber(currentFloorNumber, dest);
-            } else {
-
-                scheduler.removeEvent(floor.getSchedule().peek());
-            }
-
-            floor.getSchedule().poll();
-
-
-
-
-        }
-
-
-
-    }
-
-
-    public void openDoors(int floor,boolean isUp){
-        door.setOpen(true);
-        if(isUp) {
-            scheduler.floors.get(floor).turnUpButtonOff();
-        }
-        else
-        {
-            scheduler.floors.get(floor).turnDownButtonOff();
-        }
-        System.out.println("doors open at floor "+floor);
-    }
-
-    /**
-     * Closes the elevator doors
-     */
-    public synchronized void closeDoors(int floor){
-        try {
-            wait(WAIT_TIME * 1000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        System.out.println("doors closed at floor "+floor);
-
-        door.setOpen(false);
-        buttons.get(floor).setOn(false);
-        elevatorLamps.get(floor).setLamp(false);
+        destinationsInPath = new HashSet<>();
+        destinationsOutOfPath = new HashSet<>();
     }
 
     /**
      * Getter for the current floor number
+     *
      * @return The current floor number
      */
     public synchronized int getCurrentFloorNumber() {
         return currentFloorNumber;
-    }
-
-    public void setIdle(boolean idle)
-    {
-        this.idle = idle;
-    }
-    public boolean getIdle()
-    {
-        return idle;
-    }
-
-    public ArrayList<ElevatorButton> getButtons() {
-        return buttons;
-    }
-
-    public ArrayList<ElevatorLamp> getElevatorLamps() {
-        return elevatorLamps;
     }
 
     /**
@@ -244,9 +70,175 @@ public class Elevator implements Runnable {
      */
     @Override
     public void run() {
-        while(scheduler.hasEvents())
-        {
+    }
 
+    public int distanceTheFloor(int floorNumber, boolean isUp) {
+        return state.handleDistanceTheFloor(floorNumber, isUp);
+    }
+
+    private void setLamps() {
+        ElevatorLamp previousLamp = lamps.get(currentFloorNumber + (motor.directionIsUp() ? -1 : 1));
+        if (previousLamp != null && previousLamp.isLit()) {
+            previousLamp.setLamp(false);
+        }
+        lamps.get(currentFloorNumber).setLamp(true);
+    }
+
+    public synchronized void addDestination(int floorNumber, boolean isUp) {
+        state.handleAddDestination(floorNumber, isUp);
+    }
+
+    public synchronized boolean stopForNextFloor() {
+        return state.handleStopForNextFloor();
+    }
+
+    public synchronized void passFloor() {
+        setLamps();
+        System.out.println("Elevator passing floor " + currentFloorNumber);
+    }
+
+
+    public synchronized void atFloor() {
+        state.handleAtFloor();
+    }
+
+    interface State {
+        int handleDistanceTheFloor(int floorNumber, boolean isUp);
+
+        void handleAddDestination(int floorNumber, boolean isUp);
+
+        boolean handleStopForNextFloor();
+
+        void handleAtFloor();
+    }
+
+    class ElevatorNotMoving implements State {
+        public int handleDistanceTheFloor(int floorNumber, boolean isUp) {
+            return abs(floorNumber - currentFloorNumber);
+        }
+
+        public synchronized void handleAddDestination(int floorNumber, boolean isUp) {
+            new Thread(arrivalSensor).start();
+            destinationsInPath.add(floorNumber);
+            state = floorNumber > currentFloorNumber ? new ElevatorMovingUp() : new ElevatorMovingDown();
+        }
+
+        @Override
+        public boolean handleStopForNextFloor() {
+            throw new RuntimeException();
+        }
+
+        @Override
+        public void handleAtFloor() {
+            throw new RuntimeException();
+        }
+    }
+
+    abstract class MovingState implements State {
+        abstract protected Set<Integer> getWaitingPeople();
+
+        abstract protected void ChangeDirectionOfTravel();
+
+        @Override
+        public void handleAtFloor() {
+            setLamps();
+            System.out.println("Elevator stopped at floor " + currentFloorNumber);
+            motor.setMoving(false);
+            door.open();
+            destinationsInPath.remove(currentFloorNumber);
+            destinationsInPath.addAll(getWaitingPeople());
+            try {
+                Thread.sleep(WAIT_TIME * 1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            door.close();
+            if (destinationsInPath.isEmpty()) {
+                if (!destinationsOutOfPath.isEmpty()) {
+                    ChangeDirectionOfTravel();
+                    destinationsInPath.addAll(destinationsOutOfPath);
+                    destinationsOutOfPath.clear();
+
+                    //Handle the edge case when the elevator is turning around on the floor where it needs to pick up someone.
+                    if (destinationsInPath.contains(currentFloorNumber)) {
+                        atFloor();
+                    }
+                } else {
+                    arrivalSensor.shutDown();
+                    state = new ElevatorNotMoving();
+                }
+            }
+            motor.setMoving(true);
+        }
+    }
+
+    class ElevatorMovingUp extends MovingState {
+        @Override
+        public int handleDistanceTheFloor(int floorNumber, boolean isUp) {
+            return abs(floorNumber - currentFloorNumber) +
+                    (isUp ? maxFloors - currentFloorNumber : 0);
+        }
+
+        @Override
+        public void handleAddDestination(int floorNumber, boolean isUp) {
+            if (arrivalSensor.isNotRunning()) {
+                new Thread(arrivalSensor).start();
+            }
+            if (isUp && floorNumber > currentFloorNumber) {
+                destinationsInPath.add(floorNumber);
+            } else {
+                destinationsOutOfPath.add(floorNumber);
+            }
+        }
+
+        @Override
+        public boolean handleStopForNextFloor() {
+            return destinationsInPath.contains(++currentFloorNumber);
+        }
+
+        @Override
+        protected Set<Integer> getWaitingPeople() {
+            return scheduler.getWaitingPeopleUp(currentFloorNumber);
+        }
+
+        @Override
+        protected void ChangeDirectionOfTravel() {
+            state = new ElevatorMovingDown();
+        }
+    }
+
+    private class ElevatorMovingDown extends MovingState {
+        @Override
+        public int handleDistanceTheFloor(int floorNumber, boolean isUp) {
+            return abs(floorNumber - currentFloorNumber) + currentFloorNumber;
+        }
+
+        @Override
+        public void handleAddDestination(int floorNumber, boolean isUp) {
+            if (arrivalSensor.isNotRunning()) {
+                new Thread(arrivalSensor).start();
+            }
+            if (!isUp && floorNumber < currentFloorNumber) {
+                destinationsInPath.add(floorNumber);
+            } else {
+                destinationsOutOfPath.add(floorNumber);
+            }
+        }
+
+        @Override
+        public boolean handleStopForNextFloor() {
+            return destinationsInPath.contains(--currentFloorNumber);
+        }
+
+        @Override
+        protected Set<Integer> getWaitingPeople() {
+            return scheduler.getWaitingPeopleDown(currentFloorNumber);
+        }
+
+        @Override
+        protected void ChangeDirectionOfTravel() {
+            state = new ElevatorMovingUp();
         }
     }
 }
+

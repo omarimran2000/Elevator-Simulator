@@ -13,11 +13,12 @@ import static java.util.stream.Collectors.groupingBy;
 
 /**
  * The Floor Subsystem class represents all of the floors in the building
+ *
  * @version Feb 06, 2021
  */
 public class FloorSubsystem {
     public static final SimpleDateFormat CSV_DATE_FORMAT = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
-    private static Date START_DATE;
+    public static Date START_DATE;
 
     static {
         try {
@@ -29,13 +30,13 @@ public class FloorSubsystem {
 
     /**
      * @param scheduler the scheduler
-     * @param schedule the list of events
+     * @param schedule  the list of events
      * @return The map of the floors
      */
     public static Map<Integer, Floor> generateFloors(Scheduler scheduler, List<Event> schedule) {
         Map<Integer, Floor> floors = new HashMap<>();
 
-        Map<Integer, List<Event>> schedule_by_floor = schedule.stream().collect(groupingBy(Event::getFloor));
+        Map<Integer, List<Event>> schedule_by_floor = schedule.stream().collect(groupingBy(Event::getFloorNumber));
 
         int max_floor_number = 0;
 
@@ -56,7 +57,8 @@ public class FloorSubsystem {
 
     /**
      * Generates the map of floors in the system
-     * @param scheduler The scheduler
+     *
+     * @param scheduler         The scheduler
      * @param schedule_filename The input file
      * @return The map of floors
      * @throws FileNotFoundException
@@ -68,6 +70,7 @@ public class FloorSubsystem {
 
     /**
      * Reads the input file and schedules the events
+     *
      * @param filename The input file
      * @return The scheduled list of events
      * @throws FileNotFoundException
@@ -79,18 +82,10 @@ public class FloorSubsystem {
 
         while (scanner.hasNext()) {
             String[] line = scanner.nextLine().split(",");
-            schedule.add(new Event(CSV_DATE_FORMAT.parse("01-01-2021 "+line[0]), Integer.parseInt(line[1]), line[2].equalsIgnoreCase("up"), Integer.parseInt(line[3])));
+            schedule.add(new Event(CSV_DATE_FORMAT.parse("01-01-2021 " + line[0]), Integer.parseInt(line[1]), line[2].equalsIgnoreCase("up"), Integer.parseInt(line[3])));
         }
 
         scanner.close();
         return schedule;
-    }
-
-    /**
-     * Getter for the start date
-     * @return The start date
-     */
-    public static Date getStartDate() {
-        return START_DATE;
     }
 }
