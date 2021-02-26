@@ -209,5 +209,6 @@ public class Scheduler implements Runnable {
             d = new Date();
             timePassed = (d.getTime() - startTime)/1000;
         }
+        System.exit(0);
     }
 }
