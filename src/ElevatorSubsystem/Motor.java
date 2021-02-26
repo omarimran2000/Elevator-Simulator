@@ -3,6 +3,7 @@ package ElevatorSubsystem;
 /**
  * The Motor class represents
  * the motors that move the elevators
+ *
  * @version Feb 06, 2021
  */
 public class Motor {
@@ -19,6 +20,7 @@ public class Motor {
 
     /**
      * Set the direction of the motor
+     *
      * @param directionsIsUp The direction - true for up, false for down
      */
     public void setDirectionsIsUp(boolean directionsIsUp) {
@@ -41,6 +43,7 @@ public class Motor {
 
     /**
      * Set the motor to moving or not
+     *
      * @param moving The state of the motor
      */
     public void setMoving(boolean moving) {
