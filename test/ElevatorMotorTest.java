@@ -6,6 +6,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ElevatorMotorTest {
 
+    /**
+     * Testing the initialization of the motor
+     */
     @Test
     public void motorTest() {
         Motor motor = new Motor();

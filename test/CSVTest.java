@@ -16,6 +16,11 @@ class CSVTest {
     CSVTest() throws IOException {
     }
 
+    /**
+     * Testing the reading of the input csv file
+     * @throws FileNotFoundException
+     * @throws ParseException
+     */
     @Test
     void readCSVTest() throws FileNotFoundException, ParseException {
         List<Event> list = FloorSubsystem.readCSV(config, "test.csv");
