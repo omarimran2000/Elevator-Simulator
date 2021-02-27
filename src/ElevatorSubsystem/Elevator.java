@@ -107,6 +107,10 @@ public class Elevator implements Runnable {
     }
 
     class ElevatorNotMoving implements State {
+        public ElevatorNotMoving() {
+            System.out.println("Elevator State Changed to: Idle");
+        }
+
         @Override
         public void handleSetLamps() {
             throw new RuntimeException();
@@ -134,6 +138,10 @@ public class Elevator implements Runnable {
     }
 
     abstract class MovingState implements State {
+
+        public MovingState() {
+            System.out.println("Elevator State Changed to: Moving");
+        }
 
         abstract protected ElevatorLamp getPreviousLamp();
 
