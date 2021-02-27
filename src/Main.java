@@ -1,8 +1,10 @@
 import ElevatorSubsystem.Elevator;
 import FloorSubsystem.Floor;
 import SchedulerSubsystem.Scheduler;
+import util.Config;
 
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.text.ParseException;
 import java.util.Comparator;
 import java.util.List;
@@ -16,7 +18,6 @@ import static FloorSubsystem.FloorSubsystem.generateFloors;
  * @version Feb 06, 2021
  */
 public class Main {
-    public static final String CSV_FILE_NAME = "test.csv";
 
     /**
      * Initializes the map of floors, the shceduler and the elevator
@@ -24,12 +25,13 @@ public class Main {
      *
      * @param args
      */
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
+        Config config = new Config();
         Scheduler scheduler = new Scheduler();
         try {
-            Map<Integer, Floor> floors = generateFloors(scheduler, CSV_FILE_NAME);
+            Map<Integer, Floor> floors = generateFloors(config, scheduler, config.getProperty("csvFileName"));
             scheduler.setFloors(floors);
-            Elevator elevator = new Elevator(1,scheduler, floors.keySet().stream().max(Comparator.comparingInt(k -> k)).orElseThrow());
+            Elevator elevator = new Elevator(config, scheduler, 1, floors.keySet().stream().max(Comparator.comparingInt(k -> k)).orElseThrow());
             scheduler.setElevators(List.of(elevator));
             floors.forEach((floorNumber, floor) -> new Thread(floor, "Floor " + floorNumber).start());
             new Thread(elevator, "Elevator 1").start();
