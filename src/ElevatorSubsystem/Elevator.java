@@ -180,16 +180,22 @@ public class Elevator implements Runnable {
                     if (destinationsInPath.contains(currentFloorNumber)) {
                         atFloor();
                     }
+                    motor.setMoving(true);
                 } else {
                     arrivalSensor.shutDown();
                     state = new ElevatorNotMoving();
                 }
+            } else {
+                motor.setMoving(true);
             }
-            motor.setMoving(true);
         }
     }
 
     class ElevatorMovingUp extends MovingState {
+
+        public ElevatorMovingUp() {
+            motor.setDirectionIsUp(true);
+        }
 
         @Override
         public int handleDistanceTheFloor(int floorNumber, boolean isUp) {
@@ -233,6 +239,10 @@ public class Elevator implements Runnable {
     }
 
     private class ElevatorMovingDown extends MovingState {
+        public ElevatorMovingDown() {
+            motor.setDirectionIsUp(false);
+        }
+
         @Override
         public int handleDistanceTheFloor(int floorNumber, boolean isUp) {
             return abs(floorNumber - currentFloorNumber) + currentFloorNumber;
