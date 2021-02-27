@@ -1,6 +1,7 @@
 package ElevatorSubsystem;
 
 import SchedulerSubsystem.Scheduler;
+import util.Config;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -16,28 +17,27 @@ import static java.lang.Math.abs;
  */
 public class Elevator implements Runnable {
 
-    private State state;
-
-    protected static final long WAIT_TIME = (long) 9.175;
     protected final Scheduler scheduler;
-
+    protected final Config config;
     protected final Door door;
     protected final ArrivalSensor arrivalSensor;
     protected final Motor motor;
     protected final Map<Integer, ElevatorButton> buttons;
     protected final Map<Integer, ElevatorLamp> lamps;
-
     protected final Set<Integer> destinationsInPath;
     protected final Set<Integer> destinationsOutOfPath;
     protected final int maxFloors;
     protected int currentFloorNumber;
+    private State state;
 
     /**
      * Constructor for Elevator
      *
+     * @param config
      * @param scheduler The system scheduler
      */
-    public Elevator(int elevatorNumber, Scheduler scheduler, int maxFloors) {
+    public Elevator(Config config, Scheduler scheduler, int elevatorNumber, int maxFloors) {
+        this.config = config;
         this.scheduler = scheduler;
         this.maxFloors = maxFloors;
         door = new Door();
@@ -159,7 +159,7 @@ public class Elevator implements Runnable {
             destinationsInPath.remove(currentFloorNumber);
             destinationsInPath.addAll(getWaitingPeople());
             try {
-                Thread.sleep(WAIT_TIME * 1000);
+                Thread.sleep(config.getIntProperty("waitTime"));
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
