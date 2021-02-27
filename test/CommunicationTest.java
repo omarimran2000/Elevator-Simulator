@@ -22,7 +22,7 @@ class CommunicationTest {
         Map<Integer, Floor> floors = generateFloors(config, scheduler, config.getProperty("csvFileName"));
         scheduler.setFloors(floors);
 
-        Elevator elevator = new Elevator(config,scheduler,1, floors.size());
+        Elevator elevator = new Elevator(config, scheduler, 1, floors.size());
         scheduler.setElevators(List.of(elevator));
 
         assertTrue(floors.get(1).hasEvents());
