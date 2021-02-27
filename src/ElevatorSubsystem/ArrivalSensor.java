@@ -31,10 +31,10 @@ public class ArrivalSensor implements Runnable {
     public void shutDown() {
         run = false;
     }
+
     public long getSecondsToTravelBetweenTwoFloors(int distance) {
         return (long) ((distance * elevator.getConfig().getFloatProperty("distanceBetweenFloors")) / elevator.getConfig().getFloatProperty("velocity"));
     }
-
 
 
     @Override
@@ -48,11 +48,11 @@ public class ArrivalSensor implements Runnable {
             }
 
             int nextFloor;
-            if(elevator.motor.directionIsUp()){
-                 nextFloor = elevator.currentFloorNumber + 1;
+            if (elevator.motor.directionIsUp()) {
+                nextFloor = elevator.currentFloorNumber + 1;
 
             } else {
-                 nextFloor = elevator.currentFloorNumber - 1;
+                nextFloor = elevator.currentFloorNumber - 1;
             }
             int distance = elevator.distanceTheFloor(nextFloor, elevator.motor.directionIsUp());
             long seconds = getSecondsToTravelBetweenTwoFloors(distance);

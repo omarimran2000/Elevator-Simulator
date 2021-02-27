@@ -65,9 +65,10 @@ public class Elevator implements Runnable {
         return currentFloorNumber;
     }
 
-    public Config getConfig(){
+    public Config getConfig() {
         return config;
     }
+
     public Set<Integer> getDestinationPath() {
         return destinationsInPath;
     }
@@ -79,6 +80,7 @@ public class Elevator implements Runnable {
     public boolean getIsMoving() {
         return motor.isMoving();
     }
+
     /**
      * The run method
      */
@@ -125,6 +127,7 @@ public class Elevator implements Runnable {
         public ElevatorNotMoving() {
             System.out.println("Elevator State Changed to: Idle");
         }
+
         @Override
         public void handleSetLamps() {
             throw new RuntimeException();
@@ -155,6 +158,7 @@ public class Elevator implements Runnable {
         public MovingState() {
             System.out.println("Elevator State Changed to: Moving");
         }
+
         abstract protected ElevatorLamp getPreviousLamp();
 
         abstract protected Set<Integer> getWaitingPeople();

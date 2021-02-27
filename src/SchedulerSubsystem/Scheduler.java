@@ -37,7 +37,7 @@ public class Scheduler implements Runnable {
     }
 
     public void handleFloorButton(int floorNumber, boolean isUp) {
-        System.out.println("Scheduler: scheduling event for floor "+floorNumber);
+        System.out.println("Scheduler: scheduling event for floor " + floorNumber);
         elevators.stream()
                 .min(Comparator.comparing(elevator -> elevator.distanceTheFloor(floorNumber, isUp)))
                 .orElseThrow(NoSuchElementException::new)
