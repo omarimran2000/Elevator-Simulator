@@ -1,7 +1,7 @@
 package ElevatorSubsystem;
 
 import SchedulerSubsystem.Scheduler;
-import util.Config;
+import utill.Config;
 
 import java.util.HashMap;
 import java.util.HashSet;
