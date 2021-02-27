@@ -65,6 +65,9 @@ public class Elevator implements Runnable {
         return currentFloorNumber;
     }
 
+    public Config getConfig(){
+        return config;
+    }
     public Set<Integer> getDestinationPath() {
         return destinationsInPath;
     }
@@ -76,7 +79,6 @@ public class Elevator implements Runnable {
     public boolean getIsMoving() {
         return motor.isMoving();
     }
-
     /**
      * The run method
      */
@@ -97,6 +99,7 @@ public class Elevator implements Runnable {
     }
 
     public synchronized void passFloor() {
+
         state.handleSetLamps();
         System.out.println("Elevator passing floor " + currentFloorNumber);
     }
@@ -122,7 +125,6 @@ public class Elevator implements Runnable {
         public ElevatorNotMoving() {
             System.out.println("Elevator State Changed to: Idle");
         }
-
         @Override
         public void handleSetLamps() {
             throw new RuntimeException();
@@ -150,11 +152,9 @@ public class Elevator implements Runnable {
     }
 
     abstract class MovingState implements State {
-
         public MovingState() {
             System.out.println("Elevator State Changed to: Moving");
         }
-
         abstract protected ElevatorLamp getPreviousLamp();
 
         abstract protected Set<Integer> getWaitingPeople();
@@ -172,6 +172,7 @@ public class Elevator implements Runnable {
 
         @Override
         public void handleAtFloor() {
+
             handleSetLamps();
             System.out.println("Elevator stopped at floor " + currentFloorNumber);
             motor.setMoving(false);
@@ -247,6 +248,8 @@ public class Elevator implements Runnable {
         @Override
         protected void ChangeDirectionOfTravel() {
             state = new ElevatorMovingDown();
+
+
         }
     }
 
@@ -290,6 +293,8 @@ public class Elevator implements Runnable {
         @Override
         protected void ChangeDirectionOfTravel() {
             state = new ElevatorMovingUp();
+
+
         }
     }
 }
