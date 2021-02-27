@@ -1,8 +1,8 @@
-import ElevatorSubsystem.Elevator;
 import ElevatorSubsystem.Motor;
-import SchedulerSubsystem.Scheduler;
-import org.junit.Test;
-import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ElevatorMotorTest {
 
@@ -15,9 +15,9 @@ class ElevatorMotorTest {
         motor.setDirectionIsUp(false);
         assertFalse(motor.directionIsUp());
 
-        //Default setting for isMoving is True
-        assertTrue(motor.isMoving());
-        motor.setMoving(false);
+        //Default setting for isMoving is False
         assertFalse(motor.isMoving());
+        motor.setMoving(true);
+        assertTrue(motor.isMoving());
     }
 }
