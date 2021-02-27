@@ -61,14 +61,13 @@ public class ArrivalSensor implements Runnable {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            System.out.println("current: " + elevator.currentFloorNumber);
-            System.out.println("next: " + nextFloor);
+
             if (elevator.stopForNextFloor()) {
-                System.out.println("new floor: " + elevator.currentFloorNumber);
+
                 elevator.atFloor();
 
             } else {
-                 System.out.println("new floor: " + elevator.currentFloorNumber);
+
                 elevator.passFloor();
             }
         }
