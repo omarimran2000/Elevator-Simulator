@@ -10,6 +10,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
@@ -26,19 +27,16 @@ class StateTest {
 
         Map<Integer, Floor> floors = generateFloors(config, scheduler, config.getProperty("csvFileName"));
         scheduler.setFloors(floors);
-
-        Elevator elevator = new Elevator(config,scheduler,1, floors.size());
+        Elevator elevator = new Elevator(config, scheduler, 1, floors.keySet().stream().max(Comparator.comparingInt(k -> k)).orElseThrow());
         scheduler.setElevators(List.of(elevator));
-        assertTrue(elevator.getIsUp());
-        assertFalse(elevator.getIsMoving());
 
+        assertTrue(elevator.getIsUp()); //Can only go up from base floor
+        assertFalse(elevator.getIsMoving()); //Shouldn't be moving on instantiation
         assertEquals(4,elevator.distanceTheFloor(4,true)); //starts on floor 0 so expected is 4 instead of 3
+
         elevator.addDestination(3,true);
         Object[] futureFloors = elevator.getDestinationPath().toArray();
 
-        assertEquals(3,futureFloors[0]);
-
-
-        floors.get(0).run();
+        assertEquals(3,futureFloors[0]); //The floor number on the queue is floor 3
     }
 }
