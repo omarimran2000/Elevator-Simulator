@@ -68,7 +68,7 @@ public class Elevator implements Runnable {
     /**
      * @return the configuration
      */
-    public Config getConfig(){
+    public Config getConfig() {
         return config;
     }
 
@@ -92,6 +92,7 @@ public class Elevator implements Runnable {
     public boolean getIsMoving() {
         return motor.isMoving();
     }
+
     /**
      * The run method
      */
@@ -101,8 +102,9 @@ public class Elevator implements Runnable {
 
     /**
      * Gets the number of floors between the current and destination floors
+     *
      * @param floorNumber The destination floor number
-     * @param isUp The direction of travel (true = up, false = down)
+     * @param isUp        The direction of travel (true = up, false = down)
      * @return the distance between the two floors
      */
     public int distanceTheFloor(int floorNumber, boolean isUp) {
@@ -111,8 +113,9 @@ public class Elevator implements Runnable {
 
     /**
      * Adds the specified floor number to the list of destinations
+     *
      * @param floorNumber The number of destination floor to add
-     * @param isUp The direction of the elevator
+     * @param isUp        The direction of the elevator
      */
     public synchronized void addDestination(int floorNumber, boolean isUp) {
         state.handleAddDestination(floorNumber, isUp);
@@ -148,16 +151,18 @@ public class Elevator implements Runnable {
 
         /**
          * Gets the number of floors between the current and destination floors
+         *
          * @param floorNumber The destination floor number
-         * @param isUp The direction of travel (true = up, false = down)
+         * @param isUp        The direction of travel (true = up, false = down)
          * @return the distance between the two floors
          */
         int handleDistanceTheFloor(int floorNumber, boolean isUp);
 
         /**
          * Adds the specified floor number to the list of destinations
+         *
          * @param floorNumber The number of destination floor to add
-         * @param isUp The direction of the elevator
+         * @param isUp        The direction of the elevator
          */
         void handleAddDestination(int floorNumber, boolean isUp);
 
@@ -190,8 +195,9 @@ public class Elevator implements Runnable {
 
         /**
          * Gets the number of floors between the current and destination floors
+         *
          * @param floorNumber The destination floor number
-         * @param isUp The direction of travel (true = up, false = down)
+         * @param isUp        The direction of travel (true = up, false = down)
          * @return the distance between the two floors
          */
         public int handleDistanceTheFloor(int floorNumber, boolean isUp) {
@@ -200,8 +206,9 @@ public class Elevator implements Runnable {
 
         /**
          * Adds the specified floor number to the list of destinations
+         *
          * @param floorNumber The number of destination floor to add
-         * @param isUp The direction of the elevator
+         * @param isUp        The direction of the elevator
          */
         public synchronized void handleAddDestination(int floorNumber, boolean isUp) {
             new Thread(arrivalSensor).start();
@@ -271,6 +278,8 @@ public class Elevator implements Runnable {
             System.out.println("Elevator stopped at floor " + currentFloorNumber);
             motor.setMoving(false);
             door.open();
+            String direction = (motor.directionIsUp() ? "Up" : "Down");
+            System.out.println(direction + " lamp on floor " + currentFloorNumber + " is off");
             destinationsInPath.remove(currentFloorNumber);
             destinationsInPath.addAll(getWaitingPeople());
             try {
@@ -311,8 +320,9 @@ public class Elevator implements Runnable {
 
         /**
          * Gets the number of floors between the current and destination floors
+         *
          * @param floorNumber The destination floor number
-         * @param isUp The direction of travel (true = up, false = down)
+         * @param isUp        The direction of travel (true = up, false = down)
          * @return the distance between the two floors
          */
         @Override
@@ -323,8 +333,9 @@ public class Elevator implements Runnable {
 
         /**
          * Adds the specified floor number to the list of destinations
+         *
          * @param floorNumber The number of destination floor to add
-         * @param isUp The direction of the elevator
+         * @param isUp        The direction of the elevator
          */
         @Override
         public void handleAddDestination(int floorNumber, boolean isUp) {
@@ -381,8 +392,9 @@ public class Elevator implements Runnable {
 
         /**
          * Gets the number of floors between the current and destination floors
+         *
          * @param floorNumber The destination floor number
-         * @param isUp The direction of travel (true = up, false = down)
+         * @param isUp        The direction of travel (true = up, false = down)
          * @return the distance between the two floors
          */
         @Override
@@ -392,8 +404,9 @@ public class Elevator implements Runnable {
 
         /**
          * Adds the specified floor number to the list of destinations
+         *
          * @param floorNumber The number of destination floor to add
-         * @param isUp The direction of the elevator
+         * @param isUp        The direction of the elevator
          */
         @Override
         public void handleAddDestination(int floorNumber, boolean isUp) {
