@@ -15,7 +15,7 @@ public class Motor {
      */
     public Motor() {
         this.directionIsUp = true;
-        isMoving = true;
+        isMoving = false;
     }
 
     /**
@@ -26,16 +26,6 @@ public class Motor {
     public void setDirectionIsUp(boolean directionIsUp) {
         System.out.println("The motor direction is " + (directionIsUp ? "up" : "down"));
         this.directionIsUp = directionIsUp;
-    }
-
-    /**
-     * Set the motor to moving or not
-     *
-     * @param moving The state of the motor
-     */
-    public void setMoving(boolean moving) {
-        isMoving = moving;
-        System.out.println("The motor is " + (isMoving ? "" : "not ") + "running");
     }
 
     /**
@@ -50,6 +40,16 @@ public class Motor {
      */
     public boolean isMoving() {
         return isMoving;
+    }
+
+    /**
+     * Set the motor to moving or not
+     *
+     * @param moving The state of the motor
+     */
+    public void setMoving(boolean moving) {
+        isMoving = moving;
+        System.out.println("The motor is " + (isMoving ? "" : "not ") + "running");
     }
 
 }

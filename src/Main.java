@@ -1,7 +1,7 @@
 import ElevatorSubsystem.Elevator;
 import FloorSubsystem.Floor;
 import SchedulerSubsystem.Scheduler;
-import util.Config;
+import utill.Config;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -20,7 +20,7 @@ import static FloorSubsystem.FloorSubsystem.generateFloors;
 public class Main {
 
     /**
-     * Initializes the map of floors, the shceduler and the elevator
+     * Initializes the map of floors, the scheduler and the elevator
      * Starts the threads
      *
      * @param args

@@ -2,7 +2,7 @@ package FloorSubsystem;
 
 import SchedulerSubsystem.Event;
 import SchedulerSubsystem.Scheduler;
-import util.Config;
+import utill.Config;
 
 import java.io.File;
 import java.io.FileNotFoundException;
