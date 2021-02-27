@@ -65,6 +65,10 @@ public class Elevator implements Runnable {
         return currentFloorNumber;
     }
 
+    public Set<Integer> getDestinationPath(){
+        return destinationsInPath;
+    }
+
     /**
      * The run method
      */

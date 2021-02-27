@@ -13,10 +13,10 @@ import java.util.Map;
 import static FloorSubsystem.FloorSubsystem.CSV_DATE_FORMAT;
 import static org.junit.jupiter.api.Assertions.*;
 
-class CommunicationTest {
+class StateTest {
 
     @Test
-    void CommsTest() throws ParseException {
+    void StateMethodsTest() throws ParseException {
         Scheduler scheduler = new Scheduler();
 
         List<Event> events = new ArrayList<>();
@@ -28,11 +28,12 @@ class CommunicationTest {
         Elevator elevator = new Elevator(1, scheduler, floors.size());
         scheduler.setElevators(List.of(elevator));
 
-        assertTrue(floors.get(1).hasEvents());
-        assertFalse(floors.get(0).getTop().isOn());
-        assertEquals(0, elevator.getCurrentFloorNumber());
+        assertEquals(4,elevator.distanceTheFloor(4,true)); //starts on floor 0 so expected is 4 instead of 3
+        elevator.addDestination(3,true);
+        Object[] futureFloors = elevator.getDestinationPath().toArray();
+
+        System.out.println(futureFloors[0].getClass().toString());
 
         floors.get(0).run();
-        assertEquals(1, elevator.getCurrentFloorNumber());
     }
 }
