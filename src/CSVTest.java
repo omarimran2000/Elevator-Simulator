@@ -1,12 +1,12 @@
-import SchedulerSubsystem.*;
 import FloorSubsystem.FloorSubsystem;
+import SchedulerSubsystem.Event;
 import org.junit.jupiter.api.Test;
 
 import java.io.FileNotFoundException;
 import java.text.ParseException;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 class CSVTest {
 
