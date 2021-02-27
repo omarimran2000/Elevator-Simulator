@@ -15,7 +15,7 @@ public class Motor {
      */
     public Motor() {
         this.directionIsUp = true;
-        isMoving = true;
+        isMoving = false;
     }
 
     /**

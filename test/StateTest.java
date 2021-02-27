@@ -4,35 +4,40 @@ import FloorSubsystem.FloorSubsystem;
 import SchedulerSubsystem.Event;
 import SchedulerSubsystem.Scheduler;
 import org.junit.jupiter.api.Test;
+import util.Config;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import static FloorSubsystem.FloorSubsystem.CSV_DATE_FORMAT;
+
+import static FloorSubsystem.FloorSubsystem.generateFloors;
 import static org.junit.jupiter.api.Assertions.*;
 
 class StateTest {
 
     @Test
-    void StateMethodsTest() throws ParseException {
+    void StateMethodsTest() throws ParseException, IOException {
         Scheduler scheduler = new Scheduler();
+        Config config = new Config();
 
-        List<Event> events = new ArrayList<>();
-        events.add(new Event(CSV_DATE_FORMAT.parse("01-01-2021 14:00:05"), 1, true, 2));
-
-        Map<Integer, Floor> floors = FloorSubsystem.generateFloors(scheduler, events);
+        Map<Integer, Floor> floors = generateFloors(config, scheduler, config.getProperty("csvFileName"));
         scheduler.setFloors(floors);
 
-        Elevator elevator = new Elevator(1, scheduler, floors.size());
+        Elevator elevator = new Elevator(config,scheduler,1, floors.size());
         scheduler.setElevators(List.of(elevator));
+        assertTrue(elevator.getIsUp());
+        assertFalse(elevator.getIsMoving());
 
         assertEquals(4,elevator.distanceTheFloor(4,true)); //starts on floor 0 so expected is 4 instead of 3
         elevator.addDestination(3,true);
         Object[] futureFloors = elevator.getDestinationPath().toArray();
 
-        System.out.println(futureFloors[0].getClass().toString());
+        assertEquals(3,futureFloors[0]);
+
 
         floors.get(0).run();
     }

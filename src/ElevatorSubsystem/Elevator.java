@@ -69,6 +69,14 @@ public class Elevator implements Runnable {
         return destinationsInPath;
     }
 
+    public boolean getIsUp(){
+        return motor.directionIsUp();
+    }
+
+    public boolean getIsMoving(){
+        return motor.isMoving();
+    }
+
     /**
      * The run method
      */
