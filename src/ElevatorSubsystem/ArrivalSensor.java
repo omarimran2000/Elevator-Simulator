@@ -22,21 +22,33 @@ public class ArrivalSensor implements Runnable {
         run = false;
     }
 
-
+    /**
+     * @return true if the elevator is running
+     */
     public boolean isNotRunning() {
         return !run;
     }
 
 
+    /**
+     * Shuts down the elevator
+     */
     public void shutDown() {
         run = false;
     }
+
+    /**
+     * Get the time in seconds to travel between two floors given the distance in meters between them
+     * @param distance The distance to travel
+     * @return
+     */
     public long getSecondsToTravelBetweenTwoFloors(int distance) {
         return (long) ((distance * elevator.getConfig().getFloatProperty("distanceBetweenFloors")) / elevator.getConfig().getFloatProperty("velocity"));
     }
 
-
-
+    /**
+     * The run method
+     */
     @Override
     public void run() {
         run = true;

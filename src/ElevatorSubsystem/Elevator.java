@@ -65,17 +65,30 @@ public class Elevator implements Runnable {
         return currentFloorNumber;
     }
 
+    /**
+     * @return the configuration
+     */
     public Config getConfig(){
         return config;
     }
+
+    /**
+     * @return
+     */
     public Set<Integer> getDestinationPath() {
         return destinationsInPath;
     }
 
+    /**
+     * @return true if the motor direction is upwards, false for downwards
+     */
     public boolean getIsUp() {
         return motor.directionIsUp();
     }
 
+    /**
+     * @return true if the motor is moving
+     */
     public boolean getIsMoving() {
         return motor.isMoving();
     }
@@ -86,81 +99,159 @@ public class Elevator implements Runnable {
     public void run() {
     }
 
+    /**
+     * Gets the number of floors between the current and destination floors
+     * @param floorNumber The destination floor number
+     * @param isUp The direction of travel (true = up, false = down)
+     * @return the distance between the two floors
+     */
     public int distanceTheFloor(int floorNumber, boolean isUp) {
         return state.handleDistanceTheFloor(floorNumber, isUp);
     }
 
+    /**
+     * Adds the specified floor number to the list of destinations
+     * @param floorNumber The number of destination floor to add
+     * @param isUp The direction of the elevator
+     */
     public synchronized void addDestination(int floorNumber, boolean isUp) {
         state.handleAddDestination(floorNumber, isUp);
     }
 
+    /**
+     * @return true if the elevator should stop at the next floor
+     */
     public synchronized boolean stopForNextFloor() {
         return state.handleStopForNextFloor();
     }
 
+    /**
+     * Pass the floor without stopping
+     */
     public synchronized void passFloor() {
-
         state.handleSetLamps();
         System.out.println("Elevator passing floor " + currentFloorNumber);
     }
 
-
+    /**
+     * Actions for when the elevator stops at a floor
+     */
     public synchronized void atFloor() {
         state.handleAtFloor();
     }
 
     interface State {
+        /**
+         * Turns off the previous lamp and turns on the next one
+         */
         void handleSetLamps();
 
+        /**
+         * Gets the number of floors between the current and destination floors
+         * @param floorNumber The destination floor number
+         * @param isUp The direction of travel (true = up, false = down)
+         * @return the distance between the two floors
+         */
         int handleDistanceTheFloor(int floorNumber, boolean isUp);
 
+        /**
+         * Adds the specified floor number to the list of destinations
+         * @param floorNumber The number of destination floor to add
+         * @param isUp The direction of the elevator
+         */
         void handleAddDestination(int floorNumber, boolean isUp);
 
+        /**
+         * @return true if the elevator should stop at the next floor
+         */
         boolean handleStopForNextFloor();
 
+        /**
+         * Actions for when the elevator stops at a floor
+         */
         void handleAtFloor();
     }
 
+    /**
+     * Represents a stationary elevator
+     */
     class ElevatorNotMoving implements State {
         public ElevatorNotMoving() {
             System.out.println("Elevator State Changed to: Idle");
         }
+
+        /**
+         * Sets the elevator lamps
+         */
         @Override
         public void handleSetLamps() {
             throw new RuntimeException();
         }
 
+        /**
+         * Gets the number of floors between the current and destination floors
+         * @param floorNumber The destination floor number
+         * @param isUp The direction of travel (true = up, false = down)
+         * @return the distance between the two floors
+         */
         public int handleDistanceTheFloor(int floorNumber, boolean isUp) {
             return abs(floorNumber - currentFloorNumber);
         }
 
+        /**
+         * Adds the specified floor number to the list of destinations
+         * @param floorNumber The number of destination floor to add
+         * @param isUp The direction of the elevator
+         */
         public synchronized void handleAddDestination(int floorNumber, boolean isUp) {
             new Thread(arrivalSensor).start();
             destinationsInPath.add(floorNumber);
             state = floorNumber > currentFloorNumber ? new ElevatorMovingUp() : new ElevatorMovingDown();
         }
 
+        /**
+         * @return true if the elevator should stop at the next floor
+         */
         @Override
         public boolean handleStopForNextFloor() {
             throw new RuntimeException();
         }
 
+        /**
+         * Actions for when the elevator stops at a floor
+         */
         @Override
         public void handleAtFloor() {
             throw new RuntimeException();
         }
     }
 
+    /**
+     * Represents an elevator in motion
+     */
     abstract class MovingState implements State {
         public MovingState() {
             System.out.println("Elevator State Changed to: Moving");
         }
+
+        /**
+         * @return the previously lit elevator lamp
+         */
         abstract protected ElevatorLamp getPreviousLamp();
 
+        /**
+         * @return the set of floors with people waiting for an elevator moving in the specified direction
+         */
         abstract protected Set<Integer> getWaitingPeople();
 
+        /**
+         * Reverses the direction of travel
+         */
         abstract protected void ChangeDirectionOfTravel();
 
+        /**
+         * Turns off the previous lamp and turns on the next one
+         */
         @Override
         public void handleSetLamps() {
             ElevatorLamp previousLamp = getPreviousLamp();
@@ -170,6 +261,9 @@ public class Elevator implements Runnable {
             lamps.get(currentFloorNumber).setLamp(true);
         }
 
+        /**
+         * Actions for when the elevator stops at a floor
+         */
         @Override
         public void handleAtFloor() {
 
@@ -206,18 +300,32 @@ public class Elevator implements Runnable {
         }
     }
 
+    /**
+     * Represents an elevator moving upwards
+     */
     class ElevatorMovingUp extends MovingState {
 
         public ElevatorMovingUp() {
             motor.setDirectionIsUp(true);
         }
 
+        /**
+         * Gets the number of floors between the current and destination floors
+         * @param floorNumber The destination floor number
+         * @param isUp The direction of travel (true = up, false = down)
+         * @return the distance between the two floors
+         */
         @Override
         public int handleDistanceTheFloor(int floorNumber, boolean isUp) {
             return abs(floorNumber - currentFloorNumber) +
                     (isUp ? maxFloors - currentFloorNumber : 0);
         }
 
+        /**
+         * Adds the specified floor number to the list of destinations
+         * @param floorNumber The number of destination floor to add
+         * @param isUp The direction of the elevator
+         */
         @Override
         public void handleAddDestination(int floorNumber, boolean isUp) {
             if (arrivalSensor.isNotRunning()) {
@@ -230,39 +338,63 @@ public class Elevator implements Runnable {
             }
         }
 
+        /**
+         * @return true if the elevator should stop at the next floor
+         */
         @Override
         public boolean handleStopForNextFloor() {
             return destinationsInPath.contains(++currentFloorNumber);
         }
 
+        /**
+         * @return the previously lit elevator lamp
+         */
         @Override
         protected ElevatorLamp getPreviousLamp() {
             return lamps.get(currentFloorNumber - 1);
         }
 
+        /**
+         * @return the set of floors with people waiting for an elevator moving upwards
+         */
         @Override
         protected Set<Integer> getWaitingPeople() {
             return scheduler.getWaitingPeopleUp(currentFloorNumber);
         }
 
+        /**
+         * Reverses the direction of travel
+         */
         @Override
         protected void ChangeDirectionOfTravel() {
             state = new ElevatorMovingDown();
-
-
         }
     }
 
+    /**
+     * Represents an elevator moving downwards
+     */
     private class ElevatorMovingDown extends MovingState {
         public ElevatorMovingDown() {
             motor.setDirectionIsUp(false);
         }
 
+        /**
+         * Gets the number of floors between the current and destination floors
+         * @param floorNumber The destination floor number
+         * @param isUp The direction of travel (true = up, false = down)
+         * @return the distance between the two floors
+         */
         @Override
         public int handleDistanceTheFloor(int floorNumber, boolean isUp) {
             return abs(floorNumber - currentFloorNumber) + currentFloorNumber;
         }
 
+        /**
+         * Adds the specified floor number to the list of destinations
+         * @param floorNumber The number of destination floor to add
+         * @param isUp The direction of the elevator
+         */
         @Override
         public void handleAddDestination(int floorNumber, boolean isUp) {
             if (arrivalSensor.isNotRunning()) {
@@ -275,26 +407,36 @@ public class Elevator implements Runnable {
             }
         }
 
+        /**
+         * @return true if the elevator should stop at the next floor
+         */
         @Override
         public boolean handleStopForNextFloor() {
             return destinationsInPath.contains(--currentFloorNumber);
         }
 
+        /**
+         * @return the previously lit elevator lamp
+         */
         @Override
         protected ElevatorLamp getPreviousLamp() {
             return lamps.get(currentFloorNumber + 1);
         }
 
+        /**
+         * @return the set of floors with people waiting for an elevator moving downwards
+         */
         @Override
         protected Set<Integer> getWaitingPeople() {
             return scheduler.getWaitingPeopleDown(currentFloorNumber);
         }
 
+        /**
+         * Reverses the direction of travel
+         */
         @Override
         protected void ChangeDirectionOfTravel() {
             state = new ElevatorMovingUp();
-
-
         }
     }
 }

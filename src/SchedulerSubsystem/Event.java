@@ -29,7 +29,6 @@ public class Event implements Comparable<Event> {
         this.floorNumber = floorNumber;
         this.floorButtonIsUp = floor_button_is_up;
         this.carButton = car_button;
-
     }
 
     /**
@@ -97,7 +96,6 @@ public class Event implements Comparable<Event> {
                 ", carButton=" + carButton +
                 '}';
     }
-
 
     /**
      * Compare to method for the priority queue

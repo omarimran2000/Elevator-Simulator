@@ -83,13 +83,18 @@ public abstract class Floor implements Runnable {
         }
     }
 
-
+    /**
+     * @return the set of floors with people waiting to go up
+     */
     public Set<Integer> getWaitingPeopleUp() {
         Set<Integer> waitingPeople = Set.copyOf(waitingPeopleUp);
         waitingPeopleUp.clear();
         return waitingPeople;
     }
 
+    /**
+     * @return the set of floors with people waiting to go down
+     */
     public Set<Integer> getWaitingPeopleDown() {
         Set<Integer> waitingPeople = Set.copyOf(waitingPeopleDown);
         waitingPeopleDown.clear();
@@ -148,8 +153,6 @@ public abstract class Floor implements Runnable {
      * Abstract method for getting the up button
      */
     public abstract FloorButton getTop();
-
-
 }
 
 
@@ -207,8 +210,6 @@ class TopFloor extends Floor {
     public FloorButton getTop() {
         return null;
     }
-
-
 }
 
 class BottomFloor extends Floor {
@@ -331,6 +332,4 @@ class MiddleFloor extends Floor {
     public FloorButton getTop() {
         return upButton;
     }
-
-
 }
