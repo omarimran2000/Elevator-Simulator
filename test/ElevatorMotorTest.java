@@ -4,7 +4,7 @@ import SchedulerSubsystem.Scheduler;
 import org.junit.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
-class ElevatorTest {
+class ElevatorMotorTest {
 
     @Test
     public void motorTest() {
