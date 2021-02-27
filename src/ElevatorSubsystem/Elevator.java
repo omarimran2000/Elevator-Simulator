@@ -65,6 +65,18 @@ public class Elevator implements Runnable {
         return currentFloorNumber;
     }
 
+    public Set<Integer> getDestinationPath(){
+        return destinationsInPath;
+    }
+
+    public boolean getIsUp(){
+        return motor.directionIsUp();
+    }
+
+    public boolean getIsMoving(){
+        return motor.isMoving();
+    }
+
     /**
      * The run method
      */
