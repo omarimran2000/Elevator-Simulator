@@ -17,7 +17,7 @@ class CSVTest {
 
     @Test
     void readCSVTest() throws FileNotFoundException, ParseException {
-        List<Event> list = FloorSubsystem.readCSV(config,"csvFileName");
+        List<Event> list = FloorSubsystem.readCSV(config, config.getProperty("csvFileName"));
         assertNotNull(list);
         System.out.print(list.get(0));
     }
