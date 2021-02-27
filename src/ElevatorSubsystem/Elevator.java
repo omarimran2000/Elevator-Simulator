@@ -71,6 +71,10 @@ public class Elevator implements Runnable {
 
     public synchronized boolean getIsMoving(){
         return motor.isMoving();
+
+    public Config getConfig(){
+        return config;
+
     }
 
     /**
@@ -93,6 +97,7 @@ public class Elevator implements Runnable {
     }
 
     public synchronized void passFloor() {
+
         state.handleSetLamps();
         System.out.println("Elevator passing floor " + currentFloorNumber);
     }
@@ -160,6 +165,7 @@ public class Elevator implements Runnable {
 
         @Override
         public void handleAtFloor() {
+
             handleSetLamps();
             System.out.println("Elevator stopped at floor " + currentFloorNumber);
             motor.setMoving(false);
@@ -182,16 +188,22 @@ public class Elevator implements Runnable {
                     if (destinationsInPath.contains(currentFloorNumber)) {
                         atFloor();
                     }
+                    motor.setMoving(true);
                 } else {
                     arrivalSensor.shutDown();
                     state = new ElevatorNotMoving();
                 }
+            } else {
+                motor.setMoving(true);
             }
-            motor.setMoving(true);
         }
     }
 
     class ElevatorMovingUp extends MovingState {
+
+        public ElevatorMovingUp() {
+            motor.setDirectionIsUp(true);
+        }
 
         @Override
         public int handleDistanceTheFloor(int floorNumber, boolean isUp) {
@@ -229,10 +241,16 @@ public class Elevator implements Runnable {
         @Override
         protected void ChangeDirectionOfTravel() {
             state = new ElevatorMovingDown();
+
+
         }
     }
 
     private class ElevatorMovingDown extends MovingState {
+        public ElevatorMovingDown() {
+            motor.setDirectionIsUp(false);
+        }
+
         @Override
         public int handleDistanceTheFloor(int floorNumber, boolean isUp) {
             return abs(floorNumber - currentFloorNumber) + currentFloorNumber;
@@ -268,6 +286,8 @@ public class Elevator implements Runnable {
         @Override
         protected void ChangeDirectionOfTravel() {
             state = new ElevatorMovingUp();
+
+
         }
     }
 }

@@ -73,6 +73,12 @@ public abstract class Floor implements Runnable {
                     waitingPeopleDown.add(event.getCarButton());
                 }
                 scheduler.handleFloorButton(this.floorNumber, event.isFloorButtonIsUp());
+            } else {
+                try {
+                    Thread.sleep(schedule.peek().getTimeToEvent() - System.currentTimeMillis() + startTime);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
             }
         }
     }
