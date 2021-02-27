@@ -2,7 +2,10 @@ package FloorSubsystem;
 
 import SchedulerSubsystem.Event;
 import SchedulerSubsystem.Scheduler;
+import util.Config;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 import static java.lang.Math.abs;
@@ -31,7 +34,7 @@ public abstract class Floor implements Runnable {
      * @param scheduler
      * @param schedule    A list of events
      */
-    public Floor(int floorNumber, Scheduler scheduler, List<Event> schedule) {
+    public Floor(Config config, int floorNumber, Scheduler scheduler, List<Event> schedule) {
         this.floorNumber = floorNumber;
         this.scheduler = scheduler;
         this.schedule = new PriorityQueue<>();
@@ -40,7 +43,14 @@ public abstract class Floor implements Runnable {
         downLamp = new FloorLamp();
 
         destinationFloorNumbers = new LinkedList<>();
-        schedule.forEach(event -> event.setTimeToEvent(abs(FloorSubsystem.START_DATE.getTime() - event.getTime().getTime())));
+
+        schedule.forEach(event -> {
+            try {
+                event.setTimeToEvent(abs((new SimpleDateFormat(config.getProperty("dateFormatPattern"))).parse(config.getProperty("startDate")).getTime() - event.getTime().getTime()));
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+        });
         waitingPeopleUp = new HashSet<>();
         waitingPeopleDown = new HashSet<>();
     }
@@ -147,8 +157,8 @@ class TopFloor extends Floor {
      * @param scheduler   The scheduler
      * @param schedule    The list of scheduled events
      */
-    public TopFloor(int floorNumber, Scheduler scheduler, List<Event> schedule) {
-        super(floorNumber, scheduler, schedule);
+    public TopFloor(Config config,int floorNumber, Scheduler scheduler, List<Event> schedule) {
+        super(config,floorNumber, scheduler, schedule);
         downButton = new FloorButton();
     }
 
@@ -205,8 +215,8 @@ class BottomFloor extends Floor {
      * @param scheduler   The scheduler
      * @param schedule    The list of scheduled events
      */
-    public BottomFloor(int floorNumber, Scheduler scheduler, List<Event> schedule) {
-        super(floorNumber, scheduler, schedule);
+    public BottomFloor(Config config,int floorNumber, Scheduler scheduler, List<Event> schedule) {
+        super(config, floorNumber, scheduler, schedule);
         upButton = new FloorButton();
     }
 
@@ -262,8 +272,8 @@ class MiddleFloor extends Floor {
      * @param scheduler   The scheduler
      * @param schedule    The list of scheduled events
      */
-    public MiddleFloor(int floorNumber, Scheduler scheduler, List<Event> schedule) {
-        super(floorNumber, scheduler, schedule);
+    public MiddleFloor(Config config, int floorNumber, Scheduler scheduler, List<Event> schedule) {
+        super(config, floorNumber, scheduler, schedule);
         upButton = new FloorButton();
         downButton = new FloorButton();
     }
