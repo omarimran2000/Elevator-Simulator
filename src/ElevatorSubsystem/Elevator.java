@@ -17,21 +17,18 @@ import static java.lang.Math.abs;
  */
 public class Elevator implements Runnable {
 
-    private State state;
-
     protected final Scheduler scheduler;
     protected final Config config;
-
     protected final Door door;
     protected final ArrivalSensor arrivalSensor;
     protected final Motor motor;
     protected final Map<Integer, ElevatorButton> buttons;
     protected final Map<Integer, ElevatorLamp> lamps;
-
     protected final Set<Integer> destinationsInPath;
     protected final Set<Integer> destinationsOutOfPath;
     protected final int maxFloors;
     protected int currentFloorNumber;
+    private State state;
 
     /**
      * Constructor for Elevator

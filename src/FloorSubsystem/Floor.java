@@ -157,8 +157,8 @@ class TopFloor extends Floor {
      * @param scheduler   The scheduler
      * @param schedule    The list of scheduled events
      */
-    public TopFloor(Config config,int floorNumber, Scheduler scheduler, List<Event> schedule) {
-        super(config,floorNumber, scheduler, schedule);
+    public TopFloor(Config config, int floorNumber, Scheduler scheduler, List<Event> schedule) {
+        super(config, floorNumber, scheduler, schedule);
         downButton = new FloorButton();
     }
 
@@ -215,7 +215,7 @@ class BottomFloor extends Floor {
      * @param scheduler   The scheduler
      * @param schedule    The list of scheduled events
      */
-    public BottomFloor(Config config,int floorNumber, Scheduler scheduler, List<Event> schedule) {
+    public BottomFloor(Config config, int floorNumber, Scheduler scheduler, List<Event> schedule) {
         super(config, floorNumber, scheduler, schedule);
         upButton = new FloorButton();
     }
