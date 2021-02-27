@@ -22,6 +22,7 @@ public class Door {
         System.out.println("Opening elevator door");
         this.isOpen = true;
     }
+
     /**
      * Close the door
      */
