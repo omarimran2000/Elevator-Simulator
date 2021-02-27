@@ -48,7 +48,7 @@ public class Elevator implements Runnable {
         currentFloorNumber = 0;
         state = new ElevatorNotMoving();
 
-        for (int i = 1; i <= maxFloors; i++) {
+        for (int i = 0; i <= maxFloors; i++) {
             buttons.put(i, new ElevatorButton(i));
             lamps.put(i, new ElevatorLamp(elevatorNumber, i));
         }
@@ -76,14 +76,6 @@ public class Elevator implements Runnable {
         return state.handleDistanceTheFloor(floorNumber, isUp);
     }
 
-    private void setLamps() {
-        ElevatorLamp previousLamp = lamps.get(currentFloorNumber + (motor.directionIsUp() ? -1 : 1));
-        if (previousLamp != null && previousLamp.isLit()) {
-            previousLamp.setLamp(false);
-        }
-        lamps.get(currentFloorNumber).setLamp(true);
-    }
-
     public synchronized void addDestination(int floorNumber, boolean isUp) {
         state.handleAddDestination(floorNumber, isUp);
     }
@@ -93,7 +85,7 @@ public class Elevator implements Runnable {
     }
 
     public synchronized void passFloor() {
-        setLamps();
+        state.handleSetLamps();
         System.out.println("Elevator passing floor " + currentFloorNumber);
     }
 
@@ -103,6 +95,8 @@ public class Elevator implements Runnable {
     }
 
     interface State {
+        void handleSetLamps();
+
         int handleDistanceTheFloor(int floorNumber, boolean isUp);
 
         void handleAddDestination(int floorNumber, boolean isUp);
@@ -113,6 +107,11 @@ public class Elevator implements Runnable {
     }
 
     class ElevatorNotMoving implements State {
+        @Override
+        public void handleSetLamps() {
+            throw new RuntimeException();
+        }
+
         public int handleDistanceTheFloor(int floorNumber, boolean isUp) {
             return abs(floorNumber - currentFloorNumber);
         }
@@ -135,13 +134,25 @@ public class Elevator implements Runnable {
     }
 
     abstract class MovingState implements State {
+
+        abstract protected ElevatorLamp getPreviousLamp();
+
         abstract protected Set<Integer> getWaitingPeople();
 
         abstract protected void ChangeDirectionOfTravel();
 
         @Override
+        public void handleSetLamps() {
+            ElevatorLamp previousLamp = getPreviousLamp();
+            if (previousLamp != null && previousLamp.isLit()) {
+                previousLamp.setLamp(false);
+            }
+            lamps.get(currentFloorNumber).setLamp(true);
+        }
+
+        @Override
         public void handleAtFloor() {
-            setLamps();
+            handleSetLamps();
             System.out.println("Elevator stopped at floor " + currentFloorNumber);
             motor.setMoving(false);
             door.open();
@@ -173,6 +184,7 @@ public class Elevator implements Runnable {
     }
 
     class ElevatorMovingUp extends MovingState {
+
         @Override
         public int handleDistanceTheFloor(int floorNumber, boolean isUp) {
             return abs(floorNumber - currentFloorNumber) +
@@ -194,6 +206,11 @@ public class Elevator implements Runnable {
         @Override
         public boolean handleStopForNextFloor() {
             return destinationsInPath.contains(++currentFloorNumber);
+        }
+
+        @Override
+        protected ElevatorLamp getPreviousLamp() {
+            return lamps.get(currentFloorNumber - 1);
         }
 
         @Override
@@ -228,6 +245,11 @@ public class Elevator implements Runnable {
         @Override
         public boolean handleStopForNextFloor() {
             return destinationsInPath.contains(--currentFloorNumber);
+        }
+
+        @Override
+        protected ElevatorLamp getPreviousLamp() {
+            return lamps.get(currentFloorNumber + 1);
         }
 
         @Override

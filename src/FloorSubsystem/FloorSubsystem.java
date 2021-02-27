@@ -40,9 +40,14 @@ public class FloorSubsystem {
 
         int max_floor_number = 0;
 
-        for (int floor_number : schedule_by_floor.keySet()) {
-            if (floor_number > max_floor_number) {
-                max_floor_number = floor_number;
+        for (Map.Entry<Integer, List<Event>> entry : schedule_by_floor.entrySet()) {
+            if (entry.getKey() > max_floor_number) {
+                max_floor_number = entry.getKey();
+            }
+            for (Event event : entry.getValue()) {
+                if (event.getCarButton() > max_floor_number) {
+                    max_floor_number = event.getCarButton();
+                }
             }
         }
 
