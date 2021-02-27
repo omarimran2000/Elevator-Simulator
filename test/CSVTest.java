@@ -2,7 +2,6 @@ import FloorSubsystem.FloorSubsystem;
 import SchedulerSubsystem.Event;
 import org.junit.jupiter.api.Test;
 import util.Config;
-
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.text.ParseException;
