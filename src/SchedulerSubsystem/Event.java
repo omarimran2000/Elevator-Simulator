@@ -6,7 +6,7 @@ import java.util.Date;
 /**
  * The Event class represents the events that occur
  *
- * @version Feb 06, 2021
+ * @version Feb 27, 2021
  */
 public class Event implements Comparable<Event> {
     private final Date time;

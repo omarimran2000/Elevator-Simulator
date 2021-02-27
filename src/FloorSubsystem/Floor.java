@@ -13,7 +13,7 @@ import static java.lang.Math.abs;
 /**
  * The Floor class represents a single floor in the building
  *
- * @version Feb 06, 2021
+ * @version Feb 27, 2021
  */
 public abstract class Floor implements Runnable {
 

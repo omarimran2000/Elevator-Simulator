@@ -13,7 +13,7 @@ import static java.lang.Math.abs;
 /**
  * The Elevator class represents a single elevator in the system
  *
- * @version Feb 06, 2021
+ * @version Feb 27, 2021
  */
 public class Elevator implements Runnable {
 

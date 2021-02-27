@@ -4,7 +4,7 @@ package ElevatorSubsystem;
  * The Arrival Sensor is a sensor in the Elevator
  * to notify the schedule that it has arrived at a floor
  *
- * @version Feb 06, 2021
+ * @version Feb 27, 2021
  */
 public class ArrivalSensor implements Runnable {
     private final Elevator elevator;

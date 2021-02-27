@@ -8,7 +8,7 @@ import java.util.*;
 /**
  * The Scheduler class schedules the events
  *
- * @version Feb 06, 2021
+ * @version Feb 27, 2021
  */
 public class Scheduler implements Runnable {
     private List<Elevator> elevators;

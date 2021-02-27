@@ -4,7 +4,7 @@ package FloorSubsystem;
  * The Direction Lamp class represents the lamps on the floors
  * that tell the users which direction the elevator is travelling in
  *
- * @version Feb 06, 2021
+ * @version Feb 27, 2021
  */
 public class DirectionLamp {
     private boolean isLit;

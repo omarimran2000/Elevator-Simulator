@@ -4,7 +4,7 @@ package ElevatorSubsystem;
  * The Elevator Button class represents the buttons inside
  * the elevator used to request a destination floor
  *
- * @version Feb 06, 2021
+ * @version Feb 27, 2021
  */
 public class ElevatorButton {
     private final int floor;

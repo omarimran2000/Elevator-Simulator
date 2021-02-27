@@ -4,7 +4,7 @@ package FloorSubsystem;
  * The Floor Button class represents the buttons on
  * each floor used to request an elevator
  *
- * @version Feb 06, 2021
+ * @version Feb 27, 2021
  */
 public class FloorButton {
     private boolean on;
