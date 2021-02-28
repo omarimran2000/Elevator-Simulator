@@ -4,7 +4,7 @@ package FloorSubsystem;
  * The Floor Lamp class represents the lamps that
  * light up when a Floor Button is pressed
  *
- * @version Feb 06, 2021
+ * @version Feb 27, 2021
  */
 public class FloorLamp {
 

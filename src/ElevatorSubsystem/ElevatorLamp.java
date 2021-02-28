@@ -4,7 +4,7 @@ package ElevatorSubsystem;
  * The Elevator Lamp represents the
  * lamps that light up when an Elevator Button is pressed
  *
- * @version Feb 06, 2021
+ * @version Feb 27, 2021
  */
 public class ElevatorLamp {
     private final int elevatorNumber;

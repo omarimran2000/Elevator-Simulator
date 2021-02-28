@@ -14,6 +14,11 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class CommunicationTest {
 
+    /**
+     * Testing the communication between systems
+     * @throws ParseException
+     * @throws IOException
+     */
     @Test
     void CommsTest() throws ParseException, IOException {
         Scheduler scheduler = new Scheduler();

@@ -13,7 +13,7 @@ import static java.lang.Math.abs;
 /**
  * The Floor class represents a single floor in the building
  *
- * @version Feb 06, 2021
+ * @version Feb 27, 2021
  */
 public abstract class Floor implements Runnable {
 
@@ -83,14 +83,21 @@ public abstract class Floor implements Runnable {
         }
     }
 
-
+    /**
+     * @return the set of floors with people waiting to go up
+     */
     public Set<Integer> getWaitingPeopleUp() {
+        turnUpButtonOff();
         Set<Integer> waitingPeople = Set.copyOf(waitingPeopleUp);
         waitingPeopleUp.clear();
         return waitingPeople;
     }
 
+    /**
+     * @return the set of floors with people waiting to go down
+     */
     public Set<Integer> getWaitingPeopleDown() {
+        turnDownButtonOff();
         Set<Integer> waitingPeople = Set.copyOf(waitingPeopleDown);
         waitingPeopleDown.clear();
         return waitingPeople;
@@ -148,8 +155,6 @@ public abstract class Floor implements Runnable {
      * Abstract method for getting the up button
      */
     public abstract FloorButton getTop();
-
-
 }
 
 
@@ -165,7 +170,7 @@ class TopFloor extends Floor {
      */
     public TopFloor(Config config, int floorNumber, Scheduler scheduler, List<Event> schedule) {
         super(config, floorNumber, scheduler, schedule);
-        downButton = new FloorButton();
+        downButton = new FloorButton(floorNumber);
     }
 
     @Override
@@ -207,8 +212,6 @@ class TopFloor extends Floor {
     public FloorButton getTop() {
         return null;
     }
-
-
 }
 
 class BottomFloor extends Floor {
@@ -223,7 +226,7 @@ class BottomFloor extends Floor {
      */
     public BottomFloor(Config config, int floorNumber, Scheduler scheduler, List<Event> schedule) {
         super(config, floorNumber, scheduler, schedule);
-        upButton = new FloorButton();
+        upButton = new FloorButton(floorNumber);
     }
 
     /**
@@ -280,8 +283,8 @@ class MiddleFloor extends Floor {
      */
     public MiddleFloor(Config config, int floorNumber, Scheduler scheduler, List<Event> schedule) {
         super(config, floorNumber, scheduler, schedule);
-        upButton = new FloorButton();
-        downButton = new FloorButton();
+        upButton = new FloorButton(floorNumber);
+        downButton = new FloorButton(floorNumber);
     }
 
     /**
@@ -331,6 +334,4 @@ class MiddleFloor extends Floor {
     public FloorButton getTop() {
         return upButton;
     }
-
-
 }

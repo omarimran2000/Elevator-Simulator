@@ -15,6 +15,11 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class StateTest {
 
+    /**
+     * Testing the states
+     * @throws ParseException
+     * @throws IOException
+     */
     @Test
     void StateMethodsTest() throws ParseException, IOException, InterruptedException {
         Scheduler scheduler = new Scheduler();

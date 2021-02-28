@@ -15,7 +15,7 @@ import static FloorSubsystem.FloorSubsystem.generateFloors;
 /**
  * This is the main class that starts the threads
  *
- * @version Feb 06, 2021
+ * @version Feb 27, 2021
  */
 public class Main {
 
@@ -40,5 +40,4 @@ public class Main {
         }
         new Thread(scheduler, "Scheduler").start();
     }
-
 }
