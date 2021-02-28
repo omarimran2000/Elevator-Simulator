@@ -9,14 +9,17 @@ package FloorSubsystem;
 public class FloorButton {
     private boolean on;
     private final int floorNumber;
+    private final boolean isUp;
 
     /**
      * Constructor for a floor button
      *
      * @param floorNumber
+     * @param isUp
      */
-    public FloorButton(int floorNumber) {
+    public FloorButton(int floorNumber, boolean isUp) {
         this.floorNumber = floorNumber;
+        this.isUp = isUp;
         this.on = false;
     }
 
@@ -35,7 +38,9 @@ public class FloorButton {
      * @param on to turn it on
      */
     public void setOn(boolean on) {
-        System.out.println("The button on " + floorNumber + " is " + (on ? "on" : "off"));
-        this.on = on;
+        if (this.on != on) {
+            System.out.println("The " + (isUp ? "up" : "down") + " button on " + floorNumber + " is " + (on ? "on" : "off"));
+            this.on = on;
+        }
     }
 }
