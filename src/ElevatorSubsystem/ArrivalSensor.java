@@ -1,6 +1,6 @@
 package ElevatorSubsystem;
 
-import util.Config;
+import utill.Config;
 
 /**
  * The Arrival Sensor is a sensor in the Elevator
