@@ -41,7 +41,7 @@ public class Elevator implements Runnable {
         this.scheduler = scheduler;
         this.maxFloors = maxFloors;
         door = new Door();
-        arrivalSensor = new ArrivalSensor(this);
+        arrivalSensor = new ArrivalSensor(config, this);
         motor = new Motor();
         buttons = new HashMap<>();
         lamps = new HashMap<>();
@@ -65,31 +65,18 @@ public class Elevator implements Runnable {
         return currentFloorNumber;
     }
 
-    /**
-     * @return the configuration
-     */
-    public Config getConfig() {
-        return config;
-    }
-
-    /**
-     * @return
-     */
-    public Set<Integer> getDestinationPath() {
-        return destinationsInPath;
-    }
 
     /**
      * @return true if the motor direction is upwards, false for downwards
      */
-    public boolean getIsUp() {
+    public synchronized boolean getIsUp() {
         return motor.directionIsUp();
     }
 
     /**
      * @return true if the motor is moving
      */
-    public boolean getIsMoving() {
+    public synchronized boolean getIsMoving() {
         return motor.isMoving();
     }
 
@@ -107,7 +94,7 @@ public class Elevator implements Runnable {
      * @param isUp        The direction of travel (true = up, false = down)
      * @return the distance between the two floors
      */
-    public int distanceTheFloor(int floorNumber, boolean isUp) {
+    public synchronized int distanceTheFloor(int floorNumber, boolean isUp) {
         return state.handleDistanceTheFloor(floorNumber, isUp);
     }
 
@@ -184,10 +171,6 @@ public class Elevator implements Runnable {
         public ElevatorNotMoving() {
             System.out.println("Elevator State Changed to: Idle");
         }
-
-        /**
-         * Sets the elevator lamps
-         */
         @Override
         public void handleSetLamps() {
             throw new RuntimeException();
@@ -240,10 +223,6 @@ public class Elevator implements Runnable {
         public MovingState() {
             System.out.println("Elevator State Changed to: Moving");
         }
-
-        /**
-         * @return the previously lit elevator lamp
-         */
         abstract protected ElevatorLamp getPreviousLamp();
 
         /**

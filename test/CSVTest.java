@@ -2,7 +2,6 @@ import FloorSubsystem.FloorSubsystem;
 import SchedulerSubsystem.Event;
 import org.junit.jupiter.api.Test;
 import utill.Config;
-
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.text.ParseException;
@@ -23,7 +22,7 @@ class CSVTest {
      */
     @Test
     void readCSVTest() throws FileNotFoundException, ParseException {
-        List<Event> list = FloorSubsystem.readCSV(config, "test.csv");
+        List<Event> list = FloorSubsystem.readCSV(config, config.getProperty("csvFileName"));
         assertNotNull(list);
         System.out.print(list.get(0));
     }

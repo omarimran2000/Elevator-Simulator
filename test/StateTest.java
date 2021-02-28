@@ -21,7 +21,7 @@ class StateTest {
      * @throws IOException
      */
     @Test
-    void StateMethodsTest() throws ParseException, IOException {
+    void StateMethodsTest() throws ParseException, IOException, InterruptedException {
         Scheduler scheduler = new Scheduler();
         Config config = new Config();
 
@@ -35,8 +35,7 @@ class StateTest {
         assertEquals(4, elevator.distanceTheFloor(4, true)); //starts on floor 0 so expected is 4 instead of 3
 
         elevator.addDestination(3, true);
-        Object[] futureFloors = elevator.getDestinationPath().toArray();
-
-        assertEquals(3, futureFloors[0]); //The floor number on the queue is floor 3
+        Thread.sleep(20000);
+        assertEquals(3, elevator.getCurrentFloorNumber());
     }
 }
