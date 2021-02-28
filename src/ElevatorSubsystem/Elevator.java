@@ -66,18 +66,13 @@ public class Elevator implements Runnable {
     }
 
 
-    public synchronized boolean getIsUp(){
+    public synchronized boolean getIsUp() {
         return motor.directionIsUp();
     }
 
-    public synchronized boolean getIsMoving(){
+    public synchronized boolean getIsMoving() {
         return motor.isMoving();
     }
-    public Config getConfig(){
-        return config;
-
-    }
-
 
     /**
      * The run method
