@@ -2,7 +2,7 @@ import ElevatorSubsystem.Elevator;
 import FloorSubsystem.Floor;
 import SchedulerSubsystem.Scheduler;
 import org.junit.jupiter.api.Test;
-import util.Config;
+import utill.Config;
 
 import java.io.IOException;
 import java.text.ParseException;

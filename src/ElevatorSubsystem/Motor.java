@@ -29,16 +29,6 @@ public class Motor {
     }
 
     /**
-     * Set the motor to moving or not
-     *
-     * @param moving The state of the motor
-     */
-    public void setMoving(boolean moving) {
-        isMoving = moving;
-        System.out.println("The motor is " + (isMoving ? "" : "not ") + "running");
-    }
-
-    /**
      * @return true if the direction is up
      */
     public boolean directionIsUp() {
@@ -50,6 +40,16 @@ public class Motor {
      */
     public boolean isMoving() {
         return isMoving;
+    }
+
+    /**
+     * Set the motor to moving or not
+     *
+     * @param moving The state of the motor
+     */
+    public void setMoving(boolean moving) {
+        isMoving = moving;
+        System.out.println("The motor is " + (isMoving ? "" : "not ") + "running");
     }
 
 }

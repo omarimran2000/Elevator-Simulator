@@ -1,14 +1,11 @@
 import ElevatorSubsystem.Elevator;
 import FloorSubsystem.Floor;
-import FloorSubsystem.FloorSubsystem;
-import SchedulerSubsystem.Event;
 import SchedulerSubsystem.Scheduler;
 import org.junit.jupiter.api.Test;
-import util.Config;
+import utill.Config;
 
 import java.io.IOException;
 import java.text.ParseException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -25,7 +22,7 @@ class CommunicationTest {
         Map<Integer, Floor> floors = generateFloors(config, scheduler, config.getProperty("csvFileName"));
         scheduler.setFloors(floors);
 
-        Elevator elevator = new Elevator(config,scheduler,1, floors.size());
+        Elevator elevator = new Elevator(config, scheduler, 1, floors.size());
         scheduler.setElevators(List.of(elevator));
 
         assertTrue(floors.get(1).hasEvents());
