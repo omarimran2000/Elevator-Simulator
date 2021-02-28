@@ -171,6 +171,7 @@ public class Elevator implements Runnable {
         public ElevatorNotMoving() {
             System.out.println("Elevator State Changed to: Idle");
         }
+
         @Override
         public void handleSetLamps() {
             throw new RuntimeException();
@@ -223,6 +224,7 @@ public class Elevator implements Runnable {
         public MovingState() {
             System.out.println("Elevator State Changed to: Moving");
         }
+
         abstract protected ElevatorLamp getPreviousLamp();
 
         /**
@@ -252,15 +254,15 @@ public class Elevator implements Runnable {
          */
         @Override
         public void handleAtFloor() {
-
+            buttons.get(currentFloorNumber).setOn(false);
             handleSetLamps();
             System.out.println("Elevator stopped at floor " + currentFloorNumber);
             motor.setMoving(false);
             door.open();
-            String direction = (motor.directionIsUp() ? "Up" : "Down");
-            System.out.println(direction + " lamp on floor " + currentFloorNumber + " is off");
             destinationsInPath.remove(currentFloorNumber);
-            destinationsInPath.addAll(getWaitingPeople());
+            Set<Integer> destinations = getWaitingPeople();
+            destinations.forEach(destination -> buttons.get(destination).setOn(true));
+            destinationsInPath.addAll(destinations);
             try {
                 Thread.sleep(config.getIntProperty("waitTime"));
             } catch (InterruptedException e) {

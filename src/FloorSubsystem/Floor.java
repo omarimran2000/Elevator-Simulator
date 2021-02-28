@@ -87,6 +87,7 @@ public abstract class Floor implements Runnable {
      * @return the set of floors with people waiting to go up
      */
     public Set<Integer> getWaitingPeopleUp() {
+        turnUpButtonOff();
         Set<Integer> waitingPeople = Set.copyOf(waitingPeopleUp);
         waitingPeopleUp.clear();
         return waitingPeople;
@@ -96,6 +97,7 @@ public abstract class Floor implements Runnable {
      * @return the set of floors with people waiting to go down
      */
     public Set<Integer> getWaitingPeopleDown() {
+        turnDownButtonOff();
         Set<Integer> waitingPeople = Set.copyOf(waitingPeopleDown);
         waitingPeopleDown.clear();
         return waitingPeople;
@@ -168,7 +170,7 @@ class TopFloor extends Floor {
      */
     public TopFloor(Config config, int floorNumber, Scheduler scheduler, List<Event> schedule) {
         super(config, floorNumber, scheduler, schedule);
-        downButton = new FloorButton();
+        downButton = new FloorButton(floorNumber);
     }
 
     @Override
@@ -224,7 +226,7 @@ class BottomFloor extends Floor {
      */
     public BottomFloor(Config config, int floorNumber, Scheduler scheduler, List<Event> schedule) {
         super(config, floorNumber, scheduler, schedule);
-        upButton = new FloorButton();
+        upButton = new FloorButton(floorNumber);
     }
 
     /**
@@ -281,8 +283,8 @@ class MiddleFloor extends Floor {
      */
     public MiddleFloor(Config config, int floorNumber, Scheduler scheduler, List<Event> schedule) {
         super(config, floorNumber, scheduler, schedule);
-        upButton = new FloorButton();
-        downButton = new FloorButton();
+        upButton = new FloorButton(floorNumber);
+        downButton = new FloorButton(floorNumber);
     }
 
     /**
