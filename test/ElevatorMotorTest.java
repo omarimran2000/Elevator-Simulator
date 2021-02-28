@@ -1,8 +1,7 @@
 import ElevatorSubsystem.Motor;
 import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ElevatorMotorTest {
 
@@ -15,7 +14,7 @@ class ElevatorMotorTest {
         motor.setDirectionIsUp(false);
         assertFalse(motor.directionIsUp());
 
-        //Default setting for isMoving is False
+        //Default setting for isMoving is false
         assertFalse(motor.isMoving());
         motor.setMoving(true);
         assertTrue(motor.isMoving());
