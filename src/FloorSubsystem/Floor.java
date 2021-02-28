@@ -170,7 +170,7 @@ class TopFloor extends Floor {
      */
     public TopFloor(Config config, int floorNumber, Scheduler scheduler, List<Event> schedule) {
         super(config, floorNumber, scheduler, schedule);
-        downButton = new FloorButton(floorNumber);
+        downButton = new FloorButton(floorNumber, false);
     }
 
     @Override
@@ -226,7 +226,7 @@ class BottomFloor extends Floor {
      */
     public BottomFloor(Config config, int floorNumber, Scheduler scheduler, List<Event> schedule) {
         super(config, floorNumber, scheduler, schedule);
-        upButton = new FloorButton(floorNumber);
+        upButton = new FloorButton(floorNumber, true);
     }
 
     /**
@@ -283,8 +283,8 @@ class MiddleFloor extends Floor {
      */
     public MiddleFloor(Config config, int floorNumber, Scheduler scheduler, List<Event> schedule) {
         super(config, floorNumber, scheduler, schedule);
-        upButton = new FloorButton(floorNumber);
-        downButton = new FloorButton(floorNumber);
+        upButton = new FloorButton(floorNumber, true);
+        downButton = new FloorButton(floorNumber, false);
     }
 
     /**
