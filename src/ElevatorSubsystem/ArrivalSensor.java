@@ -37,42 +37,24 @@ public class ArrivalSensor implements Runnable {
         run = false;
     }
 
-    public long getSecondsToTravelBetweenTwoFloors(int distance) {
-        return (long) ((distance * config.getFloatProperty("distanceBetweenFloors")) / config.getFloatProperty("velocity"));
-    }
-
 
     @Override
     public void run() {
         run = true;
         while (run) {
             try {
-                Thread.sleep(1000);
+                Thread.sleep((long) (config.getFloatProperty("distanceBetweenFloors") / config.getFloatProperty("velocity") * 500));
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-
-            int nextFloor;
-            if (elevator.motor.directionIsUp()) {
-                nextFloor = elevator.currentFloorNumber + 1;
-
-            } else {
-                nextFloor = elevator.currentFloorNumber - 1;
-            }
-            int distance = elevator.distanceTheFloor(nextFloor, elevator.motor.directionIsUp());
-            long seconds = getSecondsToTravelBetweenTwoFloors(distance);
-            try {
-                Thread.sleep(seconds * 1000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-
             if (elevator.stopForNextFloor()) {
-
+                try {
+                    Thread.sleep((long) (config.getFloatProperty("distanceBetweenFloors") / config.getFloatProperty("velocity") * 500));
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
                 elevator.atFloor();
-
             } else {
-
                 elevator.passFloor();
             }
         }

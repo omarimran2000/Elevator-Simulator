@@ -65,6 +65,15 @@ public class Elevator implements Runnable {
         return currentFloorNumber;
     }
 
+
+    public synchronized boolean getIsUp() {
+        return motor.directionIsUp();
+    }
+
+    public synchronized boolean getIsMoving() {
+        return motor.isMoving();
+    }
+
     /**
      * The run method
      */
@@ -72,7 +81,7 @@ public class Elevator implements Runnable {
     public void run() {
     }
 
-    public int distanceTheFloor(int floorNumber, boolean isUp) {
+    public synchronized int distanceTheFloor(int floorNumber, boolean isUp) {
         return state.handleDistanceTheFloor(floorNumber, isUp);
     }
 
