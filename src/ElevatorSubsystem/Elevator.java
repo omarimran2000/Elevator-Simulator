@@ -41,7 +41,7 @@ public class Elevator implements Runnable {
         this.scheduler = scheduler;
         this.maxFloors = maxFloors;
         door = new Door();
-        arrivalSensor = new ArrivalSensor(this);
+        arrivalSensor = new ArrivalSensor(config, this);
         motor = new Motor();
         buttons = new HashMap<>();
         lamps = new HashMap<>();
@@ -63,10 +63,6 @@ public class Elevator implements Runnable {
      */
     public synchronized int getCurrentFloorNumber() {
         return currentFloorNumber;
-    }
-
-    public Config getConfig(){
-        return config;
     }
 
     /**
