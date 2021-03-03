@@ -1,4 +1,4 @@
-package SchedulerSubsystem;
+package model;
 
 import java.util.Date;
 

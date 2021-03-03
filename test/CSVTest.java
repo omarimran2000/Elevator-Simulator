@@ -1,5 +1,5 @@
 import FloorSubsystem.FloorSubsystem;
-import SchedulerSubsystem.Event;
+import model.Event;
 import org.junit.jupiter.api.Test;
 import utill.Config;
 import java.io.FileNotFoundException;

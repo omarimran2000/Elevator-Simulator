@@ -1,6 +1,6 @@
 package FloorSubsystem;
 
-import SchedulerSubsystem.Event;
+import model.Event;
 import SchedulerSubsystem.Scheduler;
 import utill.Config;
 
