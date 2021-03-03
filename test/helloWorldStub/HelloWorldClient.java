@@ -7,7 +7,7 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.util.List;
 
-public class HelloWorldClient extends StubClient {
+public class HelloWorldClient extends StubClient implements HelloWorldApi {
     private final InetAddress inetAddress;
     private final int port;
 

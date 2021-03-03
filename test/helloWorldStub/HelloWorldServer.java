@@ -10,7 +10,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class HelloWorldServer extends StubServer implements Runnable {
+public class HelloWorldServer extends StubServer implements Runnable, HelloWorldApi {
     private final String testStringInput1;
     private final String testStringInput2;
     private final String testStringOutput;
@@ -31,20 +31,20 @@ public class HelloWorldServer extends StubServer implements Runnable {
     }
 
 
-    private HelloWorld sendAndReceive(HelloWorld helloWorld) {
+    public HelloWorld sendAndReceive(HelloWorld helloWorld) {
         assertEquals(testStringInput1, helloWorld.getString());
         numCalls.incrementAndGet();
         return new HelloWorld(testStringOutput);
     }
 
-    private HelloWorld sendAndReceive(HelloWorld helloWorld1, HelloWorld helloWorld2) {
+    public HelloWorld sendAndReceive(HelloWorld helloWorld1, HelloWorld helloWorld2) {
         assertEquals(testStringInput1, helloWorld1.getString());
         assertEquals(testStringInput2, helloWorld2.getString());
         numCalls.incrementAndGet();
         return new HelloWorld(testStringOutput);
     }
 
-    private void sendAndReceiveAck(HelloWorld helloWorld) {
+    public void sendAndReceiveAck(HelloWorld helloWorld) {
         assertEquals(testStringInput1, helloWorld.getString());
         numCalls.incrementAndGet();
     }
