@@ -7,9 +7,9 @@ package FloorSubsystem;
  * @version Feb 27, 2021
  */
 public class FloorButton {
-    private boolean on;
     private final int floorNumber;
     private final boolean isUp;
+    private boolean on;
 
     /**
      * Constructor for a floor button
