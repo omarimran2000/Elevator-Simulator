@@ -4,6 +4,7 @@ import model.AckMessage;
 import stub.StubServer;
 import utill.Config;
 
+import java.io.IOException;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -50,12 +51,16 @@ public class HelloWorldServer extends StubServer implements Runnable {
 
     @Override
     public void run() {
-        receiveAsync(port, Map.of(
-                1, input -> sendAndReceive((HelloWorld) input.get(0)),
-                2, input -> sendAndReceive((HelloWorld) input.get(0), (HelloWorld) input.get(1)),
-                3, input -> {
-                    sendAndReceive((HelloWorld) input.get(0));
-                    return new AckMessage();
-                }));
+        try {
+            receiveAsync(port, Map.of(
+                    1, input -> sendAndReceive((HelloWorld) input.get(0)),
+                    2, input -> sendAndReceive((HelloWorld) input.get(0), (HelloWorld) input.get(1)),
+                    3, input -> {
+                        sendAndReceive((HelloWorld) input.get(0));
+                        return new AckMessage();
+                    }));
+        } catch (IOException | ClassNotFoundException e) {
+            e.printStackTrace();
+        }
     }
 }
