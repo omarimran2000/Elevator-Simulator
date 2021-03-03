@@ -8,7 +8,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class HelloWorldServer extends StubServer {
+public class HelloWorldServer extends StubServer implements Runnable {
     private final String testStringInput1;
     private final String testStringInput2;
     private final String testStringOutput;

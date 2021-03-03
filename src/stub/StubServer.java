@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
-public abstract class StubServer implements Runnable {
+public abstract class StubServer {
     protected final Config config;
 
     protected StubServer(Config config) {
