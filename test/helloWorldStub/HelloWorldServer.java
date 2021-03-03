@@ -1,5 +1,6 @@
 package helloWorldStub;
 
+import model.AckMessage;
 import stub.StubServer;
 import utill.Config;
 
@@ -28,6 +29,7 @@ public class HelloWorldServer extends StubServer implements Runnable {
         return numCalls;
     }
 
+
     private HelloWorld sendAndReceive(HelloWorld helloWorld) {
         assertEquals(testStringInput1, helloWorld.getString());
         numCalls.incrementAndGet();
@@ -41,11 +43,19 @@ public class HelloWorldServer extends StubServer implements Runnable {
         return new HelloWorld(testStringOutput);
     }
 
+    private void sendAndReceiveAck(HelloWorld helloWorld) {
+        assertEquals(testStringInput1, helloWorld.getString());
+        numCalls.incrementAndGet();
+    }
 
     @Override
     public void run() {
         receiveAsync(port, Map.of(
                 1, input -> sendAndReceive((HelloWorld) input.get(0)),
-                2, input -> sendAndReceive((HelloWorld) input.get(0), (HelloWorld) input.get(1))));
+                2, input -> sendAndReceive((HelloWorld) input.get(0), (HelloWorld) input.get(1)),
+                3, input -> {
+                    sendAndReceive((HelloWorld) input.get(0));
+                    return new AckMessage();
+                }));
     }
 }

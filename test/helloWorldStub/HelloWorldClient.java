@@ -24,4 +24,8 @@ public class HelloWorldClient extends StubClient {
     public HelloWorld sendAndReceive(HelloWorld helloWorld1, HelloWorld helloWorld2) throws IOException, ClassNotFoundException {
         return sendAndReceive(2, List.of(helloWorld1, helloWorld2), inetAddress, port);
     }
+
+    public void sendAndReceiveAck(HelloWorld helloWorld) throws IOException, ClassNotFoundException {
+        sendAndReceive(3, helloWorld, inetAddress, port);
+    }
 }
