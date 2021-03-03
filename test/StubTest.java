@@ -1,79 +1,57 @@
-import model.HelloWorld;
-import org.junit.jupiter.api.Assertions;
+import helloWorldStub.HelloWorld;
+import helloWorldStub.HelloWorldClient;
+import helloWorldStub.HelloWorldServer;
 import org.junit.jupiter.api.Test;
-import stub.HelloWorldClient;
 import utill.Config;
 
-import java.io.*;
+import java.io.IOException;
 import java.net.InetAddress;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.net.SocketTimeoutException;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class StubTest {
-    private static final String testStringInput = "Hello world in";
+    private static final String testStringInput1 = "Hello world in 1";
+    private static final String testStringInput2 = "Hello world in 2";
     private static final String testStringOutput = "Hello world out";
 
     @Test
-    void sendAndReceiveTest() throws IOException, ClassNotFoundException {
+    public void sendAndReceive() throws IOException, ClassNotFoundException {
+        int port = 8040;
         Config config = new Config();
-        AtomicInteger numCalls = new AtomicInteger();
 
-        HelloWorldClient helloWorldClient = new HelloWorldClient(config, InetAddress.getLocalHost(), 8040, responses);
+        HelloWorldServer helloWorldServer = new HelloWorldServer(config, port, testStringInput1, testStringInput2, testStringOutput);
+        Thread thread = new Thread(helloWorldServer);
+        thread.start();
 
-        helloWorldClient.receiveAsync((helloWorld) -> {
-            assertEquals(testStringInput, helloWorld.getString());
-            numCalls.getAndIncrement();
-            return new HelloWorld(testStringOutput);
-        });
+        HelloWorldClient helloWorldClient = new HelloWorldClient(config, InetAddress.getLocalHost(), port);
+        assertEquals(new HelloWorld(testStringOutput), helloWorldClient.sendAndReceive(new HelloWorld(testStringInput1)));
+        assertEquals(1, helloWorldServer.getNumCalls().get());
+        assertEquals(new HelloWorld(testStringOutput), helloWorldClient.sendAndReceive(new HelloWorld(testStringInput1), new HelloWorld(testStringInput2)));
+        assertEquals(2, helloWorldServer.getNumCalls().get());
 
-        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        ObjectOutputStream objectOutputStream = new ObjectOutputStream(byteArrayOutputStream);
-        objectOutputStream.writeObject(new HelloWorld(testStringInput));
-        objectOutputStream.flush();
-
-        byte[] helloWorld = helloWorldClient.send(byteArrayOutputStream.toByteArray());
-
-        ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(helloWorld);
-        ObjectInputStream objectInputStream = new ObjectInputStream(byteArrayInputStream);
-
-        assertEquals(new HelloWorld(testStringOutput), objectInputStream.readObject());
-
-        assertEquals(1, numCalls.get());
+        thread.interrupt();
     }
 
     @Test
-    void sendAsyncAndReceiveTest() throws IOException {
+    public void timeout() throws IOException {
+        int port = 8041;
         Config config = new Config();
-        AtomicInteger numCalls = new AtomicInteger();
 
-        HelloWorldClient helloWorldClient = new HelloWorldClient(config, InetAddress.getLocalHost(), 8041, responses);
-
-        helloWorldClient.receiveAsync((helloWorld) -> {
-            assertEquals(testStringInput, helloWorld.getString());
-            numCalls.getAndIncrement();
-            return new HelloWorld(testStringOutput);
-        });
-
-        helloWorldClient.sendAsync(new HelloWorld(testStringInput),
-                (helloWorld) -> {
-                    assertEquals(testStringOutput, helloWorld.getString());
-                    assertEquals(1, numCalls.get());
-                },
-                Assertions::fail);
-
+        HelloWorldClient helloWorldClient = new HelloWorldClient(config, InetAddress.getLocalHost(), port);
+        assertThrows(SocketTimeoutException.class, () -> helloWorldClient.sendAndReceive(new HelloWorld(testStringInput1)));
     }
 
     @Test
-    void timeout() throws IOException, InterruptedException {
+    public void interrupt() throws IOException, InterruptedException {
+        int port = 8041;
         Config config = new Config();
-        AtomicInteger numCalls = new AtomicInteger();
 
-        HelloWorldClient helloWorldClient = new HelloWorldClient(config, InetAddress.getLocalHost(), 8042, responses);
-
-        helloWorldClient.sendAsync(new HelloWorld(testStringInput), (helloWorld) -> fail(), numCalls::getAndIncrement);
-        Thread.sleep(config.getIntProperty("socketTimeout")* 2L);
-        assertEquals(1, numCalls.get());
+        HelloWorldServer helloWorldServer = new HelloWorldServer(config, port, testStringInput1, testStringInput2, testStringOutput);
+        Thread thread = new Thread(helloWorldServer);
+        thread.start();
+        thread.interrupt();
+        Thread.sleep(100);
+        assertFalse(thread.isAlive());
     }
 }

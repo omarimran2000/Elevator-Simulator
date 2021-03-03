@@ -1,7 +1,6 @@
 package stub;
 
 import model.StubRequestMessage;
-import model.StubResponseMessage;
 import utill.Config;
 
 import java.io.*;
@@ -23,19 +22,18 @@ public abstract class StubServer implements Runnable {
         ByteArrayInputStream byteArrayInputStream;
         ObjectInputStream objectInputStream;
         StubRequestMessage stubRequestMessage;
-        byte[] buff = new byte[config.getIntProperty("maxMessageSize")];
-        DatagramPacket datagramPacket = new DatagramPacket(buff, buff.length);
+        byte[] buff;
+        DatagramPacket datagramPacket;
         try (DatagramSocket datagramSocket = new DatagramSocket(port)) {
             while (!Thread.interrupted()) {
+                buff = new byte[config.getIntProperty("maxMessageSize")];
+                datagramPacket = new DatagramPacket(buff, buff.length);
                 datagramSocket.receive(datagramPacket);
                 byteArrayInputStream = new ByteArrayInputStream(buff);
                 objectInputStream = new ObjectInputStream(byteArrayInputStream);
                 stubRequestMessage = (StubRequestMessage) objectInputStream.readObject();
-                StubResponseMessage stubResponseMessage = new StubResponseMessage(
-                        stubRequestMessage.getFunctionNumber(),
-                        callbacks.get(stubRequestMessage.getFunctionNumber()).apply(stubRequestMessage.getArguments()));
                 ObjectOutputStream objectOutputStream = new ObjectOutputStream(byteArrayOutputStream);
-                objectOutputStream.writeObject(stubResponseMessage);
+                objectOutputStream.writeObject(callbacks.get(stubRequestMessage.getFunctionNumber()).apply(stubRequestMessage.getArguments()));
                 objectOutputStream.flush();
                 buff = byteArrayOutputStream.toByteArray();
                 datagramSocket.send(new DatagramPacket(buff, buff.length, datagramPacket.getAddress(), datagramPacket.getPort()));

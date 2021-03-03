@@ -1,4 +1,4 @@
-package model;
+package helloWorldStub;
 
 import java.io.Serializable;
 import java.util.Objects;
