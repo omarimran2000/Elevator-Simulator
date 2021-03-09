@@ -5,24 +5,27 @@ import stub.StubServer;
 import utill.Config;
 
 import java.io.IOException;
+import java.net.DatagramSocket;
+import java.net.SocketException;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class HelloWorldServer extends StubServer implements Runnable, HelloWorldApi {
+public class HelloWorldServer extends Thread implements Runnable, HelloWorldApi {
     private final String testStringInput1;
     private final String testStringInput2;
     private final String testStringOutput;
-    private final int port;
+    private final DatagramSocket socket;
     private final AtomicInteger numCalls;
+    private final Config config;
 
-    public HelloWorldServer(Config config, int port, String testStringInput1, String testStringInput2, String testStringOutput) {
-        super(config);
+    public HelloWorldServer(Config config, int port, String testStringInput1, String testStringInput2, String testStringOutput) throws SocketException {
         this.testStringInput1 = testStringInput1;
         this.testStringInput2 = testStringInput2;
         this.testStringOutput = testStringOutput;
-        this.port = port;
+        this.config = config;
+        socket = new DatagramSocket(port);
         numCalls = new AtomicInteger(0);
     }
 
@@ -52,14 +55,14 @@ public class HelloWorldServer extends StubServer implements Runnable, HelloWorld
     @Override
     public void run() {
         try {
-            receiveAsync(port, Map.of(
+            StubServer.receiveAsync(socket, config.getIntProperty("numHandlerThreads"), config.getIntProperty("maxMessageSize"), Map.of(
                     1, input -> sendAndReceive((HelloWorld) input.get(0)),
                     2, input -> sendAndReceive((HelloWorld) input.get(0), (HelloWorld) input.get(1)),
                     3, input -> {
                         sendAndReceive((HelloWorld) input.get(0));
                         return new AckMessage();
                     }));
-        } catch (IOException | ClassNotFoundException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
