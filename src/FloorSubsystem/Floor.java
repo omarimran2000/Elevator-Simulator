@@ -1,7 +1,7 @@
 package FloorSubsystem;
 
-import SchedulerSubsystem.Event;
 import SchedulerSubsystem.Scheduler;
+import model.Event;
 import utill.Config;
 
 import java.text.ParseException;

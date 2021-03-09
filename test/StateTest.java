@@ -17,6 +17,7 @@ class StateTest {
 
     /**
      * Testing the states
+     *
      * @throws ParseException
      * @throws IOException
      */

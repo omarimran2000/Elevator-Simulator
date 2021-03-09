@@ -16,6 +16,7 @@ class CommunicationTest {
 
     /**
      * Testing the communication between systems
+     *
      * @throws ParseException
      * @throws IOException
      */

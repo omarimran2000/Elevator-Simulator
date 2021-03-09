@@ -2,10 +2,10 @@ import FloorSubsystem.Floor;
 import SchedulerSubsystem.Scheduler;
 import org.junit.jupiter.api.Test;
 import utill.Config;
+
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.Map;
-
 
 import static FloorSubsystem.FloorSubsystem.generateFloors;
 import static org.junit.jupiter.api.Assertions.*;
@@ -20,7 +20,7 @@ class FloorsTest {
         Map<Integer, Floor> floors = generateFloors(config, scheduler, config.getProperty("csvFileName"));
 
         assertNotNull(floors);
-        assertEquals(5,floors.size());
+        assertEquals(5, floors.size());
 
         assertNull(floors.get(0).getBottom());
         assertNull(floors.get(4).getTop());
