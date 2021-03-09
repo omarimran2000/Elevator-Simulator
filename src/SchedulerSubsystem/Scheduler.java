@@ -1,6 +1,7 @@
 package SchedulerSubsystem;
 
 import ElevatorSubsystem.Elevator;
+import ElevatorSubsystem.ElevatorSubsystem;
 import FloorSubsystem.Floor;
 
 import java.util.*;
@@ -11,17 +12,17 @@ import java.util.*;
  * @version Feb 27, 2021
  */
 public class Scheduler implements Runnable {
-    private List<Elevator> elevators;
     private Map<Integer, Floor> floors;
+    private ElevatorSubsystem elevatorSubsystem;
 
     /**
      * Set the list of elevators
      *
-     * @param elevators The list of elevators
+     * @param elevatorSubsystem The elevator subsystem
      */
-    public void setElevators(List<Elevator> elevators) {
-        if (this.elevators == null) {
-            this.elevators = Collections.unmodifiableList(elevators);
+    public void setElevators(ElevatorSubsystem elevatorSubsystem) {
+        if (this.elevatorSubsystem == null) {
+            this.elevatorSubsystem = elevatorSubsystem;
         }
     }
 
@@ -38,10 +39,8 @@ public class Scheduler implements Runnable {
 
     public void handleFloorButton(int floorNumber, boolean isUp) {
         System.out.println("Scheduler: scheduling event for floor " + floorNumber);
-        elevators.stream()
-                .min(Comparator.comparing(elevator -> elevator.distanceTheFloor(floorNumber, isUp)))
-                .orElseThrow(NoSuchElementException::new)
-                .addDestination(floorNumber, isUp);
+        Elevator best = elevatorSubsystem.getBestElevator(floorNumber, isUp);
+        best.addDestination(floorNumber, isUp);
     }
 
 

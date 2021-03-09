@@ -1,4 +1,5 @@
 import ElevatorSubsystem.Elevator;
+import ElevatorSubsystem.ElevatorSubsystem;
 import FloorSubsystem.Floor;
 import SchedulerSubsystem.Scheduler;
 import utill.Config;
@@ -31,10 +32,10 @@ public class Main {
         try {
             Map<Integer, Floor> floors = generateFloors(config, scheduler, config.getProperty("csvFileName"));
             scheduler.setFloors(floors);
-            Elevator elevator = new Elevator(config, scheduler, 1, floors.keySet().stream().max(Comparator.comparingInt(k -> k)).orElseThrow());
-            scheduler.setElevators(List.of(elevator));
+            int maxFloor = config.getIntProperty("maxFloor");
+            ElevatorSubsystem elevatorSubsystem = new ElevatorSubsystem(config, scheduler, maxFloor);
+            scheduler.setElevators(elevatorSubsystem);
             floors.forEach((floorNumber, floor) -> new Thread(floor, "Floor " + floorNumber).start());
-            new Thread(elevator, "Elevator 1").start();
         } catch (FileNotFoundException | ParseException e) {
             e.printStackTrace();
         }

@@ -1,4 +1,5 @@
 import ElevatorSubsystem.Elevator;
+import ElevatorSubsystem.ElevatorSubsystem;
 import FloorSubsystem.Floor;
 import SchedulerSubsystem.Scheduler;
 import org.junit.jupiter.api.Test;
@@ -28,8 +29,11 @@ class CommunicationTest {
         Map<Integer, Floor> floors = generateFloors(config, scheduler, config.getProperty("csvFileName"));
         scheduler.setFloors(floors);
 
-        Elevator elevator = new Elevator(config, scheduler, 1, floors.size());
-        scheduler.setElevators(List.of(elevator));
+        int maxFloor = config.getIntProperty("maxFloor");
+        ElevatorSubsystem elevatorSubsystem = new ElevatorSubsystem(config,scheduler,maxFloor);
+        scheduler.setElevators(elevatorSubsystem);
+
+        Elevator elevator = elevatorSubsystem.getElevators().get(0);
 
         assertTrue(floors.get(1).hasEvents());
         assertFalse(floors.get(0).getTop().isOn());
