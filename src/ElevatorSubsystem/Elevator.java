@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Logger;
 
 import static java.lang.Math.abs;
 
@@ -29,6 +30,7 @@ public class Elevator implements Runnable {
     protected final int maxFloors;
     protected int currentFloorNumber;
     private State state;
+    private final Logger logger;
 
     /**
      * Constructor for Elevator
@@ -40,6 +42,7 @@ public class Elevator implements Runnable {
         this.config = config;
         this.scheduler = scheduler;
         this.maxFloors = maxFloors;
+        logger = Logger.getLogger(this.getClass().getName());
         door = new Door();
         arrivalSensor = new ArrivalSensor(config, this);
         motor = new Motor();
@@ -120,7 +123,7 @@ public class Elevator implements Runnable {
      */
     public synchronized void passFloor() {
         state.handleSetLamps();
-        System.out.println("Elevator passing floor " + currentFloorNumber);
+        logger.info("Elevator passing floor " + currentFloorNumber);
     }
 
     /**
@@ -169,7 +172,7 @@ public class Elevator implements Runnable {
      */
     class ElevatorNotMoving implements State {
         public ElevatorNotMoving() {
-            System.out.println("Elevator State Changed to: Idle");
+            logger.info("Elevator State Changed to: Idle");
         }
 
         @Override
@@ -222,7 +225,7 @@ public class Elevator implements Runnable {
      */
     abstract class MovingState implements State {
         public MovingState() {
-            System.out.println("Elevator State Changed to: Moving");
+            logger.info("Elevator State Changed to: Moving");
         }
 
         abstract protected ElevatorLamp getPreviousLamp();
@@ -256,7 +259,7 @@ public class Elevator implements Runnable {
         public void handleAtFloor() {
             buttons.get(currentFloorNumber).setOn(false);
             handleSetLamps();
-            System.out.println("Elevator stopped at floor " + currentFloorNumber);
+            logger.info("Elevator stopped at floor " + currentFloorNumber);
             motor.setMoving(false);
             door.open();
             destinationsInPath.remove(currentFloorNumber);

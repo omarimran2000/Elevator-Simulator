@@ -31,6 +31,21 @@ public abstract class StubClient {
      * sendAndReceive creates a StubRequestMessage then calls another version of sendAndReceive to send it and receive the response.
      *
      * @param functionNumber The number assigned to the function in order for the server to tell but function is being called.
+     * @param inetAddress    The IP address to send the stubRequestMessage to.
+     * @param port           The port to send the stubRequestMessage to.
+     * @param <T>            The type of the response must implement serializable.
+     * @return The object receive on the socket.
+     * @throws IOException            IOException is thrown if the server fails to send or receive to the port.
+     * @throws ClassNotFoundException ClassNotFoundException is thrown if serialization failed.
+     */
+    protected <T> T sendAndReceive(int functionNumber, InetAddress inetAddress, int port) throws IOException, ClassNotFoundException {
+        return sendAndReceive(new StubRequestMessage(functionNumber, List.of()), inetAddress, port);
+    }
+
+    /**
+     * sendAndReceive creates a StubRequestMessage then calls another version of sendAndReceive to send it and receive the response.
+     *
+     * @param functionNumber The number assigned to the function in order for the server to tell but function is being called.
      * @param argument       The argument for the function.
      * @param inetAddress    The IP address to send the stubRequestMessage to.
      * @param port           The port to send the stubRequestMessage to.
@@ -118,7 +133,7 @@ public abstract class StubClient {
      */
     protected byte[] sendAndReceive(DatagramSocket datagramSocket, byte[] data, InetAddress inetAddress, int port) throws IOException {
         //set socket to time
-        datagramSocket.setSoTimeout(config.getIntProperty("socketTimeout"));
+        datagramSocket.setSoTimeout(config.getIntProperty("timeout"));
 
         //response buff
         byte[] buff = new byte[config.getIntProperty("maxMessageSize")];
