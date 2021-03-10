@@ -66,4 +66,11 @@ public class HelloWorldServer extends Thread implements Runnable, HelloWorldApi 
             e.printStackTrace();
         }
     }
+
+    @Override
+    public void interrupt() {
+        super.interrupt();
+        // close socket to interrupt receive
+        socket.close();
+    }
 }
