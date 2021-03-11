@@ -22,7 +22,7 @@ public class Scheduler implements Runnable {
      */
     public void setElevators(ElevatorSubsystem elevatorSubsystem) {
         if (this.elevators == null) {
-            this.elevators =  Collections.unmodifiableList(elevatorSubsystem.getElevators());
+            this.elevators = Collections.unmodifiableList(elevatorSubsystem.getElevators());
         }
     }
 

@@ -9,11 +9,9 @@ import java.util.List;
 import java.util.NoSuchElementException;
 
 public class ElevatorSubsystem {
-    private final Config config;
     private final List<Elevator> elevators;
 
     public ElevatorSubsystem(Config config, Scheduler scheduler, int maxFloor) {
-        this.config = config;
         elevators = new ArrayList<>();
 
         for (int i = 0; i < config.getIntProperty("numElevators"); i++) {
@@ -25,11 +23,5 @@ public class ElevatorSubsystem {
 
     public List<Elevator> getElevators() {
         return elevators;
-    }
-
-    public Elevator getBestElevator(int floorNumber, boolean isUp) {
-        return elevators.stream()
-                .min(Comparator.comparing(elevator -> elevator.distanceTheFloor(floorNumber, isUp)))
-                .orElseThrow(NoSuchElementException::new);
     }
 }
