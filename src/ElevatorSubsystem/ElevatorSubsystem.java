@@ -11,12 +11,10 @@ import java.util.NoSuchElementException;
 public class ElevatorSubsystem {
     private final Config config;
     private final List<Elevator> elevators;
-    private final Scheduler scheduler;
 
     public ElevatorSubsystem(Config config, Scheduler scheduler, int maxFloor) {
         this.config = config;
         elevators = new ArrayList<>();
-        this.scheduler = scheduler;
 
         for (int i = 0; i < config.getIntProperty("numElevators"); i++) {
             Elevator tempElev = new Elevator(config, scheduler, i + 1, maxFloor);

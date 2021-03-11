@@ -13,7 +13,7 @@ import java.util.*;
  */
 public class Scheduler implements Runnable {
     private Map<Integer, Floor> floors;
-    private ElevatorSubsystem elevatorSubsystem;
+    private List<Elevator> elevators;
 
     /**
      * Set the list of elevators
@@ -21,8 +21,8 @@ public class Scheduler implements Runnable {
      * @param elevatorSubsystem The elevator subsystem
      */
     public void setElevators(ElevatorSubsystem elevatorSubsystem) {
-        if (this.elevatorSubsystem == null) {
-            this.elevatorSubsystem = elevatorSubsystem;
+        if (this.elevators == null) {
+            this.elevators =  Collections.unmodifiableList(elevatorSubsystem.getElevators());
         }
     }
 
@@ -39,8 +39,10 @@ public class Scheduler implements Runnable {
 
     public void handleFloorButton(int floorNumber, boolean isUp) {
         System.out.println("Scheduler: scheduling event for floor " + floorNumber);
-        Elevator best = elevatorSubsystem.getBestElevator(floorNumber, isUp);
-        best.addDestination(floorNumber, isUp);
+        elevators.stream()
+                .min(Comparator.comparing(elevator -> elevator.distanceTheFloor(floorNumber, isUp)))
+                .orElseThrow(NoSuchElementException::new)
+                .addDestination(floorNumber, isUp);
     }
 
 
