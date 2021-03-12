@@ -9,9 +9,9 @@ import java.util.logging.Logger;
  * @version Feb 27, 2021
  */
 public class Motor {
+    private final Logger logger;
     private boolean directionIsUp;
     private boolean isMoving;
-    private final Logger logger;
 
 
     /**

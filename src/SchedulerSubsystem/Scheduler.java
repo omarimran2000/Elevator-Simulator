@@ -1,9 +1,15 @@
 package SchedulerSubsystem;
 
+
 import ElevatorSubsystem.Elevator;
 import ElevatorSubsystem.ElevatorSubsystem;
 import FloorSubsystem.Floor;
+import ElevatorSubsystem.ElevatorApi;
+import FloorSubsystem.FloorApi;
 
+
+import java.io.IOException;
+import java.lang.reflect.UndeclaredThrowableException;
 import java.util.*;
 import java.util.logging.Logger;
 
@@ -12,10 +18,10 @@ import java.util.logging.Logger;
  *
  * @version Feb 27, 2021
  */
-public class Scheduler implements Runnable {
-    private Map<Integer, Floor> floors;
-    private List<Elevator> elevators;
+public class Scheduler implements Runnable, SchedulerApi {
     private final Logger logger;
+    private List<ElevatorApi> elevators;
+    private Map<Integer, FloorApi> floors;
 
     public Scheduler() {
         logger = Logger.getLogger(this.getClass().getName());
@@ -26,7 +32,7 @@ public class Scheduler implements Runnable {
      *
      * @param elevators The elevators
      */
-    public void setElevators(List<Elevator> elevators) {
+    public void setElevators(List<ElevatorApi> elevators) {
         if (this.elevators == null) {
             this.elevators = Collections.unmodifiableList(elevators);
         }
@@ -37,16 +43,22 @@ public class Scheduler implements Runnable {
      *
      * @param floors The map of floors in the system
      */
-    public void setFloors(Map<Integer, Floor> floors) {
+    public void setFloors(Map<Integer, FloorApi> floors) {
         if (this.floors == null) {
             this.floors = Collections.unmodifiableMap(floors);
         }
     }
 
-    public void handleFloorButton(int floorNumber, boolean isUp) {
+    public void handleFloorButton(int floorNumber, boolean isUp) throws IOException, ClassNotFoundException {
         logger.info("Scheduler: scheduling event for floor " + floorNumber);
         elevators.stream()
-                .min(Comparator.comparing(elevator -> elevator.distanceTheFloor(floorNumber, isUp)))
+                .min(Comparator.comparing(elevator -> {
+                    try {
+                        return elevator.distanceTheFloor(floorNumber, isUp);
+                    } catch (IOException | ClassNotFoundException e) {
+                        throw new UndeclaredThrowableException(e);
+                    }
+                }))
                 .orElseThrow(NoSuchElementException::new)
                 .addDestination(floorNumber, isUp);
     }
@@ -59,11 +71,11 @@ public class Scheduler implements Runnable {
     public void run() {
     }
 
-    public Set<Integer> getWaitingPeopleUp(int floorNumber) {
+    public Set<Integer> getWaitingPeopleUp(int floorNumber) throws IOException, ClassNotFoundException {
         return floors.get(floorNumber).getWaitingPeopleUp();
     }
 
-    public Set<Integer> getWaitingPeopleDown(int floorNumber) {
+    public Set<Integer> getWaitingPeopleDown(int floorNumber) throws IOException, ClassNotFoundException {
         return floors.get(floorNumber).getWaitingPeopleDown();
     }
 }
