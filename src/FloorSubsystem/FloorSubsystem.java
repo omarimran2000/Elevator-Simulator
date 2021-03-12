@@ -1,6 +1,6 @@
 package FloorSubsystem;
 
-import SchedulerSubsystem.Scheduler;
+import SchedulerSubsystem.SchedulerApi;
 import model.Event;
 import utill.Config;
 
@@ -24,7 +24,7 @@ public class FloorSubsystem {
      * @param schedule  the list of events
      * @return The map of the floors
      */
-    public static Map<Integer, Floor> generateFloors(Config config, Scheduler scheduler, List<Event> schedule) {
+    public static Map<Integer, Floor> generateFloors(Config config, SchedulerApi scheduler, List<Event> schedule) {
         Map<Integer, Floor> floors = new HashMap<>();
 
         Map<Integer, List<Event>> schedule_by_floor = schedule.stream().collect(groupingBy(Event::getFloorNumber));
@@ -60,7 +60,7 @@ public class FloorSubsystem {
      * @throws FileNotFoundException
      * @throws ParseException
      */
-    public static Map<Integer, Floor> generateFloors(Config config, Scheduler scheduler, String schedule_filename) throws FileNotFoundException, ParseException {
+    public static Map<Integer, Floor> generateFloors(Config config, SchedulerApi scheduler, String schedule_filename) throws FileNotFoundException, ParseException {
         return generateFloors(config, scheduler, FloorSubsystem.readCSV(config, schedule_filename));
     }
 

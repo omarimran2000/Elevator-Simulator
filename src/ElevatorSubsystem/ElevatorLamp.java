@@ -11,9 +11,8 @@ import java.util.logging.Logger;
 public class ElevatorLamp {
     private final int elevatorNumber;
     private final int floorNumber;
-    private boolean isLit;
     private final Logger logger;
-
+    private boolean isLit;
 
     /**
      * Constructor for ElevatorLamp

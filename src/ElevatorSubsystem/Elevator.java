@@ -1,8 +1,9 @@
 package ElevatorSubsystem;
 
-import SchedulerSubsystem.Scheduler;
+import SchedulerSubsystem.SchedulerApi;
 import utill.Config;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -16,9 +17,9 @@ import static java.lang.Math.abs;
  *
  * @version Feb 27, 2021
  */
-public class Elevator implements Runnable {
+public class Elevator implements Runnable, ElevatorApi {
 
-    protected final Scheduler scheduler;
+    protected final SchedulerApi scheduler;
     protected final Config config;
     protected final Door door;
     protected final ArrivalSensor arrivalSensor;
@@ -29,9 +30,9 @@ public class Elevator implements Runnable {
     protected final Set<Integer> destinationsOutOfPath;
     protected final int elevatorNumber;
     protected final int maxFloors;
+    private final Logger logger;
     protected int currentFloorNumber;
     private State state;
-    private final Logger logger;
 
     /**
      * Constructor for Elevator
@@ -39,7 +40,7 @@ public class Elevator implements Runnable {
      * @param config
      * @param scheduler The system scheduler
      */
-    public Elevator(Config config, Scheduler scheduler, int elevatorNumber, int maxFloors) {
+    public Elevator(Config config, SchedulerApi scheduler, int elevatorNumber, int maxFloors) {
         this.config = config;
         this.scheduler = scheduler;
         this.maxFloors = maxFloors;
@@ -132,7 +133,11 @@ public class Elevator implements Runnable {
      * Actions for when the elevator stops at a floor
      */
     public synchronized void atFloor() {
-        state.handleAtFloor();
+        try {
+            state.handleAtFloor();
+        } catch (IOException | ClassNotFoundException e) {
+            e.printStackTrace();
+        }
     }
 
     interface State {
@@ -166,7 +171,7 @@ public class Elevator implements Runnable {
         /**
          * Actions for when the elevator stops at a floor
          */
-        void handleAtFloor();
+        void handleAtFloor() throws IOException, ClassNotFoundException;
     }
 
     /**
@@ -235,7 +240,7 @@ public class Elevator implements Runnable {
         /**
          * @return the set of floors with people waiting for an elevator moving in the specified direction
          */
-        abstract protected Set<Integer> getWaitingPeople();
+        abstract protected Set<Integer> getWaitingPeople() throws IOException, ClassNotFoundException;
 
         /**
          * Reverses the direction of travel
@@ -258,7 +263,7 @@ public class Elevator implements Runnable {
          * Actions for when the elevator stops at a floor
          */
         @Override
-        public void handleAtFloor() {
+        public void handleAtFloor() throws IOException, ClassNotFoundException {
             buttons.get(currentFloorNumber).setOn(false);
             handleSetLamps();
             logger.info("Elevator " + elevatorNumber + " stopped at floor " + currentFloorNumber);
@@ -355,7 +360,7 @@ public class Elevator implements Runnable {
          * @return the set of floors with people waiting for an elevator moving upwards
          */
         @Override
-        protected Set<Integer> getWaitingPeople() {
+        protected Set<Integer> getWaitingPeople() throws IOException, ClassNotFoundException {
             return scheduler.getWaitingPeopleUp(currentFloorNumber);
         }
 
@@ -426,7 +431,7 @@ public class Elevator implements Runnable {
          * @return the set of floors with people waiting for an elevator moving downwards
          */
         @Override
-        protected Set<Integer> getWaitingPeople() {
+        protected Set<Integer> getWaitingPeople() throws IOException, ClassNotFoundException {
             return scheduler.getWaitingPeopleDown(currentFloorNumber);
         }
 

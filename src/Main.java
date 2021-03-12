@@ -10,6 +10,7 @@ import java.text.ParseException;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import static FloorSubsystem.FloorSubsystem.generateFloors;
 import static ElevatorSubsystem.ElevatorSubsystem.generateElevators;
@@ -32,6 +33,7 @@ public class Main {
         Scheduler scheduler = new Scheduler();
         try {
             Map<Integer, Floor> floors = generateFloors(config, scheduler, config.getProperty("csvFileName"));
+          
             scheduler.setFloors(floors);
             int maxFloor = config.getIntProperty("maxFloor");
             List<Elevator> elevators = ElevatorSubsystem.generateElevators(config, scheduler, maxFloor);
