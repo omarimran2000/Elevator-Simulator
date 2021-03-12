@@ -8,6 +8,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -34,8 +35,7 @@ public class Main {
             Map<Integer, Floor> floors = generateFloors(config, scheduler, config.getProperty("csvFileName"));
 
             scheduler.setFloors(floors.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue)));
-            int maxFloor = config.getIntProperty("maxFloor");
-            List<Elevator> elevators = ElevatorSubsystem.generateElevators(config, scheduler, maxFloor);
+            List<Elevator> elevators = ElevatorSubsystem.generateElevators(config, scheduler, Collections.max(floors.keySet()));
             scheduler.setElevators(new ArrayList<>(elevators));
             floors.forEach((floorNumber, floor) -> new Thread(floor, "Floor " + floorNumber).start());
         } catch (FileNotFoundException | ParseException e) {
