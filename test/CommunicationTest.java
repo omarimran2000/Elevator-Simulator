@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.text.ParseException;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import static FloorSubsystem.FloorSubsystem.generateFloors;
 import static org.junit.jupiter.api.Assertions.*;
@@ -26,7 +27,7 @@ class CommunicationTest {
         Config config = new Config();
 
         Map<Integer, Floor> floors = generateFloors(config, scheduler, config.getProperty("csvFileName"));
-        scheduler.setFloors(floors);
+        scheduler.setFloors(floors.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue)));
 
         Elevator elevator = new Elevator(config, scheduler, 1, floors.size());
         scheduler.setElevators(List.of(elevator));
