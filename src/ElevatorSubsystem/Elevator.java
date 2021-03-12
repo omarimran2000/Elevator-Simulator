@@ -28,6 +28,7 @@ public class Elevator implements Runnable, ElevatorApi {
     protected final Map<Integer, ElevatorLamp> lamps;
     protected final Set<Integer> destinationsInPath;
     protected final Set<Integer> destinationsOutOfPath;
+    protected final int elevatorNumber;
     protected final int maxFloors;
     private final Logger logger;
     protected int currentFloorNumber;
@@ -43,6 +44,7 @@ public class Elevator implements Runnable, ElevatorApi {
         this.config = config;
         this.scheduler = scheduler;
         this.maxFloors = maxFloors;
+        this.elevatorNumber = elevatorNumber;
         logger = Logger.getLogger(this.getClass().getName());
         door = new Door();
         arrivalSensor = new ArrivalSensor(config, this);
@@ -124,7 +126,7 @@ public class Elevator implements Runnable, ElevatorApi {
      */
     public synchronized void passFloor() {
         state.handleSetLamps();
-        logger.info("Elevator passing floor " + currentFloorNumber);
+        logger.info("Elevator " + elevatorNumber + " passing floor " + currentFloorNumber);
     }
 
     /**
@@ -177,7 +179,7 @@ public class Elevator implements Runnable, ElevatorApi {
      */
     class ElevatorNotMoving implements State {
         public ElevatorNotMoving() {
-            logger.info("Elevator State Changed to: Idle");
+            logger.info("Elevator " + elevatorNumber + " State Changed to: Idle");
         }
 
         @Override
@@ -230,7 +232,7 @@ public class Elevator implements Runnable, ElevatorApi {
      */
     abstract class MovingState implements State {
         public MovingState() {
-            logger.info("Elevator State Changed to: Moving");
+            logger.info("Elevator " + elevatorNumber + " State Changed to: Moving");
         }
 
         abstract protected ElevatorLamp getPreviousLamp();
@@ -264,7 +266,7 @@ public class Elevator implements Runnable, ElevatorApi {
         public void handleAtFloor() throws IOException, ClassNotFoundException {
             buttons.get(currentFloorNumber).setOn(false);
             handleSetLamps();
-            logger.info("Elevator stopped at floor " + currentFloorNumber);
+            logger.info("Elevator " + elevatorNumber + " stopped at floor " + currentFloorNumber);
             motor.setMoving(false);
             door.open();
             destinationsInPath.remove(currentFloorNumber);

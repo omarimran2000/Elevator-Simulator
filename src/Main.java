@@ -1,4 +1,5 @@
 import ElevatorSubsystem.Elevator;
+import ElevatorSubsystem.ElevatorSubsystem;
 import FloorSubsystem.Floor;
 import SchedulerSubsystem.Scheduler;
 import utill.Config;
@@ -6,7 +7,8 @@ import utill.Config;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.text.ParseException;
-import java.util.Comparator;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -31,11 +33,11 @@ public class Main {
         Scheduler scheduler = new Scheduler();
         try {
             Map<Integer, Floor> floors = generateFloors(config, scheduler, config.getProperty("csvFileName"));
+
             scheduler.setFloors(floors.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue)));
-            Elevator elevator = new Elevator(config, scheduler, 1, floors.keySet().stream().max(Comparator.comparingInt(k -> k)).orElseThrow());
-            scheduler.setElevators(List.of(elevator));
+            List<Elevator> elevators = ElevatorSubsystem.generateElevators(config, scheduler, Collections.max(floors.keySet()));
+            scheduler.setElevators(new ArrayList<>(elevators));
             floors.forEach((floorNumber, floor) -> new Thread(floor, "Floor " + floorNumber).start());
-            new Thread(elevator, "Elevator 1").start();
         } catch (FileNotFoundException | ParseException e) {
             e.printStackTrace();
         }
