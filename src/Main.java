@@ -33,7 +33,7 @@ public class Main {
         Scheduler scheduler = new Scheduler();
         try {
             Map<Integer, Floor> floors = generateFloors(config, scheduler, config.getProperty("csvFileName"));
-          
+
             scheduler.setFloors(floors);
             int maxFloor = config.getIntProperty("maxFloor");
             List<Elevator> elevators = ElevatorSubsystem.generateElevators(config, scheduler, maxFloor);
