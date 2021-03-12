@@ -1,5 +1,7 @@
 package ElevatorSubsystem;
 
+import java.util.logging.Logger;
+
 /**
  * The Elevator Lamp represents the
  * lamps that light up when an Elevator Button is pressed
@@ -9,8 +11,8 @@ package ElevatorSubsystem;
 public class ElevatorLamp {
     private final int elevatorNumber;
     private final int floorNumber;
+    private final Logger logger;
     private boolean isLit;
-
 
     /**
      * Constructor for ElevatorLamp
@@ -21,6 +23,7 @@ public class ElevatorLamp {
     public ElevatorLamp(int elevatorNumber, int floorNumber) {
         this.elevatorNumber = elevatorNumber;
         this.floorNumber = floorNumber;
+        logger = Logger.getLogger(this.getClass().getName());
         isLit = false;
     }
 
@@ -31,7 +34,7 @@ public class ElevatorLamp {
      */
     public void setLamp(boolean lit) {
         isLit = lit;
-        System.out.println("Elevator " + elevatorNumber + " floor " + floorNumber + " lamp is now " + (isLit ? "on" : "off"));
+        logger.info("Elevator " + elevatorNumber + " floor " + floorNumber + " lamp is now " + (isLit ? "on" : "off"));
     }
 
     /**

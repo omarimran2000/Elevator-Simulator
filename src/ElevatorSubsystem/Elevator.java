@@ -1,12 +1,14 @@
 package ElevatorSubsystem;
 
-import SchedulerSubsystem.Scheduler;
+import SchedulerSubsystem.SchedulerApi;
 import utill.Config;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Logger;
 
 import static java.lang.Math.abs;
 
@@ -15,9 +17,9 @@ import static java.lang.Math.abs;
  *
  * @version Feb 27, 2021
  */
-public class Elevator implements Runnable {
+public class Elevator implements Runnable, ElevatorApi {
 
-    protected final Scheduler scheduler;
+    protected final SchedulerApi scheduler;
     protected final Config config;
     protected final Door door;
     protected final ArrivalSensor arrivalSensor;
@@ -26,7 +28,9 @@ public class Elevator implements Runnable {
     protected final Map<Integer, ElevatorLamp> lamps;
     protected final Set<Integer> destinationsInPath;
     protected final Set<Integer> destinationsOutOfPath;
+    protected final int elevatorNumber;
     protected final int maxFloors;
+    private final Logger logger;
     protected int currentFloorNumber;
     private State state;
 
@@ -36,10 +40,12 @@ public class Elevator implements Runnable {
      * @param config
      * @param scheduler The system scheduler
      */
-    public Elevator(Config config, Scheduler scheduler, int elevatorNumber, int maxFloors) {
+    public Elevator(Config config, SchedulerApi scheduler, int elevatorNumber, int maxFloors) {
         this.config = config;
         this.scheduler = scheduler;
         this.maxFloors = maxFloors;
+        this.elevatorNumber = elevatorNumber;
+        logger = Logger.getLogger(this.getClass().getName());
         door = new Door();
         arrivalSensor = new ArrivalSensor(config, this);
         motor = new Motor();
@@ -120,14 +126,18 @@ public class Elevator implements Runnable {
      */
     public synchronized void passFloor() {
         state.handleSetLamps();
-        System.out.println("Elevator passing floor " + currentFloorNumber);
+        logger.info("Elevator " + elevatorNumber + " passing floor " + currentFloorNumber);
     }
 
     /**
      * Actions for when the elevator stops at a floor
      */
     public synchronized void atFloor() {
-        state.handleAtFloor();
+        try {
+            state.handleAtFloor();
+        } catch (IOException | ClassNotFoundException e) {
+            e.printStackTrace();
+        }
     }
 
     interface State {
@@ -161,7 +171,7 @@ public class Elevator implements Runnable {
         /**
          * Actions for when the elevator stops at a floor
          */
-        void handleAtFloor();
+        void handleAtFloor() throws IOException, ClassNotFoundException;
     }
 
     /**
@@ -169,7 +179,7 @@ public class Elevator implements Runnable {
      */
     class ElevatorNotMoving implements State {
         public ElevatorNotMoving() {
-            System.out.println("Elevator State Changed to: Idle");
+            logger.info("Elevator " + elevatorNumber + " State Changed to: Idle");
         }
 
         @Override
@@ -222,7 +232,7 @@ public class Elevator implements Runnable {
      */
     abstract class MovingState implements State {
         public MovingState() {
-            System.out.println("Elevator State Changed to: Moving");
+            logger.info("Elevator " + elevatorNumber + " State Changed to: Moving");
         }
 
         abstract protected ElevatorLamp getPreviousLamp();
@@ -230,7 +240,7 @@ public class Elevator implements Runnable {
         /**
          * @return the set of floors with people waiting for an elevator moving in the specified direction
          */
-        abstract protected Set<Integer> getWaitingPeople();
+        abstract protected Set<Integer> getWaitingPeople() throws IOException, ClassNotFoundException;
 
         /**
          * Reverses the direction of travel
@@ -253,10 +263,10 @@ public class Elevator implements Runnable {
          * Actions for when the elevator stops at a floor
          */
         @Override
-        public void handleAtFloor() {
+        public void handleAtFloor() throws IOException, ClassNotFoundException {
             buttons.get(currentFloorNumber).setOn(false);
             handleSetLamps();
-            System.out.println("Elevator stopped at floor " + currentFloorNumber);
+            logger.info("Elevator " + elevatorNumber + " stopped at floor " + currentFloorNumber);
             motor.setMoving(false);
             door.open();
             destinationsInPath.remove(currentFloorNumber);
@@ -350,7 +360,7 @@ public class Elevator implements Runnable {
          * @return the set of floors with people waiting for an elevator moving upwards
          */
         @Override
-        protected Set<Integer> getWaitingPeople() {
+        protected Set<Integer> getWaitingPeople() throws IOException, ClassNotFoundException {
             return scheduler.getWaitingPeopleUp(currentFloorNumber);
         }
 
@@ -421,7 +431,7 @@ public class Elevator implements Runnable {
          * @return the set of floors with people waiting for an elevator moving downwards
          */
         @Override
-        protected Set<Integer> getWaitingPeople() {
+        protected Set<Integer> getWaitingPeople() throws IOException, ClassNotFoundException {
             return scheduler.getWaitingPeopleDown(currentFloorNumber);
         }
 

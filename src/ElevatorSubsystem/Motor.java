@@ -1,5 +1,7 @@
 package ElevatorSubsystem;
 
+import java.util.logging.Logger;
+
 /**
  * The Motor class represents
  * the motors that move the elevators
@@ -7,14 +9,17 @@ package ElevatorSubsystem;
  * @version Feb 27, 2021
  */
 public class Motor {
+    private final Logger logger;
     private boolean directionIsUp;
     private boolean isMoving;
+
 
     /**
      * Constructor for Motor
      */
     public Motor() {
-        this.directionIsUp = true;
+        logger = Logger.getLogger(this.getClass().getName());
+        directionIsUp = true;
         isMoving = false;
     }
 
@@ -24,7 +29,7 @@ public class Motor {
      * @param directionIsUp The direction - true for up, false for down
      */
     public void setDirectionIsUp(boolean directionIsUp) {
-        System.out.println("The motor direction is " + (directionIsUp ? "up" : "down"));
+        logger.info("The motor direction is " + (directionIsUp ? "up" : "down"));
         this.directionIsUp = directionIsUp;
     }
 
@@ -49,7 +54,7 @@ public class Motor {
      */
     public void setMoving(boolean moving) {
         isMoving = moving;
-        System.out.println("The motor is " + (isMoving ? "" : "not ") + "running");
+        logger.info("The motor is " + (isMoving ? "" : "not ") + "running");
     }
 
 }

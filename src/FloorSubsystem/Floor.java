@@ -1,9 +1,10 @@
 package FloorSubsystem;
 
-import SchedulerSubsystem.Scheduler;
+import SchedulerSubsystem.SchedulerApi;
 import model.Event;
 import utill.Config;
 
+import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -15,9 +16,9 @@ import static java.lang.Math.abs;
  *
  * @version Feb 27, 2021
  */
-public abstract class Floor implements Runnable {
+public abstract class Floor implements Runnable, FloorApi {
 
-    private final Scheduler scheduler;
+    private final SchedulerApi scheduler;
     private final PriorityQueue<Event> schedule;
     private final Set<Integer> waitingPeopleUp;
     private final Set<Integer> waitingPeopleDown;
@@ -34,7 +35,7 @@ public abstract class Floor implements Runnable {
      * @param scheduler
      * @param schedule    A list of events
      */
-    public Floor(Config config, int floorNumber, Scheduler scheduler, List<Event> schedule) {
+    public Floor(Config config, int floorNumber, SchedulerApi scheduler, List<Event> schedule) {
         this.floorNumber = floorNumber;
         this.scheduler = scheduler;
         this.schedule = new PriorityQueue<>();
@@ -72,7 +73,11 @@ public abstract class Floor implements Runnable {
                     turnDownButtonOn();
                     waitingPeopleDown.add(event.getCarButton());
                 }
-                scheduler.handleFloorButton(this.floorNumber, event.isFloorButtonIsUp());
+                try {
+                    scheduler.handleFloorButton(this.floorNumber, event.isFloorButtonIsUp());
+                } catch (IOException | ClassNotFoundException e) {
+                    e.printStackTrace();
+                }
             } else {
                 try {
                     Thread.sleep(schedule.peek().getTimeToEvent() - System.currentTimeMillis() + startTime);
@@ -168,7 +173,7 @@ class TopFloor extends Floor {
      * @param scheduler   The scheduler
      * @param schedule    The list of scheduled events
      */
-    public TopFloor(Config config, int floorNumber, Scheduler scheduler, List<Event> schedule) {
+    public TopFloor(Config config, int floorNumber, SchedulerApi scheduler, List<Event> schedule) {
         super(config, floorNumber, scheduler, schedule);
         downButton = new FloorButton(floorNumber, false);
     }
@@ -224,7 +229,7 @@ class BottomFloor extends Floor {
      * @param scheduler   The scheduler
      * @param schedule    The list of scheduled events
      */
-    public BottomFloor(Config config, int floorNumber, Scheduler scheduler, List<Event> schedule) {
+    public BottomFloor(Config config, int floorNumber, SchedulerApi scheduler, List<Event> schedule) {
         super(config, floorNumber, scheduler, schedule);
         upButton = new FloorButton(floorNumber, true);
     }
@@ -281,7 +286,7 @@ class MiddleFloor extends Floor {
      * @param scheduler   The scheduler
      * @param schedule    The list of scheduled events
      */
-    public MiddleFloor(Config config, int floorNumber, Scheduler scheduler, List<Event> schedule) {
+    public MiddleFloor(Config config, int floorNumber, SchedulerApi scheduler, List<Event> schedule) {
         super(config, floorNumber, scheduler, schedule);
         upButton = new FloorButton(floorNumber, true);
         downButton = new FloorButton(floorNumber, false);
