@@ -5,6 +5,7 @@ import ElevatorSubsystem.ElevatorSubsystem;
 import FloorSubsystem.Floor;
 
 import java.util.*;
+import java.util.logging.Logger;
 
 /**
  * The Scheduler class schedules the events
@@ -14,6 +15,11 @@ import java.util.*;
 public class Scheduler implements Runnable {
     private Map<Integer, Floor> floors;
     private List<Elevator> elevators;
+    private final Logger logger;
+
+    public Scheduler() {
+        logger = Logger.getLogger(this.getClass().getName());
+    }
 
     /**
      * Set the list of elevators
@@ -38,7 +44,7 @@ public class Scheduler implements Runnable {
     }
 
     public void handleFloorButton(int floorNumber, boolean isUp) {
-        System.out.println("Scheduler: scheduling event for floor " + floorNumber);
+        logger.info("Scheduler: scheduling event for floor " + floorNumber);
         elevators.stream()
                 .min(Comparator.comparing(elevator -> elevator.distanceTheFloor(floorNumber, isUp)))
                 .orElseThrow(NoSuchElementException::new)

@@ -15,7 +15,6 @@ public class ElevatorLamp {
     private final Logger logger;
 
 
-
     /**
      * Constructor for ElevatorLamp
      *
