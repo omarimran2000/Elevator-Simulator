@@ -7,6 +7,7 @@ import utill.Config;
 
 import java.io.IOException;
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -32,7 +33,7 @@ class CommunicationTest {
 
         int maxFloor = config.getIntProperty("maxFloor");
         List<Elevator> elevators = ElevatorSubsystem.generateElevators(config, scheduler, maxFloor);
-        scheduler.setElevators(elevators);
+        scheduler.setElevators(new ArrayList<>(elevators));
 
         Elevator elevator = elevators.get(0);
 

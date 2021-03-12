@@ -7,13 +7,12 @@ import utill.Config;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.text.ParseException;
-import java.util.Comparator;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 import static FloorSubsystem.FloorSubsystem.generateFloors;
-import static ElevatorSubsystem.ElevatorSubsystem.generateElevators;
 
 /**
  * This is the main class that starts the threads
@@ -34,10 +33,10 @@ public class Main {
         try {
             Map<Integer, Floor> floors = generateFloors(config, scheduler, config.getProperty("csvFileName"));
 
-            scheduler.setFloors(floors);
+            scheduler.setFloors(floors.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue)));
             int maxFloor = config.getIntProperty("maxFloor");
             List<Elevator> elevators = ElevatorSubsystem.generateElevators(config, scheduler, maxFloor);
-            scheduler.setElevators(elevators);
+            scheduler.setElevators(new ArrayList<>(elevators));
             floors.forEach((floorNumber, floor) -> new Thread(floor, "Floor " + floorNumber).start());
         } catch (FileNotFoundException | ParseException e) {
             e.printStackTrace();

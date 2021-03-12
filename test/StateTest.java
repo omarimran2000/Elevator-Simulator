@@ -7,6 +7,7 @@ import utill.Config;
 
 import java.io.IOException;
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -29,11 +30,11 @@ class StateTest {
         Config config = new Config();
 
         Map<Integer, Floor> floors = generateFloors(config, scheduler, config.getProperty("csvFileName"));
-        scheduler.setFloors(floors);
+        scheduler.setFloors(floors.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue)));
 
         int maxFloor = config.getIntProperty("maxFloor");
         List<Elevator> elevators = ElevatorSubsystem.generateElevators(config, scheduler, maxFloor);
-        scheduler.setElevators(elevators);
+        scheduler.setElevators(new ArrayList<>(elevators));
 
         Elevator elevator = elevators.get(0);
 
