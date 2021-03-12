@@ -1,5 +1,6 @@
 package SchedulerSubsystem;
 
+
 import ElevatorSubsystem.ElevatorApi;
 import FloorSubsystem.FloorApi;
 
@@ -25,7 +26,7 @@ public class Scheduler implements Runnable, SchedulerApi {
     /**
      * Set the list of elevators
      *
-     * @param elevators The list of elevators
+     * @param elevators The elevators
      */
     public void setElevators(List<ElevatorApi> elevators) {
         if (this.elevators == null) {
