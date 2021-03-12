@@ -26,8 +26,8 @@ public class StubTest {
         Config config = new Config();
 
         HelloWorldServer helloWorldServer = new HelloWorldServer(config, port, testStringInput1, testStringInput2, testStringOutput);
-        Thread thread = new Thread(helloWorldServer);
-        thread.start();
+        helloWorldServer.start();
+
 
         HelloWorldClient helloWorldClient = new HelloWorldClient(config, InetAddress.getLocalHost(), port);
         assertEquals(new HelloWorld(testStringOutput), helloWorldClient.sendAndReceive(new HelloWorld(testStringInput1)));
@@ -37,7 +37,7 @@ public class StubTest {
         helloWorldClient.sendAndReceiveAck(new HelloWorld(testStringInput1));
         assertEquals(3, helloWorldServer.getNumCalls().get());
 
-        thread.interrupt();
+        helloWorldServer.interrupt();
     }
 
     @Test
@@ -60,10 +60,9 @@ public class StubTest {
         Config config = new Config();
 
         HelloWorldServer helloWorldServer = new HelloWorldServer(config, port, testStringInput1, testStringInput2, testStringOutput);
-        Thread thread = new Thread(helloWorldServer);
-        thread.start();
-        thread.interrupt();
+        helloWorldServer.start();
+        helloWorldServer.interrupt();
         Thread.sleep(100);
-        assertFalse(thread.isAlive());
+        assertFalse(helloWorldServer.isAlive());
     }
 }
