@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 
 import static FloorSubsystem.FloorSubsystem.generateFloors;
+import static ElevatorSubsystem.ElevatorSubsystem.generateElevators;
 
 /**
  * This is the main class that starts the threads
@@ -33,8 +34,8 @@ public class Main {
             Map<Integer, Floor> floors = generateFloors(config, scheduler, config.getProperty("csvFileName"));
             scheduler.setFloors(floors);
             int maxFloor = config.getIntProperty("maxFloor");
-            ElevatorSubsystem elevatorSubsystem = new ElevatorSubsystem(config, scheduler, maxFloor);
-            scheduler.setElevators(elevatorSubsystem);
+            List<Elevator> elevators = ElevatorSubsystem.generateElevators(config, scheduler, maxFloor);
+            scheduler.setElevators(elevators);
             floors.forEach((floorNumber, floor) -> new Thread(floor, "Floor " + floorNumber).start());
         } catch (FileNotFoundException | ParseException e) {
             e.printStackTrace();

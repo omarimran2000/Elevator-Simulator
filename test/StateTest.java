@@ -31,10 +31,10 @@ class StateTest {
         scheduler.setFloors(floors);
 
         int maxFloor = config.getIntProperty("maxFloor");
-        ElevatorSubsystem elevatorSubsystem = new ElevatorSubsystem(config,scheduler,maxFloor);
-        scheduler.setElevators(elevatorSubsystem);
+        List<Elevator> elevators = ElevatorSubsystem.generateElevators(config, scheduler, maxFloor);
+        scheduler.setElevators(elevators);
 
-        Elevator elevator = elevatorSubsystem.getElevators().get(0);
+        Elevator elevator = elevators.get(0);
 
         assertTrue(elevator.getIsUp()); //Can only go up from base floor
         assertFalse(elevator.getIsMoving()); //Shouldn't be moving on instantiation

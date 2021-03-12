@@ -24,11 +24,11 @@ public class Scheduler implements Runnable {
     /**
      * Set the list of elevators
      *
-     * @param elevatorSubsystem The elevator subsystem
+     * @param elevators The elevators
      */
-    public void setElevators(ElevatorSubsystem elevatorSubsystem) {
+    public void setElevators(List<Elevator> elevators) {
         if (this.elevators == null) {
-            this.elevators = Collections.unmodifiableList(elevatorSubsystem.getElevators());
+            this.elevators = Collections.unmodifiableList(elevators);
         }
     }
 

@@ -30,10 +30,10 @@ class CommunicationTest {
         scheduler.setFloors(floors);
 
         int maxFloor = config.getIntProperty("maxFloor");
-        ElevatorSubsystem elevatorSubsystem = new ElevatorSubsystem(config,scheduler,maxFloor);
-        scheduler.setElevators(elevatorSubsystem);
+        List<Elevator> elevators = ElevatorSubsystem.generateElevators(config, scheduler, maxFloor);
+        scheduler.setElevators(elevators);
 
-        Elevator elevator = elevatorSubsystem.getElevators().get(0);
+        Elevator elevator = elevators.get(0);
 
         assertTrue(floors.get(1).hasEvents());
         assertFalse(floors.get(0).getTop().isOn());
