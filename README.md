@@ -2,7 +2,7 @@
 
 ## SYSC 3303 Project
 
-### Milestone 2  Group 1 L5
+### Milestone 3  Group 1 L5
 
 #### By: Omar Imran, Daniel Innes, Braxton Martin, Erica Oliver, Wintana Yosief
 
@@ -39,3 +39,10 @@ will be when it has no events so it is idle.
 
 In future project iterations, the scheduler will request an elevator from the elevator subsystem as it will contain
 multiple elevators to call from. This will be done using UDP as well.
+
+## Submitted Files 
+* ElevatorSubsystem Package: has all the files containing the ElevatorSubSystem 
+    * ArrivalSensor.java: represents the ArrivalSensor used to check if there is a request on the floor
+    * Door.java: represents the ElevatorDoor 
+    * Elevator.java: represents a single Elevator 
+    * 
