@@ -98,7 +98,11 @@ public class Elevator implements Runnable, ElevatorApi {
 
             StubServer.receiveAsync(socket, config.getIntProperty("numHandlerThreads"), config.getIntProperty("maxMessageSize"), Map.of(
                     1, input -> distanceTheFloor((int)input.get(0), (boolean) input.get(1)),
-                    2, input -> addDestination((int)input.get(0), (boolean) input.get(1))));
+                    2, input -> {
+                        addDestination((int) input.get(0), (boolean) input.get(1));
+                        return new AckMessage();
+                    }));
+
         } catch (IOException e) {
             e.printStackTrace();
         }

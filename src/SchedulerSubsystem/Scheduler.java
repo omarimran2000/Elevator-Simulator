@@ -26,13 +26,14 @@ public class Scheduler implements Runnable, SchedulerApi {
     private Map<Integer, FloorApi> floors;
     private DatagramSocket socket;
     private Config config;
-    int port;
 
 
-    public Scheduler(Config config, int port) throws SocketException {
+
+    public Scheduler(Config config) throws SocketException {
         logger = Logger.getLogger(this.getClass().getName());
-        socket = new DatagramSocket(port);
-        this.port = port;
+        this.config = config;
+        socket = new DatagramSocket(config.getIntProperty())
+
 
     }
 
