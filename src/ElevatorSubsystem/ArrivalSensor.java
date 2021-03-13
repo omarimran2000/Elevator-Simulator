@@ -52,7 +52,6 @@ public class ArrivalSensor extends Thread {
                     break;
                 }
                 elevator.atFloor();
-
             } else {
                 elevator.passFloor();
             }
