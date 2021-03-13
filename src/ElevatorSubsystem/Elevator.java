@@ -285,7 +285,7 @@ public class Elevator extends Thread implements ElevatorApi {
         @Override
         public void handleAddDestination(Destination destination) {
             if (arrivalSensor.isNotRunning()) {
-                new Thread(arrivalSensor).start();
+                arrivalSensor.start();
             }
             destinations.add(destination.getFloorNumber());
         }
