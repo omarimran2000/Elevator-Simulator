@@ -3,7 +3,6 @@ package SchedulerSubsystem;
 import model.SendSet;
 
 import java.io.IOException;
-import java.util.Set;
 
 public interface SchedulerApi {
     SendSet getWaitingPeopleUp(int floorNumber) throws IOException, ClassNotFoundException;

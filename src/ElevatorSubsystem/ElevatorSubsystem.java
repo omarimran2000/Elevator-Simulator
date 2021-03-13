@@ -8,7 +8,6 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.SocketException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 public class ElevatorSubsystem {
@@ -27,7 +26,7 @@ public class ElevatorSubsystem {
     public static void main(String[] args) throws IOException {
         InetAddress localhost = InetAddress.getLocalHost();
         Config config = new Config();
-        SchedulerApi schedulerApi = new SchedulerClient(config,localhost,config.getIntProperty("schedulerPort") );
+        SchedulerApi schedulerApi = new SchedulerClient(config, localhost, config.getIntProperty("schedulerPort"));
         ElevatorSubsystem.generateElevators(config, schedulerApi, config.getIntProperty("maxFloors"));
     }
 }

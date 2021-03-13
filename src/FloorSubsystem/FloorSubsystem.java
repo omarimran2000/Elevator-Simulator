@@ -9,7 +9,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -92,7 +91,7 @@ public class FloorSubsystem {
     public static void main(String[] args) throws IOException, ParseException {
         InetAddress localhost = InetAddress.getLocalHost();
         Config config = new Config();
-        SchedulerApi schedulerApi = new SchedulerClient(config,localhost,config.getIntProperty("schedulerPort") );
+        SchedulerApi schedulerApi = new SchedulerClient(config, localhost, config.getIntProperty("schedulerPort"));
         Map<Integer, Floor> floors = generateFloors(config, schedulerApi, config.getProperty("csvFileName"));
         floors.forEach((floorNumber, floor) -> new Thread(floor, "Floor " + floorNumber).start());
     }

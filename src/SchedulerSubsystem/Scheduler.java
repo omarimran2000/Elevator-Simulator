@@ -10,17 +10,13 @@ import stub.FloorClient;
 import stub.StubServer;
 import utill.Config;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
-import java.net.UnknownHostException;
-import java.text.ParseException;
 import java.util.*;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
 
 /**
  * The Scheduler class schedules the events
@@ -136,15 +132,14 @@ public class Scheduler extends Thread implements SchedulerApi {
         InetAddress localhost = InetAddress.getLocalHost();
         Config config = new Config();
         Scheduler scheduler = new Scheduler(config);
-        Map<Integer,FloorApi> floors = new HashMap<>();
-        for(int i=0;i<config.getIntProperty("maxFloors");i++)
-        {
-            floors.put(i,new FloorClient(config,localhost,config.getIntProperty("floorPort")));
+        Map<Integer, FloorApi> floors = new HashMap<>();
+        for (int i = 0; i < config.getIntProperty("maxFloors"); i++) {
+            floors.put(i, new FloorClient(config, localhost, config.getIntProperty("floorPort")));
         }
         scheduler.setFloors(floors);
         List<ElevatorApi> elevatorClients = new ArrayList<>();
         for (int i = 0; i < config.getIntProperty("numElevators"); i++) {
-            elevatorClients.add(new ElevatorClient(config, localhost, config.getIntProperty("elevatorPort") + i+1));
+            elevatorClients.add(new ElevatorClient(config, localhost, config.getIntProperty("elevatorPort") + i + 1));
         }
         scheduler.setElevators(elevatorClients);
 
