@@ -1,9 +1,11 @@
 package ElevatorSubsystem;
 
 import SchedulerSubsystem.SchedulerApi;
+import stub.StubServer;
 import utill.Config;
 
 import java.io.IOException;
+import java.net.DatagramSocket;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -33,6 +35,7 @@ public class Elevator implements Runnable, ElevatorApi {
     private final Logger logger;
     protected int currentFloorNumber;
     private State state;
+    private DatagramSocket socket;
 
     /**
      * Constructor for Elevator
@@ -441,6 +444,17 @@ public class Elevator implements Runnable, ElevatorApi {
         @Override
         protected void ChangeDirectionOfTravel() {
             state = new ElevatorMovingUp();
+        }
+
+        public void run(){
+            try {
+
+                StubServer.receiveAsync(socket, config.getIntProperty("numHandlerThreads"), config.getIntProperty("maxMessageSize"), Map.of(
+                        1, input -> distanceTheFloor(input.get(0), input.get(1)),
+                        2, input -> addDestination(input.get(0), input.get(1))));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 }

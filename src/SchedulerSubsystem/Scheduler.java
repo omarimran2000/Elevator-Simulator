@@ -2,11 +2,17 @@ package SchedulerSubsystem;
 
 
 import ElevatorSubsystem.ElevatorApi;
+import FloorSubsystem.Floor;
 import FloorSubsystem.FloorApi;
-
+import utill.Config;
+import stub.StubServer;
 import java.io.IOException;
 import java.lang.reflect.UndeclaredThrowableException;
+
+import java.net.DatagramSocket;
+import java.net.SocketException;
 import java.util.*;
+
 import java.util.logging.Logger;
 
 /**
@@ -18,9 +24,16 @@ public class Scheduler implements Runnable, SchedulerApi {
     private final Logger logger;
     private List<ElevatorApi> elevators;
     private Map<Integer, FloorApi> floors;
+    private DatagramSocket socket;
+    private Config config;
+    int port;
 
-    public Scheduler() {
+
+    public Scheduler(Config config, int port) throws SocketException {
         logger = Logger.getLogger(this.getClass().getName());
+        socket = new DatagramSocket(port);
+        this.port = port;
+
     }
 
     /**
@@ -65,6 +78,18 @@ public class Scheduler implements Runnable, SchedulerApi {
      */
     @Override
     public void run() {
+        try {
+            try {
+                StubServer.receiveAsync(socket, config.getIntProperty("numHandlerThreads"), config.getIntProperty("maxMessageSize"), Map.of(
+                        1, input -> getWaitingPeopleUp(input.get(0)),
+                        2, input -> getWaitingPeopleDown(input.get(0))));
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public Set<Integer> getWaitingPeopleUp(int floorNumber) throws IOException, ClassNotFoundException {

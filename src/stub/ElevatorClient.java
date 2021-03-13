@@ -7,7 +7,7 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.util.List;
 
-public class Elevator extends StubClient implements ElevatorApi {
+public class ElevatorClient extends StubClient implements ElevatorApi {
     private final InetAddress inetAddress;
     private final int port;
 
@@ -18,7 +18,7 @@ public class Elevator extends StubClient implements ElevatorApi {
      * @param inetAddress
      * @param port
      */
-    protected Elevator(Config config, InetAddress inetAddress, int port) {
+    protected ElevatorClient(Config config, InetAddress inetAddress, int port) {
         super(config);
         this.inetAddress = inetAddress;
         this.port = port;

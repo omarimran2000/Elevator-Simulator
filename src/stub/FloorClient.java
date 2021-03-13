@@ -7,7 +7,7 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.util.Set;
 
-public class Floor extends StubClient implements FloorApi {
+public class FloorClient extends StubClient implements FloorApi {
     private final InetAddress inetAddress;
     private final int port;
 
@@ -19,7 +19,7 @@ public class Floor extends StubClient implements FloorApi {
      * @param inetAddress
      * @param port
      */
-    protected Floor(Config config, InetAddress inetAddress, int port) {
+    protected FloorClient(Config config, InetAddress inetAddress, int port) {
         super(config);
         this.inetAddress = inetAddress;
         this.port = port;
