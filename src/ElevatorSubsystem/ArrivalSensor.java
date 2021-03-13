@@ -8,7 +8,7 @@ import utill.Config;
  *
  * @version Feb 27, 2021
  */
-public class ArrivalSensor implements Runnable {
+public class ArrivalSensor extends Thread {
     private final Elevator elevator;
     private final Config config;
     private boolean run;
@@ -24,7 +24,6 @@ public class ArrivalSensor implements Runnable {
     public ArrivalSensor(Config config, Elevator elevator) {
         this.config = config;
         this.elevator = elevator;
-        run = false;
     }
 
     /**
@@ -34,31 +33,23 @@ public class ArrivalSensor implements Runnable {
         return !run;
     }
 
-
-    /**
-     * Shuts down the elevator
-     */
-    public void shutDown() {
-        run = false;
-    }
-
     /**
      * The run method
      */
     @Override
     public void run() {
         run = true;
-        while (run) {
+        while (!Thread.interrupted()) {
             try {
                 Thread.sleep((long) (config.getFloatProperty("distanceBetweenFloors") / config.getFloatProperty("velocity") * 500));
             } catch (InterruptedException e) {
-                e.printStackTrace();
+                return;
             }
             if (elevator.stopForNextFloor()) {
                 try {
                     Thread.sleep((long) (config.getFloatProperty("distanceBetweenFloors") / config.getFloatProperty("velocity") * 500));
                 } catch (InterruptedException e) {
-                    e.printStackTrace();
+                    return;
                 }
                 elevator.atFloor();
 
@@ -66,5 +57,6 @@ public class ArrivalSensor implements Runnable {
                 elevator.passFloor();
             }
         }
+        run = false;
     }
 }

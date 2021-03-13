@@ -235,7 +235,7 @@ public class Elevator extends Thread implements ElevatorApi {
          */
         @Override
         public synchronized void handleAddDestination(Destination destination) {
-            new Thread(arrivalSensor).start();
+            arrivalSensor.start();
             destinations.add(destination.getFloorNumber());
             state = destination.getFloorNumber() > currentFloorNumber ? new ElevatorMovingUp() : new ElevatorMovingDown();
         }
@@ -325,7 +325,7 @@ public class Elevator extends Thread implements ElevatorApi {
             if (destinations.isEmpty()) {
                 destinations.addAll(scheduler.getWaitingPeople(currentFloorNumber).getFloors());
                 if (destinations.isEmpty()) {
-                    arrivalSensor.shutDown();
+                    arrivalSensor.interrupt();
                     state = new ElevatorNotMoving();
                 } else {
                     if (destinations.stream().anyMatch(floor -> floor < currentFloorNumber)) {
