@@ -32,9 +32,7 @@ public class Scheduler implements Runnable, SchedulerApi {
     public Scheduler(Config config) throws SocketException {
         logger = Logger.getLogger(this.getClass().getName());
         this.config = config;
-        socket = new DatagramSocket(config.getIntProperty())
-
-
+        socket = new DatagramSocket(config.getIntProperty("port"));
     }
 
     /**
