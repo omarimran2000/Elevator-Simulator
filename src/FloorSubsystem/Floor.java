@@ -119,7 +119,7 @@ public abstract class Floor extends Thread implements FloorApi {
      */
     public SendSet getWaitingPeopleUp() {
         turnUpButtonOff();
-        SendSet waitingPeople = (SendSet) Set.copyOf(waitingPeopleUp);
+        SendSet waitingPeople = new SendSet(waitingPeopleUp);
         waitingPeopleUp.clear();
         return waitingPeople;
     }
@@ -129,9 +129,9 @@ public abstract class Floor extends Thread implements FloorApi {
      */
     public SendSet getWaitingPeopleDown() {
         turnDownButtonOff();
-        Set<Integer> waitingPeople = Set.copyOf(waitingPeopleDown);
+        SendSet waitingPeople = new SendSet(waitingPeopleDown);
         waitingPeopleDown.clear();
-        return (SendSet) waitingPeople;
+        return waitingPeople;
     }
 
     public int getFloorNumber() {

@@ -1,6 +1,7 @@
 package model;
 
 import java.io.Serializable;
+import java.util.Collections;
 import java.util.Objects;
 import java.util.Set;
 
@@ -8,7 +9,7 @@ public class SendSet implements Serializable {
     private final Set<Integer> floors;
 
     public SendSet(Set<Integer> floors) {
-        this.floors = floors;
+        this.floors = Collections.unmodifiableSet(floors);
     }
 
     public Set<Integer> getFloors() {
