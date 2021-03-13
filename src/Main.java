@@ -30,7 +30,7 @@ public class Main {
      */
     public static void main(String[] args) throws IOException {
         Config config = new Config();
-        Scheduler scheduler = new Scheduler();
+        Scheduler scheduler = new Scheduler(config);
         try {
             Map<Integer, Floor> floors = generateFloors(config, scheduler, config.getProperty("csvFileName"));
 

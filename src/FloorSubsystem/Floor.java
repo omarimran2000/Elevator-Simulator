@@ -9,6 +9,7 @@ import utill.Config;
 
 import java.io.IOException;
 import java.net.DatagramSocket;
+import java.net.SocketException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -32,7 +33,7 @@ public abstract class Floor implements Runnable, FloorApi {
     private final int floorNumber;
     private final Queue<Integer> destinationFloorNumbers;
     private DatagramSocket socket;
-    private Config config;
+    private final Config config;
 
     /**
      * Constructor
@@ -49,7 +50,11 @@ public abstract class Floor implements Runnable, FloorApi {
         upLamp = new FloorLamp();
         downLamp = new FloorLamp();
         this.config = config;
-        socket = new DatagramSocket(config.getIntProperty("port"));
+        try {
+            socket = new DatagramSocket(config.getIntProperty("port"));
+        } catch (SocketException e) {
+            e.printStackTrace();
+        }
 
         destinationFloorNumbers = new LinkedList<>();
 

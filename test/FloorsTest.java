@@ -14,8 +14,9 @@ class FloorsTest {
 
     @Test
     void FloorsCreationTest() throws ParseException, IOException {
-        Scheduler scheduler = new Scheduler();
+
         Config config = new Config();
+        Scheduler scheduler = new Scheduler(config);
 
         Map<Integer, Floor> floors = generateFloors(config, scheduler, config.getProperty("csvFileName"));
 

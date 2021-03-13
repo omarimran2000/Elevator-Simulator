@@ -7,6 +7,7 @@ import model.AckMessage;
 import model.SendSet;
 import utill.Config;
 import stub.StubServer;
+
 import java.io.IOException;
 import java.lang.reflect.UndeclaredThrowableException;
 
@@ -25,9 +26,8 @@ public class Scheduler implements Runnable, SchedulerApi {
     private final Logger logger;
     private List<ElevatorApi> elevators;
     private Map<Integer, FloorApi> floors;
-    private DatagramSocket socket;
-    private Config config;
-
+    private final DatagramSocket socket;
+    private final Config config;
 
 
     public Scheduler(Config config) throws SocketException {
@@ -83,7 +83,7 @@ public class Scheduler implements Runnable, SchedulerApi {
                 StubServer.receiveAsync(socket, config.getIntProperty("numHandlerThreads"), config.getIntProperty("maxMessageSize"), Map.of(
                         1, input -> {
                             try {
-                                  return getWaitingPeopleUp((int)input.get(0));
+                                return getWaitingPeopleUp((int) input.get(0));
                             } catch (IOException | ClassNotFoundException e) {
                                 throw new UndeclaredThrowableException(e);
                             }

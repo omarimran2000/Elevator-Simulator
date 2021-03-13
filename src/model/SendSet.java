@@ -7,11 +7,11 @@ import java.util.Set;
 public class SendSet implements Serializable {
     private final Set<Integer> floors;
 
-    public SendSet(Set <Integer> floors){
+    public SendSet(Set<Integer> floors) {
         this.floors = floors;
     }
 
-    public Set<Integer> getFloors(){
+    public Set<Integer> getFloors() {
         return floors;
     }
 
@@ -25,15 +25,15 @@ public class SendSet implements Serializable {
     }
 
     @Override
-    public boolean equals(Object o){
-        if(this == o) return true;
-        if(o == null || getClass() != o.getClass()) return false;
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
         SendSet sendSet = (SendSet) o;
         return Objects.equals(floors, sendSet.floors);
     }
 
     @Override
-    public int hashCode(){
+    public int hashCode() {
         return Objects.hash(floors);
     }
 }

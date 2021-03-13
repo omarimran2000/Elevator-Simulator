@@ -99,7 +99,7 @@ public class Elevator implements Runnable, ElevatorApi {
         try {
 
             StubServer.receiveAsync(socket, config.getIntProperty("numHandlerThreads"), config.getIntProperty("maxMessageSize"), Map.of(
-                    1, input -> distanceTheFloor((int)input.get(0), (boolean) input.get(1)),
+                    1, input -> distanceTheFloor((int) input.get(0), (boolean) input.get(1)),
                     2, input -> {
                         addDestination((int) input.get(0), (boolean) input.get(1));
                         return new AckMessage();
@@ -288,8 +288,8 @@ public class Elevator implements Runnable, ElevatorApi {
             door.open();
             destinationsInPath.remove(currentFloorNumber);
             SendSet destinations = getWaitingPeople();
-            destinations.forEach(destination -> buttons.get(destination).setOn(true));
-            destinationsInPath.addAll(destinations);
+            destinations.getFloors().forEach(destination -> buttons.get(destination).setOn(true));
+            destinationsInPath.addAll(destinations.getFloors());
             try {
                 Thread.sleep(config.getIntProperty("waitTime"));
             } catch (InterruptedException e) {

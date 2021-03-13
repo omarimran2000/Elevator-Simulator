@@ -26,8 +26,9 @@ class StateTest {
      */
     @Test
     void StateMethodsTest() throws ParseException, IOException, InterruptedException {
-        Scheduler scheduler = new Scheduler();
+
         Config config = new Config();
+        Scheduler scheduler = new Scheduler(config);
 
         Map<Integer, Floor> floors = generateFloors(config, scheduler, config.getProperty("csvFileName"));
         scheduler.setFloors(floors.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue)));
