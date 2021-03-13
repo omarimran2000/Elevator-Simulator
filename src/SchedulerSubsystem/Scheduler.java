@@ -4,6 +4,7 @@ package SchedulerSubsystem;
 import ElevatorSubsystem.ElevatorApi;
 import FloorSubsystem.FloorApi;
 import model.AckMessage;
+import model.Destination;
 import model.SendSet;
 import stub.ElevatorClient;
 import stub.FloorClient;
@@ -59,18 +60,19 @@ public class Scheduler extends Thread implements SchedulerApi {
         }
     }
 
-    public void handleFloorButton(int floorNumber, boolean isUp) throws IOException, ClassNotFoundException {
-        logger.info("Scheduler: scheduling event for floor " + floorNumber);
+    @Override
+    public void handleFloorButton(Destination destination) throws IOException, ClassNotFoundException {
+        logger.info("Scheduler: scheduling event for floor " + destination.getFloorNumber());
         elevators.stream()
                 .min(Comparator.comparing(elevator -> {
                     try {
-                        return elevator.distanceTheFloor(floorNumber, isUp);
+                        return elevator.distanceTheFloor(destination);
                     } catch (IOException | ClassNotFoundException e) {
                         throw new UndeclaredThrowableException(e);
                     }
                 }))
                 .orElseThrow(NoSuchElementException::new)
-                .addDestination(floorNumber, isUp);
+                .addDestination(destination);
     }
 
 
@@ -97,7 +99,7 @@ public class Scheduler extends Thread implements SchedulerApi {
                     },
                     3, input -> {
                         try {
-                            handleFloorButton((int) input.get(0), (boolean) input.get(1));
+                            handleFloorButton((Destination) input.get(0));
                             return new AckMessage();
                         } catch (IOException | ClassNotFoundException e) {
                             throw new UndeclaredThrowableException(e);
@@ -115,11 +117,13 @@ public class Scheduler extends Thread implements SchedulerApi {
         socket.close();
     }
 
+    @Override
     public SendSet getWaitingPeopleUp(int floorNumber) throws IOException, ClassNotFoundException {
         logger.info("getting people wait to go up on floor " + floorNumber);
         return floors.get(floorNumber).getWaitingPeopleUp();
     }
 
+    @Override
     public SendSet getWaitingPeopleDown(int floorNumber) throws IOException, ClassNotFoundException {
         logger.info("getting people wait to go down on floor " + floorNumber);
         return floors.get(floorNumber).getWaitingPeopleDown();

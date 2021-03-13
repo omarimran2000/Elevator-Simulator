@@ -2,6 +2,7 @@ package ElevatorSubsystem;
 
 import SchedulerSubsystem.SchedulerApi;
 import model.AckMessage;
+import model.Destination;
 import model.SendSet;
 import stub.StubServer;
 import utill.Config;
@@ -100,9 +101,9 @@ public class Elevator extends Thread implements ElevatorApi {
     public void run() {
         try {
             StubServer.receiveAsync(socket, config.getIntProperty("numHandlerThreads"), config.getIntProperty("maxMessageSize"), Map.of(
-                    1, input -> distanceTheFloor((int) input.get(0), (boolean) input.get(1)),
+                    1, input -> distanceTheFloor((Destination) input.get(0)),
                     2, input -> {
-                        addDestination((int) input.get(0), (boolean) input.get(1));
+                        addDestination((Destination) input.get(0));
                         return new AckMessage();
                     }));
 
@@ -121,22 +122,22 @@ public class Elevator extends Thread implements ElevatorApi {
     /**
      * Gets the number of floors between the current and destination floors
      *
-     * @param floorNumber The destination floor number
-     * @param isUp        The direction of travel (true = up, false = down)
+     * @param destination Potential destination for the elevator
      * @return the distance between the two floors
      */
-    public synchronized int distanceTheFloor(int floorNumber, boolean isUp) {
-        return state.handleDistanceTheFloor(floorNumber, isUp);
+    @Override
+    public synchronized int distanceTheFloor(Destination destination) {
+        return state.handleDistanceTheFloor(destination);
     }
 
     /**
      * Adds the specified floor number to the list of destinations
      *
-     * @param floorNumber The number of destination floor to add
-     * @param isUp        The direction of the elevator
+     * @param destination The new destination for the Elevator
      */
-    public synchronized void addDestination(int floorNumber, boolean isUp) {
-        state.handleAddDestination(floorNumber, isUp);
+    @Override
+    public synchronized void addDestination(Destination destination) {
+        state.handleAddDestination(destination);
     }
 
     /**
@@ -174,19 +175,17 @@ public class Elevator extends Thread implements ElevatorApi {
         /**
          * Gets the number of floors between the current and destination floors
          *
-         * @param floorNumber The destination floor number
-         * @param isUp        The direction of travel (true = up, false = down)
+         * @param destination Potential destination for the elevator
          * @return the distance between the two floors
          */
-        int handleDistanceTheFloor(int floorNumber, boolean isUp);
+        int handleDistanceTheFloor(Destination destination);
 
         /**
          * Adds the specified floor number to the list of destinations
          *
-         * @param floorNumber The number of destination floor to add
-         * @param isUp        The direction of the elevator
+         * @param destination The new destination for the Elevator
          */
-        void handleAddDestination(int floorNumber, boolean isUp);
+        void handleAddDestination(Destination destination);
 
         /**
          * @return true if the elevator should stop at the next floor
@@ -215,24 +214,24 @@ public class Elevator extends Thread implements ElevatorApi {
         /**
          * Gets the number of floors between the current and destination floors
          *
-         * @param floorNumber The destination floor number
-         * @param isUp        The direction of travel (true = up, false = down)
+         * @param destination Potential destination for the elevator
          * @return the distance between the two floors
          */
-        public int handleDistanceTheFloor(int floorNumber, boolean isUp) {
-            return abs(floorNumber - currentFloorNumber);
+        @Override
+        public int handleDistanceTheFloor(Destination destination) {
+            return abs(destination.getFloorNumber() - currentFloorNumber);
         }
 
         /**
          * Adds the specified floor number to the list of destinations
          *
-         * @param floorNumber The number of destination floor to add
-         * @param isUp        The direction of the elevator
+         * @param destination The new destination for the Elevator
          */
-        public synchronized void handleAddDestination(int floorNumber, boolean isUp) {
+        @Override
+        public synchronized void handleAddDestination(Destination destination) {
             new Thread(arrivalSensor).start();
-            destinationsInPath.add(floorNumber);
-            state = floorNumber > currentFloorNumber ? new ElevatorMovingUp() : new ElevatorMovingDown();
+            destinationsInPath.add(destination.getFloorNumber());
+            state = destination.getFloorNumber() > currentFloorNumber ? new ElevatorMovingUp() : new ElevatorMovingDown();
         }
 
         /**
@@ -337,31 +336,29 @@ public class Elevator extends Thread implements ElevatorApi {
         /**
          * Gets the number of floors between the current and destination floors
          *
-         * @param floorNumber The destination floor number
-         * @param isUp        The direction of travel (true = up, false = down)
+         * @param destination Potential destination for the elevator
          * @return the distance between the two floors
          */
         @Override
-        public int handleDistanceTheFloor(int floorNumber, boolean isUp) {
-            return abs(floorNumber - currentFloorNumber) +
-                    (isUp ? maxFloors - currentFloorNumber : 0);
+        public int handleDistanceTheFloor(Destination destination) {
+            return abs(destination.getFloorNumber() - currentFloorNumber) +
+                    (destination.isUp() ? maxFloors - currentFloorNumber : 0);
         }
 
         /**
          * Adds the specified floor number to the list of destinations
          *
-         * @param floorNumber The number of destination floor to add
-         * @param isUp        The direction of the elevator
+         * @param destination The new destination for the Elevator
          */
         @Override
-        public void handleAddDestination(int floorNumber, boolean isUp) {
+        public void handleAddDestination(Destination destination) {
             if (arrivalSensor.isNotRunning()) {
                 new Thread(arrivalSensor).start();
             }
-            if (isUp && floorNumber > currentFloorNumber) {
-                destinationsInPath.add(floorNumber);
+            if (destination.isUp() && destination.getFloorNumber() > currentFloorNumber) {
+                destinationsInPath.add(destination.getFloorNumber());
             } else {
-                destinationsOutOfPath.add(floorNumber);
+                destinationsOutOfPath.add(destination.getFloorNumber());
             }
         }
 
@@ -409,30 +406,28 @@ public class Elevator extends Thread implements ElevatorApi {
         /**
          * Gets the number of floors between the current and destination floors
          *
-         * @param floorNumber The destination floor number
-         * @param isUp        The direction of travel (true = up, false = down)
+         * @param destination Potential destination for the elevator
          * @return the distance between the two floors
          */
         @Override
-        public int handleDistanceTheFloor(int floorNumber, boolean isUp) {
-            return abs(floorNumber - currentFloorNumber) + currentFloorNumber;
+        public int handleDistanceTheFloor(Destination destination) {
+            return abs(destination.getFloorNumber() - currentFloorNumber) + currentFloorNumber;
         }
 
         /**
          * Adds the specified floor number to the list of destinations
          *
-         * @param floorNumber The number of destination floor to add
-         * @param isUp        The direction of the elevator
+         * @param destination The new destination for the Elevator
          */
         @Override
-        public void handleAddDestination(int floorNumber, boolean isUp) {
+        public void handleAddDestination(Destination destination) {
             if (arrivalSensor.isNotRunning()) {
                 new Thread(arrivalSensor).start();
             }
-            if (!isUp && floorNumber < currentFloorNumber) {
-                destinationsInPath.add(floorNumber);
+            if (!destination.isUp() && destination.getFloorNumber() < currentFloorNumber) {
+                destinationsInPath.add(destination.getFloorNumber());
             } else {
-                destinationsOutOfPath.add(floorNumber);
+                destinationsOutOfPath.add(destination.getFloorNumber());
             }
         }
 

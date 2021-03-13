@@ -2,13 +2,13 @@ import ElevatorSubsystem.Elevator;
 import ElevatorSubsystem.ElevatorSubsystem;
 import FloorSubsystem.Floor;
 import SchedulerSubsystem.Scheduler;
+import model.Destination;
 import org.junit.jupiter.api.Test;
 import utill.Config;
 
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -41,9 +41,9 @@ class StateTest {
 
         assertTrue(elevator.getIsUp()); //Can only go up from base floor
         assertFalse(elevator.getIsMoving()); //Shouldn't be moving on instantiation
-        assertEquals(4, elevator.distanceTheFloor(4, true)); //starts on floor 0 so expected is 4 instead of 3
+        assertEquals(4, elevator.distanceTheFloor(new Destination(4, true))); //starts on floor 0 so expected is 4 instead of 3
 
-        elevator.addDestination(3, true);
+        elevator.addDestination(new Destination(3, true));
         Thread.sleep(20000);
         assertEquals(3, elevator.getCurrentFloorNumber());
     }

@@ -1,6 +1,7 @@
 package stub;
 
 import SchedulerSubsystem.SchedulerApi;
+import model.Destination;
 import model.SendSet;
 import utill.Config;
 
@@ -36,7 +37,7 @@ public class SchedulerClient extends StubClient implements SchedulerApi {
     }
 
     @Override
-    public void handleFloorButton(int floorNumber, boolean isUp) throws IOException, ClassNotFoundException {
-        sendAndReceive(3, List.of(floorNumber, isUp), inetAddress, port);
+    public void handleFloorButton(Destination destination) throws IOException, ClassNotFoundException {
+        sendAndReceive(3, destination, inetAddress, port);
     }
 }

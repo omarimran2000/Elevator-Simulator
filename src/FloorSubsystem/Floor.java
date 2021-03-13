@@ -1,6 +1,7 @@
 package FloorSubsystem;
 
 import SchedulerSubsystem.SchedulerApi;
+import model.Destination;
 import model.Event;
 import model.SendSet;
 import stub.StubServer;
@@ -89,7 +90,7 @@ public abstract class Floor extends Thread implements FloorApi {
                     waitingPeopleDown.add(event.getCarButton());
                 }
                 try {
-                    scheduler.handleFloorButton(this.floorNumber, event.isFloorButtonIsUp());
+                    scheduler.handleFloorButton(new Destination(this.floorNumber, event.isFloorButtonIsUp()));
                 } catch (IOException | ClassNotFoundException e) {
                     e.printStackTrace();
                 }

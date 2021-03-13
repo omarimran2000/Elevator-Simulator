@@ -1,11 +1,11 @@
 package stub;
 
 import ElevatorSubsystem.ElevatorApi;
+import model.Destination;
 import utill.Config;
 
 import java.io.IOException;
 import java.net.InetAddress;
-import java.util.List;
 
 public class ElevatorClient extends StubClient implements ElevatorApi {
     private final InetAddress inetAddress;
@@ -25,12 +25,12 @@ public class ElevatorClient extends StubClient implements ElevatorApi {
     }
 
     @Override
-    public int distanceTheFloor(int floorNumber, boolean isUp) throws IOException, ClassNotFoundException {
-        return sendAndReceive(1, List.of(floorNumber, isUp), inetAddress, port);
+    public int distanceTheFloor(Destination destination) throws IOException, ClassNotFoundException {
+        return sendAndReceive(1, destination, inetAddress, port);
     }
 
     @Override
-    public void addDestination(int floorNumber, boolean isUp) throws IOException, ClassNotFoundException {
-        sendAndReceive(2, List.of(floorNumber, isUp), inetAddress, port);
+    public void addDestination(Destination destination) throws IOException, ClassNotFoundException {
+        sendAndReceive(2, destination, inetAddress, port);
     }
 }
