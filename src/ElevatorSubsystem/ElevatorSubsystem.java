@@ -16,7 +16,7 @@ public class ElevatorSubsystem {
         List<Elevator> elevators = new ArrayList<>();
 
         for (int i = 0; i < config.getIntProperty("numElevators"); i++) {
-            Elevator tempElev = new Elevator(config, scheduler, i + 1, maxFloor);
+            Elevator tempElev = new Elevator(config, scheduler, i, maxFloor);
             elevators.add(tempElev);
             new Thread(tempElev).start();
         }
@@ -24,9 +24,8 @@ public class ElevatorSubsystem {
     }
 
     public static void main(String[] args) throws IOException {
-        InetAddress localhost = InetAddress.getLocalHost();
         Config config = new Config();
-        SchedulerApi schedulerApi = new SchedulerClient(config, localhost, config.getIntProperty("schedulerPort"));
-        ElevatorSubsystem.generateElevators(config, schedulerApi, config.getIntProperty("maxFloors"));
+        SchedulerApi schedulerApi = new SchedulerClient(config, InetAddress.getLocalHost(), config.getIntProperty("schedulerPort"));
+        ElevatorSubsystem.generateElevators(config, schedulerApi, config.getIntProperty("numFloors"));
     }
 }

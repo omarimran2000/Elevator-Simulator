@@ -133,13 +133,13 @@ public class Scheduler extends Thread implements SchedulerApi {
         Config config = new Config();
         Scheduler scheduler = new Scheduler(config);
         Map<Integer, FloorApi> floors = new HashMap<>();
-        for (int i = 0; i < config.getIntProperty("maxFloors"); i++) {
-            floors.put(i, new FloorClient(config, localhost, config.getIntProperty("floorPort")+i));
+        for (int i = 0; i < config.getIntProperty("numFloors"); i++) {
+            floors.put(i, new FloorClient(config, localhost, config.getIntProperty("floorPort") + i));
         }
         scheduler.setFloors(floors);
         List<ElevatorApi> elevatorClients = new ArrayList<>();
         for (int i = 0; i < config.getIntProperty("numElevators"); i++) {
-            elevatorClients.add(new ElevatorClient(config, localhost, config.getIntProperty("elevatorPort") + i + 1));
+            elevatorClients.add(new ElevatorClient(config, localhost, config.getIntProperty("elevatorPort") + i));
         }
         scheduler.setElevators(elevatorClients);
 

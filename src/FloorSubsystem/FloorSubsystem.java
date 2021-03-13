@@ -45,6 +45,11 @@ public class FloorSubsystem {
             }
         }
 
+        if (max_floor_number > config.getIntProperty("numFloors")){
+            throw new RuntimeException("csv has floor above max");
+        }
+        max_floor_number = config.getIntProperty("numFloors");
+
         floors.put(0, new BottomFloor(config, 0, scheduler, schedule_by_floor.getOrDefault(0, new ArrayList<>())));
         floors.put(max_floor_number, new TopFloor(config, max_floor_number, scheduler, schedule_by_floor.getOrDefault(max_floor_number, new ArrayList<>())));
 
@@ -89,9 +94,8 @@ public class FloorSubsystem {
     }
 
     public static void main(String[] args) throws IOException, ParseException {
-        InetAddress localhost = InetAddress.getLocalHost();
         Config config = new Config();
-        SchedulerApi schedulerApi = new SchedulerClient(config, localhost, config.getIntProperty("schedulerPort"));
+        SchedulerApi schedulerApi = new SchedulerClient(config, InetAddress.getLocalHost(), config.getIntProperty("schedulerPort"));
         Map<Integer, Floor> floors = generateFloors(config, schedulerApi, config.getProperty("csvFileName"));
         floors.forEach((floorNumber, floor) -> new Thread(floor, "Floor " + floorNumber).start());
     }
