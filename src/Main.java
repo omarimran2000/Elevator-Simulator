@@ -47,7 +47,7 @@ public class Main {
             List<Elevator> elevators = ElevatorSubsystem.generateElevators(config, schedulerApi, Collections.max(floors.keySet()));
 
             List<ElevatorApi> elevatorClients = new ArrayList<>();
-            for (int i = 0; i < elevators.size(); i++) {
+            for (int i = 1; i < elevators.size(); i++) {
                 elevatorClients.add(new ElevatorClient(config, localhost, config.getIntProperty("elevatorPort") + i));
             }
             scheduler.setElevators(elevatorClients);
