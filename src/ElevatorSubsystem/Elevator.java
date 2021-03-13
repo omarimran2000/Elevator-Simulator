@@ -1,6 +1,7 @@
 package ElevatorSubsystem;
 
 import SchedulerSubsystem.SchedulerApi;
+import model.SendSet;
 import stub.StubServer;
 import utill.Config;
 import model.AckMessage;
@@ -256,7 +257,7 @@ public class Elevator implements Runnable, ElevatorApi {
         /**
          * @return the set of floors with people waiting for an elevator moving in the specified direction
          */
-        abstract protected Set<Integer> getWaitingPeople() throws IOException, ClassNotFoundException;
+        abstract protected SendSet getWaitingPeople() throws IOException, ClassNotFoundException;
 
         /**
          * Reverses the direction of travel
@@ -286,7 +287,7 @@ public class Elevator implements Runnable, ElevatorApi {
             motor.setMoving(false);
             door.open();
             destinationsInPath.remove(currentFloorNumber);
-            Set<Integer> destinations = getWaitingPeople();
+            SendSet destinations = getWaitingPeople();
             destinations.forEach(destination -> buttons.get(destination).setOn(true));
             destinationsInPath.addAll(destinations);
             try {
@@ -376,7 +377,7 @@ public class Elevator implements Runnable, ElevatorApi {
          * @return the set of floors with people waiting for an elevator moving upwards
          */
         @Override
-        protected Set<Integer> getWaitingPeople() throws IOException, ClassNotFoundException {
+        protected SendSet getWaitingPeople() throws IOException, ClassNotFoundException {
             return scheduler.getWaitingPeopleUp(currentFloorNumber);
         }
 
@@ -447,7 +448,7 @@ public class Elevator implements Runnable, ElevatorApi {
          * @return the set of floors with people waiting for an elevator moving downwards
          */
         @Override
-        protected Set<Integer> getWaitingPeople() throws IOException, ClassNotFoundException {
+        protected SendSet getWaitingPeople() throws IOException, ClassNotFoundException {
             return scheduler.getWaitingPeopleDown(currentFloorNumber);
         }
 

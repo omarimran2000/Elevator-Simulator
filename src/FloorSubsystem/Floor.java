@@ -1,11 +1,14 @@
 package FloorSubsystem;
 
 import SchedulerSubsystem.SchedulerApi;
+import model.AckMessage;
 import model.Event;
 import model.SendSet;
+import stub.StubServer;
 import utill.Config;
 
 import java.io.IOException;
+import java.net.DatagramSocket;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -28,6 +31,8 @@ public abstract class Floor implements Runnable, FloorApi {
 
     private final int floorNumber;
     private final Queue<Integer> destinationFloorNumbers;
+    private DatagramSocket socket;
+    private Config config;
 
     /**
      * Constructor
@@ -43,6 +48,8 @@ public abstract class Floor implements Runnable, FloorApi {
         this.schedule.addAll(schedule);
         upLamp = new FloorLamp();
         downLamp = new FloorLamp();
+        this.config = config;
+        socket = new DatagramSocket(config.getIntProperty("port"));
 
         destinationFloorNumbers = new LinkedList<>();
 
@@ -75,10 +82,31 @@ public abstract class Floor implements Runnable, FloorApi {
                     waitingPeopleDown.add(event.getCarButton());
                 }
                 try {
-                    scheduler.handleFloorButton(this.floorNumber, event.isFloorButtonIsUp());
-                } catch (IOException | ClassNotFoundException e) {
+                    try {
+                        scheduler.handleFloorButton(this.floorNumber, event.isFloorButtonIsUp());
+                    } catch (IOException | ClassNotFoundException e) {
+                        e.printStackTrace();
+                    }
+
+                    try {
+                        StubServer.receiveAsync(socket, config.getIntProperty("numHandlerThreads"), config.getIntProperty("maxMessageSize"), Map.of(
+                                1, input -> {
+                                    getWaitingPeopleUp();
+                                    return new AckMessage();
+                                },
+                                2, input -> {
+
+                                    getWaitingPeopleDown();
+                                    return new AckMessage();
+                                }));
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
+
+
             } else {
                 try {
                     Thread.sleep(schedule.peek().getTimeToEvent() - System.currentTimeMillis() + startTime);

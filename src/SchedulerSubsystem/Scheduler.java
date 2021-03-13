@@ -3,6 +3,7 @@ package SchedulerSubsystem;
 
 import ElevatorSubsystem.ElevatorApi;
 import FloorSubsystem.FloorApi;
+import model.AckMessage;
 import model.SendSet;
 import utill.Config;
 import stub.StubServer;
@@ -82,17 +83,25 @@ public class Scheduler implements Runnable, SchedulerApi {
                 StubServer.receiveAsync(socket, config.getIntProperty("numHandlerThreads"), config.getIntProperty("maxMessageSize"), Map.of(
                         1, input -> {
                             try {
-                                  getWaitingPeopleUp((int)input.get(0));
+                                  return getWaitingPeopleUp((int)input.get(0));
                             } catch (IOException | ClassNotFoundException e) {
                                 throw new UndeclaredThrowableException(e);
                             }
                         },
                         2, input -> {
                             try {
-                                getWaitingPeopleDown((int) input.get(0));
+                                return getWaitingPeopleDown((int) input.get(0));
                             } catch (IOException | ClassNotFoundException e) {
                                 throw new UndeclaredThrowableException(e);
                             }
+                        },
+                        3, input -> {
+                            try {
+                                handleFloorButton((int) input.get(0), (boolean) input.get(1));
+                            } catch (IOException | ClassNotFoundException e) {
+                                e.printStackTrace();
+                            }
+                            return new AckMessage();
                         }));
 
             } catch (IOException e) {
