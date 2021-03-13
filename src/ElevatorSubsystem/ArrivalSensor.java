@@ -63,7 +63,6 @@ public class ArrivalSensor implements Runnable {
                 elevator.atFloor();
 
             } else {
-
                 elevator.passFloor();
             }
         }

@@ -133,7 +133,7 @@ public abstract class StubClient {
      * @throws IOException IOException is thrown if the server fails to send or receive to the port.
      */
     protected byte[] sendAndReceive(DatagramSocket datagramSocket, byte[] data, InetAddress inetAddress, int port) throws IOException {
-        return sendAndReceive(datagramSocket, data, inetAddress, port, 1);
+        return sendAndReceive(datagramSocket, data, inetAddress, port, 2);
     }
 
     /**
