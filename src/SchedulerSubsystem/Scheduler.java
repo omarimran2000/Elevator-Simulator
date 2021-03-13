@@ -17,6 +17,7 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
 import java.util.*;
+import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
@@ -29,7 +30,7 @@ public class Scheduler extends Thread implements SchedulerApi {
     private final Logger logger;
     private final DatagramSocket socket;
     private final Config config;
-    private final Set<Destination> destinations;
+    private final ConcurrentSkipListSet<Destination> destinations;
     private List<ElevatorApi> elevators;
     private Map<Integer, FloorApi> floors;
 
@@ -38,7 +39,7 @@ public class Scheduler extends Thread implements SchedulerApi {
         logger = Logger.getLogger(this.getClass().getName());
         this.config = config;
         socket = new DatagramSocket(config.getIntProperty("schedulerPort"));
-        destinations = new HashSet<>();
+        destinations = new ConcurrentSkipListSet<>();
     }
 
     /**
