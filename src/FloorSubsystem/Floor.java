@@ -41,20 +41,17 @@ public abstract class Floor extends Thread implements FloorApi {
      * @param scheduler
      * @param schedule    A list of events
      */
-    public Floor(Config config, int floorNumber, SchedulerApi scheduler, List<Event> schedule) {
+    public Floor(Config config, int floorNumber, SchedulerApi scheduler, List<Event> schedule) throws SocketException {
+        logger = Logger.getLogger(this.getClass().getName());
         this.floorNumber = floorNumber;
         this.scheduler = scheduler;
-        this.schedule = new PriorityQueue<>();
-        this.schedule.addAll(schedule);
-        logger = Logger.getLogger(this.getClass().getName());
+        this.config = config;
+        this.schedule = new PriorityQueue<>(schedule);
+        waitingPeopleUp = new HashSet<>();
+        waitingPeopleDown = new HashSet<>();
         upLamp = new FloorLamp();
         downLamp = new FloorLamp();
-        this.config = config;
-        try {
-            socket = new DatagramSocket(config.getIntProperty("floorPort") + floorNumber);
-        } catch (SocketException e) {
-            e.printStackTrace();
-        }
+        socket = new DatagramSocket(config.getIntProperty("floorPort") + floorNumber);
         schedule.forEach(event -> {
             try {
                 event.setTimeToEvent(abs((new SimpleDateFormat(config.getProperty("dateFormatPattern"))).parse(config.getProperty("startDate")).getTime() - event.getTime().getTime()));
@@ -62,8 +59,6 @@ public abstract class Floor extends Thread implements FloorApi {
                 e.printStackTrace();
             }
         });
-        waitingPeopleUp = new HashSet<>();
-        waitingPeopleDown = new HashSet<>();
     }
 
     /**
@@ -196,7 +191,7 @@ class TopFloor extends Floor {
      * @param scheduler   The scheduler
      * @param schedule    The list of scheduled events
      */
-    public TopFloor(Config config, int floorNumber, SchedulerApi scheduler, List<Event> schedule) {
+    public TopFloor(Config config, int floorNumber, SchedulerApi scheduler, List<Event> schedule) throws SocketException {
         super(config, floorNumber, scheduler, schedule);
         downButton = new FloorButton(floorNumber, false);
     }
@@ -252,7 +247,7 @@ class BottomFloor extends Floor {
      * @param scheduler   The scheduler
      * @param schedule    The list of scheduled events
      */
-    public BottomFloor(Config config, int floorNumber, SchedulerApi scheduler, List<Event> schedule) {
+    public BottomFloor(Config config, int floorNumber, SchedulerApi scheduler, List<Event> schedule) throws SocketException {
         super(config, floorNumber, scheduler, schedule);
         upButton = new FloorButton(floorNumber, true);
     }
@@ -309,7 +304,7 @@ class MiddleFloor extends Floor {
      * @param scheduler   The scheduler
      * @param schedule    The list of scheduled events
      */
-    public MiddleFloor(Config config, int floorNumber, SchedulerApi scheduler, List<Event> schedule) {
+    public MiddleFloor(Config config, int floorNumber, SchedulerApi scheduler, List<Event> schedule) throws SocketException {
         super(config, floorNumber, scheduler, schedule);
         upButton = new FloorButton(floorNumber, true);
         downButton = new FloorButton(floorNumber, false);

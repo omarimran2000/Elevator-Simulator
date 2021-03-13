@@ -116,10 +116,12 @@ public class Scheduler extends Thread implements SchedulerApi {
     }
 
     public SendSet getWaitingPeopleUp(int floorNumber) throws IOException, ClassNotFoundException {
+        logger.info("getting people wait to go up on floor " + floorNumber);
         return floors.get(floorNumber).getWaitingPeopleUp();
     }
 
     public SendSet getWaitingPeopleDown(int floorNumber) throws IOException, ClassNotFoundException {
+        logger.info("getting people wait to go down on floor " + floorNumber);
         return floors.get(floorNumber).getWaitingPeopleDown();
     }
 
