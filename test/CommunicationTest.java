@@ -32,7 +32,7 @@ class CommunicationTest {
         Map<Integer, Floor> floors = generateFloors(config, scheduler, config.getProperty("csvFileName"));
         scheduler.setFloors(floors.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue)));
 
-        int maxFloor = config.getIntProperty("maxFloor");
+        int maxFloor = config.getIntProperty("numFloors");
         List<Elevator> elevators = ElevatorSubsystem.generateElevators(config, scheduler, maxFloor);
         scheduler.setElevators(new ArrayList<>(elevators));
 

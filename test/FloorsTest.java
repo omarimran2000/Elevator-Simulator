@@ -21,10 +21,10 @@ class FloorsTest {
         Map<Integer, Floor> floors = generateFloors(config, scheduler, config.getProperty("csvFileName"));
 
         assertNotNull(floors);
-        assertEquals(5, floors.size());
+        assertEquals(23, floors.size());
 
         assertNull(floors.get(0).getBottom());
-        assertNull(floors.get(4).getTop());
+        assertNull(floors.get(22).getTop());
 
         assertNotNull(floors.get(1).getTop());
         assertNotNull(floors.get(1).getBottom());
