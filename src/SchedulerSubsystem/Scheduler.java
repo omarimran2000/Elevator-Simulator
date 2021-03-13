@@ -125,7 +125,7 @@ public class Scheduler extends Thread implements SchedulerApi {
                         } catch (IOException | ClassNotFoundException e) {
                             throw new UndeclaredThrowableException(e);
                         }
-                    }));
+                    }, 4, input -> getWaitingPeople((Integer) input.get(0))));
         } catch (IOException e) {
             e.printStackTrace();
         }
