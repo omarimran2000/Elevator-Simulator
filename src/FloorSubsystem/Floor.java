@@ -12,6 +12,7 @@ import java.net.SocketException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.logging.Logger;
 
 import static java.lang.Math.abs;
 
@@ -21,7 +22,7 @@ import static java.lang.Math.abs;
  * @version Feb 27, 2021
  */
 public abstract class Floor extends Thread implements FloorApi {
-
+    private final Logger logger;
     private final SchedulerApi scheduler;
     private final PriorityQueue<Event> schedule;
     private final Set<Integer> waitingPeopleUp;
@@ -45,6 +46,7 @@ public abstract class Floor extends Thread implements FloorApi {
         this.scheduler = scheduler;
         this.schedule = new PriorityQueue<>();
         this.schedule.addAll(schedule);
+        logger = Logger.getLogger(this.getClass().getName());
         upLamp = new FloorLamp();
         downLamp = new FloorLamp();
         this.config = config;
@@ -118,6 +120,7 @@ public abstract class Floor extends Thread implements FloorApi {
      * @return the set of floors with people waiting to go up
      */
     public SendSet getWaitingPeopleUp() {
+        logger.info("Loading people onto the elevator going up");
         turnUpButtonOff();
         SendSet waitingPeople = new SendSet(waitingPeopleUp);
         waitingPeopleUp.clear();
@@ -128,6 +131,7 @@ public abstract class Floor extends Thread implements FloorApi {
      * @return the set of floors with people waiting to go down
      */
     public SendSet getWaitingPeopleDown() {
+        logger.info("Loading people onto the elevator going down");
         turnDownButtonOff();
         SendSet waitingPeople = new SendSet(waitingPeopleDown);
         waitingPeopleDown.clear();
