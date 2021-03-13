@@ -1,12 +1,12 @@
 package FloorSubsystem;
 
-import model.SendSet;
+import model.Floors;
 
 import java.io.IOException;
 
 public interface FloorApi {
-    SendSet getWaitingPeopleUp() throws IOException, ClassNotFoundException;
+    Floors getWaitingPeopleUp() throws IOException, ClassNotFoundException;
 
-    SendSet getWaitingPeopleDown() throws IOException, ClassNotFoundException;
+    Floors getWaitingPeopleDown() throws IOException, ClassNotFoundException;
 
 }

@@ -3,7 +3,7 @@ package FloorSubsystem;
 import SchedulerSubsystem.SchedulerApi;
 import model.Destination;
 import model.Event;
-import model.SendSet;
+import model.Floors;
 import stub.StubServer;
 import utill.Config;
 
@@ -115,10 +115,10 @@ public abstract class Floor extends Thread implements FloorApi {
     /**
      * @return the set of floors with people waiting to go up
      */
-    public SendSet getWaitingPeopleUp() {
+    public Floors getWaitingPeopleUp() {
         logger.info("Loading people onto the elevator going up");
         turnUpButtonOff();
-        SendSet waitingPeople = new SendSet(waitingPeopleUp);
+        Floors waitingPeople = new Floors(waitingPeopleUp);
         waitingPeopleUp.clear();
         return waitingPeople;
     }
@@ -126,10 +126,10 @@ public abstract class Floor extends Thread implements FloorApi {
     /**
      * @return the set of floors with people waiting to go down
      */
-    public SendSet getWaitingPeopleDown() {
+    public Floors getWaitingPeopleDown() {
         logger.info("Loading people onto the elevator going down");
         turnDownButtonOff();
-        SendSet waitingPeople = new SendSet(waitingPeopleDown);
+        Floors waitingPeople = new Floors(waitingPeopleDown);
         waitingPeopleDown.clear();
         return waitingPeople;
     }

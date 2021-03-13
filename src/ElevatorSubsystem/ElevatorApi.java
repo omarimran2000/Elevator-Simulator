@@ -8,4 +8,6 @@ public interface ElevatorApi {
     int distanceTheFloor(Destination destination) throws IOException, ClassNotFoundException;
 
     void addDestination(Destination destination) throws IOException, ClassNotFoundException;
+
+    boolean canAddDestination(Destination destination) throws IOException, ClassNotFoundException;
 }

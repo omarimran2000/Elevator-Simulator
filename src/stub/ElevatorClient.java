@@ -33,4 +33,9 @@ public class ElevatorClient extends StubClient implements ElevatorApi {
     public void addDestination(Destination destination) throws IOException, ClassNotFoundException {
         sendAndReceive(2, destination, inetAddress, port);
     }
+
+    @Override
+    public boolean canAddDestination(Destination destination) throws IOException, ClassNotFoundException {
+        return sendAndReceive(3, destination, inetAddress, port);
+    }
 }
