@@ -134,7 +134,7 @@ public class Scheduler extends Thread implements SchedulerApi {
         Scheduler scheduler = new Scheduler(config);
         Map<Integer, FloorApi> floors = new HashMap<>();
         for (int i = 0; i < config.getIntProperty("maxFloors"); i++) {
-            floors.put(i, new FloorClient(config, localhost, config.getIntProperty("floorPort")));
+            floors.put(i, new FloorClient(config, localhost, config.getIntProperty("floorPort")+i));
         }
         scheduler.setFloors(floors);
         List<ElevatorApi> elevatorClients = new ArrayList<>();
