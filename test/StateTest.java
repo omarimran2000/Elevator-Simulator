@@ -1,4 +1,5 @@
 import ElevatorSubsystem.Elevator;
+import ElevatorSubsystem.ElevatorSubsystem;
 import FloorSubsystem.Floor;
 import SchedulerSubsystem.Scheduler;
 import org.junit.jupiter.api.Test;
@@ -6,6 +7,7 @@ import utill.Config;
 
 import java.io.IOException;
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -29,8 +31,12 @@ class StateTest {
 
         Map<Integer, Floor> floors = generateFloors(config, scheduler, config.getProperty("csvFileName"));
         scheduler.setFloors(floors.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue)));
-        Elevator elevator = new Elevator(config, scheduler, 1, floors.keySet().stream().max(Comparator.comparingInt(k -> k)).orElseThrow());
-        scheduler.setElevators(List.of(elevator));
+
+        int maxFloor = config.getIntProperty("maxFloor");
+        List<Elevator> elevators = ElevatorSubsystem.generateElevators(config, scheduler, maxFloor);
+        scheduler.setElevators(new ArrayList<>(elevators));
+
+        Elevator elevator = elevators.get(0);
 
         assertTrue(elevator.getIsUp()); //Can only go up from base floor
         assertFalse(elevator.getIsMoving()); //Shouldn't be moving on instantiation
