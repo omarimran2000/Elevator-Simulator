@@ -21,7 +21,7 @@ import static java.lang.Math.abs;
  *
  * @version Feb 27, 2021
  */
-public abstract class Floor implements Runnable, FloorApi {
+public abstract class Floor extends Thread implements FloorApi {
 
     private final SchedulerApi scheduler;
     private final PriorityQueue<Event> schedule;
@@ -51,7 +51,7 @@ public abstract class Floor implements Runnable, FloorApi {
         downLamp = new FloorLamp();
         this.config = config;
         try {
-            socket = new DatagramSocket(config.getIntProperty("port"));
+            socket = new DatagramSocket(config.getIntProperty("floorPort") + floorNumber);
         } catch (SocketException e) {
             e.printStackTrace();
         }
@@ -120,6 +120,13 @@ public abstract class Floor implements Runnable, FloorApi {
                 }
             }
         }
+    }
+
+    @Override
+    public void interrupt() {
+        super.interrupt();
+        // close socket to interrupt receive
+        socket.close();
     }
 
     /**

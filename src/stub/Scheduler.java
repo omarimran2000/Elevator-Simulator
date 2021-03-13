@@ -20,7 +20,7 @@ public class Scheduler extends StubClient implements SchedulerApi {
      * @param inetAddress
      * @param port
      */
-    protected Scheduler(Config config, InetAddress inetAddress, int port) {
+    public Scheduler(Config config, InetAddress inetAddress, int port) {
         super(config);
         this.inetAddress = inetAddress;
         this.port = port;

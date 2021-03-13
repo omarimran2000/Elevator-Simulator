@@ -18,7 +18,7 @@ public class ElevatorClient extends StubClient implements ElevatorApi {
      * @param inetAddress
      * @param port
      */
-    protected ElevatorClient(Config config, InetAddress inetAddress, int port) {
+    public ElevatorClient(Config config, InetAddress inetAddress, int port) {
         super(config);
         this.inetAddress = inetAddress;
         this.port = port;

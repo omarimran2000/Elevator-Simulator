@@ -5,16 +5,14 @@ import ElevatorSubsystem.ElevatorApi;
 import FloorSubsystem.FloorApi;
 import model.AckMessage;
 import model.SendSet;
-import utill.Config;
 import stub.StubServer;
+import utill.Config;
 
 import java.io.IOException;
 import java.lang.reflect.UndeclaredThrowableException;
-
 import java.net.DatagramSocket;
 import java.net.SocketException;
 import java.util.*;
-
 import java.util.logging.Logger;
 
 /**
@@ -22,7 +20,7 @@ import java.util.logging.Logger;
  *
  * @version Feb 27, 2021
  */
-public class Scheduler implements Runnable, SchedulerApi {
+public class Scheduler extends Thread implements SchedulerApi {
     private final Logger logger;
     private List<ElevatorApi> elevators;
     private Map<Integer, FloorApi> floors;
@@ -33,7 +31,7 @@ public class Scheduler implements Runnable, SchedulerApi {
     public Scheduler(Config config) throws SocketException {
         logger = Logger.getLogger(this.getClass().getName());
         this.config = config;
-        socket = new DatagramSocket(config.getIntProperty("port"));
+        socket = new DatagramSocket(config.getIntProperty("schedulerPort"));
     }
 
     /**
@@ -110,6 +108,13 @@ public class Scheduler implements Runnable, SchedulerApi {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public void interrupt() {
+        super.interrupt();
+        // close socket to interrupt receive
+        socket.close();
     }
 
     public SendSet getWaitingPeopleUp(int floorNumber) throws IOException, ClassNotFoundException {

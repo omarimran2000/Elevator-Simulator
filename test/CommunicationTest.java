@@ -42,7 +42,7 @@ class CommunicationTest {
         assertFalse(floors.get(0).getTop().isOn());
         assertEquals(0, elevator.getCurrentFloorNumber());
 
-        floors.get(0).run();
+        floors.get(0).start();
         assertEquals(0, elevator.getCurrentFloorNumber());
     }
 }

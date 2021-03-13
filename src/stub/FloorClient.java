@@ -19,7 +19,7 @@ public class FloorClient extends StubClient implements FloorApi {
      * @param inetAddress
      * @param port
      */
-    protected FloorClient(Config config, InetAddress inetAddress, int port) {
+    public FloorClient(Config config, InetAddress inetAddress, int port) {
         super(config);
         this.inetAddress = inetAddress;
         this.port = port;

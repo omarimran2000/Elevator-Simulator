@@ -1,13 +1,14 @@
 package ElevatorSubsystem;
 
 import SchedulerSubsystem.SchedulerApi;
+import model.AckMessage;
 import model.SendSet;
 import stub.StubServer;
 import utill.Config;
-import model.AckMessage;
 
 import java.io.IOException;
 import java.net.DatagramSocket;
+import java.net.SocketException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -21,7 +22,7 @@ import static java.lang.Math.abs;
  *
  * @version Feb 27, 2021
  */
-public class Elevator implements Runnable, ElevatorApi {
+public class Elevator extends Thread implements ElevatorApi {
 
     protected final SchedulerApi scheduler;
     protected final Config config;
@@ -35,9 +36,9 @@ public class Elevator implements Runnable, ElevatorApi {
     protected final int elevatorNumber;
     protected final int maxFloors;
     private final Logger logger;
+    private final DatagramSocket socket;
     protected int currentFloorNumber;
     private State state;
-    private DatagramSocket socket;
 
     /**
      * Constructor for Elevator
@@ -45,7 +46,7 @@ public class Elevator implements Runnable, ElevatorApi {
      * @param config
      * @param scheduler The system scheduler
      */
-    public Elevator(Config config, SchedulerApi scheduler, int elevatorNumber, int maxFloors) {
+    public Elevator(Config config, SchedulerApi scheduler, int elevatorNumber, int maxFloors) throws SocketException {
         this.config = config;
         this.scheduler = scheduler;
         this.maxFloors = maxFloors;
@@ -65,6 +66,7 @@ public class Elevator implements Runnable, ElevatorApi {
         }
         destinationsInPath = new HashSet<>();
         destinationsOutOfPath = new HashSet<>();
+        socket = new DatagramSocket(config.getIntProperty("elevatorPort") + elevatorNumber);
     }
 
     /**
@@ -108,6 +110,13 @@ public class Elevator implements Runnable, ElevatorApi {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public void interrupt() {
+        super.interrupt();
+        // close socket to interrupt receive
+        socket.close();
     }
 
     /**

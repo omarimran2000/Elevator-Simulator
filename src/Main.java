@@ -1,11 +1,16 @@
 import ElevatorSubsystem.Elevator;
+import ElevatorSubsystem.ElevatorApi;
 import ElevatorSubsystem.ElevatorSubsystem;
 import FloorSubsystem.Floor;
 import SchedulerSubsystem.Scheduler;
+import SchedulerSubsystem.SchedulerApi;
+import stub.ElevatorClient;
+import stub.FloorClient;
 import utill.Config;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.net.InetAddress;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -29,14 +34,22 @@ public class Main {
      * @param args
      */
     public static void main(String[] args) throws IOException {
+        InetAddress localhost = InetAddress.getLocalHost();
         Config config = new Config();
         Scheduler scheduler = new Scheduler(config);
+        SchedulerApi schedulerApi = new stub.Scheduler(config,localhost,config.getIntProperty("schedulerPort") );
         try {
-            Map<Integer, Floor> floors = generateFloors(config, scheduler, config.getProperty("csvFileName"));
+            Map<Integer, Floor> floors = generateFloors(config, schedulerApi, config.getProperty("csvFileName"));
 
-            scheduler.setFloors(floors.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue)));
-            List<Elevator> elevators = ElevatorSubsystem.generateElevators(config, scheduler, Collections.max(floors.keySet()));
-            scheduler.setElevators(new ArrayList<>(elevators));
+            scheduler.setFloors(floors.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, e -> new FloorClient(config, localhost, config.getIntProperty("floorPort") + e.getKey()))));
+
+            List<Elevator> elevators = ElevatorSubsystem.generateElevators(config, schedulerApi, Collections.max(floors.keySet()));
+
+            List<ElevatorApi> elevatorClients = new ArrayList<>();
+            for (int i = 0; i < elevators.size(); i++) {
+                elevatorClients.add(new ElevatorClient(config, localhost, config.getIntProperty("elevatorPort") + i));
+            }
+            scheduler.setElevators(elevatorClients);
             floors.forEach((floorNumber, floor) -> new Thread(floor, "Floor " + floorNumber).start());
         } catch (FileNotFoundException | ParseException e) {
             e.printStackTrace();
