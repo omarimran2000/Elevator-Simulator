@@ -1,7 +1,6 @@
 package FloorSubsystem;
 
 import SchedulerSubsystem.SchedulerApi;
-import model.AckMessage;
 import model.Event;
 import model.SendSet;
 import stub.StubServer;
@@ -31,7 +30,6 @@ public abstract class Floor extends Thread implements FloorApi {
     private final FloorLamp downLamp;
 
     private final int floorNumber;
-    private final Queue<Integer> destinationFloorNumbers;
     private DatagramSocket socket;
     private final Config config;
 
@@ -55,9 +53,6 @@ public abstract class Floor extends Thread implements FloorApi {
         } catch (SocketException e) {
             e.printStackTrace();
         }
-
-        destinationFloorNumbers = new LinkedList<>();
-
         schedule.forEach(event -> {
             try {
                 event.setTimeToEvent(abs((new SimpleDateFormat(config.getProperty("dateFormatPattern"))).parse(config.getProperty("startDate")).getTime() - event.getTime().getTime()));
@@ -74,9 +69,19 @@ public abstract class Floor extends Thread implements FloorApi {
      */
     @Override
     public void run() {
+        Thread thread = new Thread(() -> {
+            try {
+                StubServer.receiveAsync(socket, config.getIntProperty("numHandlerThreads"), config.getIntProperty("maxMessageSize"), Map.of(
+                        1, input -> getWaitingPeopleUp(),
+                        2, input -> getWaitingPeopleDown()));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
+        thread.start();
         //currentTimeMillis use the time Of the underlying operating system and therefore will be adjusted automatically using NTP.
         long startTime = System.currentTimeMillis();
-        while (!schedule.isEmpty()) {
+        while (!schedule.isEmpty() && !Thread.interrupted()) {
             if (System.currentTimeMillis() - startTime >= schedule.peek().getTimeToEvent()) {
                 Event event = schedule.remove();
                 if (event.isFloorButtonIsUp()) {
@@ -87,31 +92,10 @@ public abstract class Floor extends Thread implements FloorApi {
                     waitingPeopleDown.add(event.getCarButton());
                 }
                 try {
-                    try {
-                        scheduler.handleFloorButton(this.floorNumber, event.isFloorButtonIsUp());
-                    } catch (IOException | ClassNotFoundException e) {
-                        e.printStackTrace();
-                    }
-
-                    try {
-                        StubServer.receiveAsync(socket, config.getIntProperty("numHandlerThreads"), config.getIntProperty("maxMessageSize"), Map.of(
-                                1, input -> {
-                                    getWaitingPeopleUp();
-                                    return new AckMessage();
-                                },
-                                2, input -> {
-
-                                    getWaitingPeopleDown();
-                                    return new AckMessage();
-                                }));
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                } catch (Exception e) {
+                    scheduler.handleFloorButton(this.floorNumber, event.isFloorButtonIsUp());
+                } catch (IOException | ClassNotFoundException e) {
                     e.printStackTrace();
                 }
-
-
             } else {
                 try {
                     Thread.sleep(schedule.peek().getTimeToEvent() - System.currentTimeMillis() + startTime);
@@ -120,6 +104,7 @@ public abstract class Floor extends Thread implements FloorApi {
                 }
             }
         }
+        thread.interrupt();
     }
 
     @Override
@@ -147,13 +132,6 @@ public abstract class Floor extends Thread implements FloorApi {
         Set<Integer> waitingPeople = Set.copyOf(waitingPeopleDown);
         waitingPeopleDown.clear();
         return (SendSet) waitingPeople;
-    }
-
-    /**
-     * @return true if there are people waiting for an elevator
-     */
-    public boolean hasPeopleWaiting() {
-        return !destinationFloorNumbers.isEmpty();
     }
 
     public int getFloorNumber() {
