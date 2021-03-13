@@ -17,8 +17,8 @@ public class ElevatorSubsystem {
 
         for (int i = 0; i < config.getIntProperty("numElevators"); i++) {
             Elevator tempElev = new Elevator(config, scheduler, i, maxFloor);
+            tempElev.start();
             elevators.add(tempElev);
-            new Thread(tempElev).start();
         }
         return elevators;
     }

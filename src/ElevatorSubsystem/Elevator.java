@@ -99,7 +99,6 @@ public class Elevator extends Thread implements ElevatorApi {
     @Override
     public void run() {
         try {
-
             StubServer.receiveAsync(socket, config.getIntProperty("numHandlerThreads"), config.getIntProperty("maxMessageSize"), Map.of(
                     1, input -> distanceTheFloor((int) input.get(0), (boolean) input.get(1)),
                     2, input -> {

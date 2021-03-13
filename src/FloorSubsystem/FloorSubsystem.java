@@ -97,6 +97,6 @@ public class FloorSubsystem {
         Config config = new Config();
         SchedulerApi schedulerApi = new SchedulerClient(config, InetAddress.getLocalHost(), config.getIntProperty("schedulerPort"));
         Map<Integer, Floor> floors = generateFloors(config, schedulerApi, config.getProperty("csvFileName"));
-        floors.forEach((floorNumber, floor) -> new Thread(floor, "Floor " + floorNumber).start());
+        floors.forEach((floorNumber, floor) -> floor.start());
     }
 }

@@ -80,35 +80,30 @@ public class Scheduler extends Thread implements SchedulerApi {
     @Override
     public void run() {
         try {
-            try {
-                StubServer.receiveAsync(socket, config.getIntProperty("numHandlerThreads"), config.getIntProperty("maxMessageSize"), Map.of(
-                        1, input -> {
-                            try {
-                                return getWaitingPeopleUp((int) input.get(0));
-                            } catch (IOException | ClassNotFoundException e) {
-                                throw new UndeclaredThrowableException(e);
-                            }
-                        },
-                        2, input -> {
-                            try {
-                                return getWaitingPeopleDown((int) input.get(0));
-                            } catch (IOException | ClassNotFoundException e) {
-                                throw new UndeclaredThrowableException(e);
-                            }
-                        },
-                        3, input -> {
-                            try {
-                                handleFloorButton((int) input.get(0), (boolean) input.get(1));
-                            } catch (IOException | ClassNotFoundException e) {
-                                e.printStackTrace();
-                            }
+            StubServer.receiveAsync(socket, config.getIntProperty("numHandlerThreads"), config.getIntProperty("maxMessageSize"), Map.of(
+                    1, input -> {
+                        try {
+                            return getWaitingPeopleUp((int) input.get(0));
+                        } catch (IOException | ClassNotFoundException e) {
+                            throw new UndeclaredThrowableException(e);
+                        }
+                    },
+                    2, input -> {
+                        try {
+                            return getWaitingPeopleDown((int) input.get(0));
+                        } catch (IOException | ClassNotFoundException e) {
+                            throw new UndeclaredThrowableException(e);
+                        }
+                    },
+                    3, input -> {
+                        try {
+                            handleFloorButton((int) input.get(0), (boolean) input.get(1));
                             return new AckMessage();
-                        }));
-
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        } catch (Exception e) {
+                        } catch (IOException | ClassNotFoundException e) {
+                            throw new UndeclaredThrowableException(e);
+                        }
+                    }));
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
@@ -143,6 +138,6 @@ public class Scheduler extends Thread implements SchedulerApi {
         }
         scheduler.setElevators(elevatorClients);
 
-        new Thread(scheduler, "Scheduler").start();
+        scheduler.start();
     }
 }
