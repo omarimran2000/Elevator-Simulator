@@ -34,6 +34,10 @@ public class Scheduler implements Runnable, SchedulerApi {
         }
     }
 
+    public ArrayList<> getElevators(){
+        return elevators;
+    }
+
     /**
      * Set the map of floors in the system
      *
