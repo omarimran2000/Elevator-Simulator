@@ -1,6 +1,7 @@
 package stub;
 
 import SchedulerSubsystem.SchedulerApi;
+import model.SendSet;
 import utill.Config;
 
 import java.io.IOException;
@@ -26,12 +27,12 @@ public class Scheduler extends StubClient implements SchedulerApi {
     }
 
     @Override
-    public Set<Integer> getWaitingPeopleUp(int floorNumber) throws IOException, ClassNotFoundException {
+    public SendSet getWaitingPeopleUp(int floorNumber) throws IOException, ClassNotFoundException {
         return sendAndReceive(1, floorNumber, inetAddress, port);
     }
 
     @Override
-    public Set<Integer> getWaitingPeopleDown(int floorNumber) throws IOException, ClassNotFoundException {
+    public SendSet getWaitingPeopleDown(int floorNumber) throws IOException, ClassNotFoundException {
         return sendAndReceive(2, floorNumber, inetAddress, port);
     }
 

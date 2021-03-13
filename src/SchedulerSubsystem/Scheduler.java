@@ -2,8 +2,8 @@ package SchedulerSubsystem;
 
 
 import ElevatorSubsystem.ElevatorApi;
-import FloorSubsystem.Floor;
 import FloorSubsystem.FloorApi;
+import model.SendSet;
 import utill.Config;
 import stub.StubServer;
 import java.io.IOException;
@@ -89,7 +89,7 @@ public class Scheduler implements Runnable, SchedulerApi {
                         },
                         2, input -> {
                             try {
-                                getWaitingPeopleDown((int)input.get(0));
+                                getWaitingPeopleDown((int) input.get(0));
                             } catch (IOException | ClassNotFoundException e) {
                                 throw new UndeclaredThrowableException(e);
                             }
@@ -103,11 +103,11 @@ public class Scheduler implements Runnable, SchedulerApi {
         }
     }
 
-    public Set<Integer> getWaitingPeopleUp(int floorNumber) throws IOException, ClassNotFoundException {
+    public SendSet getWaitingPeopleUp(int floorNumber) throws IOException, ClassNotFoundException {
         return floors.get(floorNumber).getWaitingPeopleUp();
     }
 
-    public Set<Integer> getWaitingPeopleDown(int floorNumber) throws IOException, ClassNotFoundException {
+    public SendSet getWaitingPeopleDown(int floorNumber) throws IOException, ClassNotFoundException {
         return floors.get(floorNumber).getWaitingPeopleDown();
     }
 }

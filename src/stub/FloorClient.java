@@ -1,11 +1,11 @@
 package stub;
 
 import FloorSubsystem.FloorApi;
+import model.SendSet;
 import utill.Config;
 
 import java.io.IOException;
 import java.net.InetAddress;
-import java.util.Set;
 
 public class FloorClient extends StubClient implements FloorApi {
     private final InetAddress inetAddress;
@@ -26,12 +26,12 @@ public class FloorClient extends StubClient implements FloorApi {
     }
 
     @Override
-    public Set<Integer> getWaitingPeopleUp() throws IOException, ClassNotFoundException {
+    public SendSet getWaitingPeopleUp() throws IOException, ClassNotFoundException {
         return sendAndReceive(1, inetAddress, port);
     }
 
     @Override
-    public Set<Integer> getWaitingPeopleDown() throws IOException, ClassNotFoundException {
+    public SendSet getWaitingPeopleDown() throws IOException, ClassNotFoundException {
         return sendAndReceive(2, inetAddress, port);
     }
 }

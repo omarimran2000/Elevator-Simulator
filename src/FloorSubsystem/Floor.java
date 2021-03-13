@@ -2,6 +2,7 @@ package FloorSubsystem;
 
 import SchedulerSubsystem.SchedulerApi;
 import model.Event;
+import model.SendSet;
 import utill.Config;
 
 import java.io.IOException;
@@ -91,9 +92,9 @@ public abstract class Floor implements Runnable, FloorApi {
     /**
      * @return the set of floors with people waiting to go up
      */
-    public Set<Integer> getWaitingPeopleUp() {
+    public SendSet getWaitingPeopleUp() {
         turnUpButtonOff();
-        Set<Integer> waitingPeople = Set.copyOf(waitingPeopleUp);
+        SendSet waitingPeople = (SendSet) Set.copyOf(waitingPeopleUp);
         waitingPeopleUp.clear();
         return waitingPeople;
     }
@@ -101,11 +102,11 @@ public abstract class Floor implements Runnable, FloorApi {
     /**
      * @return the set of floors with people waiting to go down
      */
-    public Set<Integer> getWaitingPeopleDown() {
+    public SendSet getWaitingPeopleDown() {
         turnDownButtonOff();
         Set<Integer> waitingPeople = Set.copyOf(waitingPeopleDown);
         waitingPeopleDown.clear();
-        return waitingPeople;
+        return (SendSet) waitingPeople;
     }
 
     /**
