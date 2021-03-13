@@ -91,8 +91,11 @@ public class Scheduler extends Thread implements SchedulerApi {
     @Override
     public Floors getWaitingPeople(int floorNumber) {
         logger.info("Stopped elevator on floor " + floorNumber + " asking for more destinations.");
-        Set<Destination> destinations = new HashSet<>(this.destinations.stream().collect(Collectors.groupingBy(destination -> destination.getFloorNumber() > floorNumber)).values().stream().max(Comparator.comparingInt(List::size)).orElse(new ArrayList<>()));
+        Set<Destination> destinations = new HashSet<>(this.destinations.stream()
+                .collect(Collectors.groupingBy(destination -> destination.getFloorNumber() > floorNumber)).values().stream()
+                .max(Comparator.comparingInt(List::size)).orElse(new ArrayList<>()));
         this.destinations.removeAll(destinations);
+        logger.info("returning " + destinations.size() + " to the stopped elevator");
         return new Floors(destinations.stream().map(Destination::getFloorNumber).collect(Collectors.toSet()));
     }
 
