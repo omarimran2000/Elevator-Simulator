@@ -53,10 +53,6 @@ public class Scheduler extends Thread implements SchedulerApi {
         }
     }
 
-    public ArrayList<> getElevators(){
-        return elevators;
-    }
-
     /**
      * Set the map of floors in the system
      *
@@ -136,6 +132,10 @@ public class Scheduler extends Thread implements SchedulerApi {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public List<ElevatorApi> getElevators() {
+        return elevators;
     }
 
     @Override

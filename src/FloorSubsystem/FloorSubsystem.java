@@ -46,7 +46,7 @@ public class FloorSubsystem {
             }
         }
 
-        if (max_floor_number > config.getIntProperty("numFloors")){
+        if (max_floor_number > config.getIntProperty("numFloors")) {
             throw new RuntimeException("csv has floor above max");
         }
         max_floor_number = config.getIntProperty("numFloors");
