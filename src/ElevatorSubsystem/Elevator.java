@@ -1,9 +1,15 @@
 package ElevatorSubsystem;
 
 import SchedulerSubsystem.SchedulerApi;
+import model.AckMessage;
+import model.Destination;
+import model.Floors;
+import stub.StubServer;
 import utill.Config;
 
 import java.io.IOException;
+import java.net.DatagramSocket;
+import java.net.SocketException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -17,7 +23,7 @@ import static java.lang.Math.abs;
  *
  * @version Feb 27, 2021
  */
-public class Elevator implements Runnable, ElevatorApi {
+public class Elevator extends Thread implements ElevatorApi {
 
     protected final SchedulerApi scheduler;
     protected final Config config;
@@ -26,11 +32,11 @@ public class Elevator implements Runnable, ElevatorApi {
     protected final Motor motor;
     protected final Map<Integer, ElevatorButton> buttons;
     protected final Map<Integer, ElevatorLamp> lamps;
-    protected final Set<Integer> destinationsInPath;
-    protected final Set<Integer> destinationsOutOfPath;
+    protected final Set<Integer> destinations;
     protected final int elevatorNumber;
     protected final int maxFloors;
     private final Logger logger;
+    private final DatagramSocket socket;
     protected int currentFloorNumber;
     private State state;
 
@@ -40,7 +46,7 @@ public class Elevator implements Runnable, ElevatorApi {
      * @param config
      * @param scheduler The system scheduler
      */
-    public Elevator(Config config, SchedulerApi scheduler, int elevatorNumber, int maxFloors) {
+    public Elevator(Config config, SchedulerApi scheduler, int elevatorNumber, int maxFloors) throws SocketException {
         this.config = config;
         this.scheduler = scheduler;
         this.maxFloors = maxFloors;
@@ -58,8 +64,8 @@ public class Elevator implements Runnable, ElevatorApi {
             buttons.put(i, new ElevatorButton(i));
             lamps.put(i, new ElevatorLamp(elevatorNumber, i));
         }
-        destinationsInPath = new HashSet<>();
-        destinationsOutOfPath = new HashSet<>();
+        destinations = new HashSet<>();
+        socket = new DatagramSocket(config.getIntProperty("elevatorPort") + elevatorNumber);
     }
 
     /**
@@ -91,27 +97,51 @@ public class Elevator implements Runnable, ElevatorApi {
      */
     @Override
     public void run() {
+        try {
+            StubServer.receiveAsync(socket, config.getIntProperty("numHandlerThreads"), config.getIntProperty("maxMessageSize"), Map.of(
+                    1, input -> distanceTheFloor((Destination) input.get(0)),
+                    2, input -> {
+                        addDestination((Destination) input.get(0));
+                        return new AckMessage();
+                    },
+                    3, input -> canAddDestination((Destination) input.get(0))));
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void interrupt() {
+        super.interrupt();
+        // close socket to interrupt receive
+        socket.close();
     }
 
     /**
      * Gets the number of floors between the current and destination floors
      *
-     * @param floorNumber The destination floor number
-     * @param isUp        The direction of travel (true = up, false = down)
+     * @param destination Potential destination for the elevator
      * @return the distance between the two floors
      */
-    public synchronized int distanceTheFloor(int floorNumber, boolean isUp) {
-        return state.handleDistanceTheFloor(floorNumber, isUp);
+    @Override
+    public synchronized int distanceTheFloor(Destination destination) {
+        return state.handleDistanceTheFloor(destination);
     }
 
     /**
      * Adds the specified floor number to the list of destinations
      *
-     * @param floorNumber The number of destination floor to add
-     * @param isUp        The direction of the elevator
+     * @param destination The new destination for the Elevator
      */
-    public synchronized void addDestination(int floorNumber, boolean isUp) {
-        state.handleAddDestination(floorNumber, isUp);
+    @Override
+    public synchronized void addDestination(Destination destination) {
+        state.handleAddDestination(destination);
+    }
+
+    @Override
+    public synchronized boolean canAddDestination(Destination destination) {
+        return state.handleCanAddDestination(destination);
     }
 
     /**
@@ -149,19 +179,17 @@ public class Elevator implements Runnable, ElevatorApi {
         /**
          * Gets the number of floors between the current and destination floors
          *
-         * @param floorNumber The destination floor number
-         * @param isUp        The direction of travel (true = up, false = down)
+         * @param destination Potential destination for the elevator
          * @return the distance between the two floors
          */
-        int handleDistanceTheFloor(int floorNumber, boolean isUp);
+        int handleDistanceTheFloor(Destination destination);
 
         /**
          * Adds the specified floor number to the list of destinations
          *
-         * @param floorNumber The number of destination floor to add
-         * @param isUp        The direction of the elevator
+         * @param destination The new destination for the Elevator
          */
-        void handleAddDestination(int floorNumber, boolean isUp);
+        void handleAddDestination(Destination destination);
 
         /**
          * @return true if the elevator should stop at the next floor
@@ -172,6 +200,8 @@ public class Elevator implements Runnable, ElevatorApi {
          * Actions for when the elevator stops at a floor
          */
         void handleAtFloor() throws IOException, ClassNotFoundException;
+
+        boolean handleCanAddDestination(Destination destination);
     }
 
     /**
@@ -190,24 +220,24 @@ public class Elevator implements Runnable, ElevatorApi {
         /**
          * Gets the number of floors between the current and destination floors
          *
-         * @param floorNumber The destination floor number
-         * @param isUp        The direction of travel (true = up, false = down)
+         * @param destination Potential destination for the elevator
          * @return the distance between the two floors
          */
-        public int handleDistanceTheFloor(int floorNumber, boolean isUp) {
-            return abs(floorNumber - currentFloorNumber);
+        @Override
+        public int handleDistanceTheFloor(Destination destination) {
+            return abs(destination.getFloorNumber() - currentFloorNumber);
         }
 
         /**
          * Adds the specified floor number to the list of destinations
          *
-         * @param floorNumber The number of destination floor to add
-         * @param isUp        The direction of the elevator
+         * @param destination The new destination for the Elevator
          */
-        public synchronized void handleAddDestination(int floorNumber, boolean isUp) {
-            new Thread(arrivalSensor).start();
-            destinationsInPath.add(floorNumber);
-            state = floorNumber > currentFloorNumber ? new ElevatorMovingUp() : new ElevatorMovingDown();
+        @Override
+        public synchronized void handleAddDestination(Destination destination) {
+            arrivalSensor.start();
+            destinations.add(destination.getFloorNumber());
+            state = destination.getFloorNumber() > currentFloorNumber ? new ElevatorMovingUp() : new ElevatorMovingDown();
         }
 
         /**
@@ -225,6 +255,11 @@ public class Elevator implements Runnable, ElevatorApi {
         public void handleAtFloor() {
             throw new RuntimeException();
         }
+
+        @Override
+        public boolean handleCanAddDestination(Destination destination) {
+            return true;
+        }
     }
 
     /**
@@ -240,12 +275,20 @@ public class Elevator implements Runnable, ElevatorApi {
         /**
          * @return the set of floors with people waiting for an elevator moving in the specified direction
          */
-        abstract protected Set<Integer> getWaitingPeople() throws IOException, ClassNotFoundException;
+        abstract protected Floors getWaitingPeople() throws IOException, ClassNotFoundException;
 
         /**
-         * Reverses the direction of travel
+         * Adds the specified floor number to the list of destinations
+         *
+         * @param destination The new destination for the Elevator
          */
-        abstract protected void ChangeDirectionOfTravel();
+        @Override
+        public void handleAddDestination(Destination destination) {
+            if (arrivalSensor.isNotRunning()) {
+                arrivalSensor.start();
+            }
+            destinations.add(destination.getFloorNumber());
+        }
 
         /**
          * Turns off the previous lamp and turns on the next one
@@ -269,30 +312,32 @@ public class Elevator implements Runnable, ElevatorApi {
             logger.info("Elevator " + elevatorNumber + " stopped at floor " + currentFloorNumber);
             motor.setMoving(false);
             door.open();
-            destinationsInPath.remove(currentFloorNumber);
-            Set<Integer> destinations = getWaitingPeople();
-            destinations.forEach(destination -> buttons.get(destination).setOn(true));
-            destinationsInPath.addAll(destinations);
+            destinations.remove(currentFloorNumber);
+            Floors floors = getWaitingPeople();
+            floors.getFloors().forEach(destination -> buttons.get(destination).setOn(true));
+            destinations.addAll(floors.getFloors());
             try {
                 Thread.sleep(config.getIntProperty("waitTime"));
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
             door.close();
-            if (destinationsInPath.isEmpty()) {
-                if (!destinationsOutOfPath.isEmpty()) {
-                    ChangeDirectionOfTravel();
-                    destinationsInPath.addAll(destinationsOutOfPath);
-                    destinationsOutOfPath.clear();
-
+            if (destinations.isEmpty()) {
+                destinations.addAll(scheduler.getWaitingPeople(currentFloorNumber).getFloors());
+                if (destinations.isEmpty()) {
+                    arrivalSensor.interrupt();
+                    state = new ElevatorNotMoving();
+                } else {
+                    if (destinations.stream().anyMatch(floor -> floor < currentFloorNumber)) {
+                        state = new ElevatorMovingDown();
+                    } else {
+                        state = new ElevatorMovingUp();
+                    }
                     //Handle the edge case when the elevator is turning around on the floor where it needs to pick up someone.
-                    if (destinationsInPath.contains(currentFloorNumber)) {
+                    if (destinations.contains(currentFloorNumber)) {
                         atFloor();
                     }
                     motor.setMoving(true);
-                } else {
-                    arrivalSensor.shutDown();
-                    state = new ElevatorNotMoving();
                 }
             } else {
                 motor.setMoving(true);
@@ -312,32 +357,13 @@ public class Elevator implements Runnable, ElevatorApi {
         /**
          * Gets the number of floors between the current and destination floors
          *
-         * @param floorNumber The destination floor number
-         * @param isUp        The direction of travel (true = up, false = down)
+         * @param destination Potential destination for the elevator
          * @return the distance between the two floors
          */
         @Override
-        public int handleDistanceTheFloor(int floorNumber, boolean isUp) {
-            return abs(floorNumber - currentFloorNumber) +
-                    (isUp ? maxFloors - currentFloorNumber : 0);
-        }
-
-        /**
-         * Adds the specified floor number to the list of destinations
-         *
-         * @param floorNumber The number of destination floor to add
-         * @param isUp        The direction of the elevator
-         */
-        @Override
-        public void handleAddDestination(int floorNumber, boolean isUp) {
-            if (arrivalSensor.isNotRunning()) {
-                new Thread(arrivalSensor).start();
-            }
-            if (isUp && floorNumber > currentFloorNumber) {
-                destinationsInPath.add(floorNumber);
-            } else {
-                destinationsOutOfPath.add(floorNumber);
-            }
+        public int handleDistanceTheFloor(Destination destination) {
+            return abs(destination.getFloorNumber() - currentFloorNumber) +
+                    (destination.isUp() ? maxFloors - currentFloorNumber : 0);
         }
 
         /**
@@ -345,7 +371,12 @@ public class Elevator implements Runnable, ElevatorApi {
          */
         @Override
         public boolean handleStopForNextFloor() {
-            return destinationsInPath.contains(++currentFloorNumber);
+            return destinations.contains(++currentFloorNumber);
+        }
+
+        @Override
+        public boolean handleCanAddDestination(Destination destination) {
+            return destination.isUp() && destination.getFloorNumber() > currentFloorNumber;
         }
 
         /**
@@ -360,17 +391,10 @@ public class Elevator implements Runnable, ElevatorApi {
          * @return the set of floors with people waiting for an elevator moving upwards
          */
         @Override
-        protected Set<Integer> getWaitingPeople() throws IOException, ClassNotFoundException {
+        protected Floors getWaitingPeople() throws IOException, ClassNotFoundException {
             return scheduler.getWaitingPeopleUp(currentFloorNumber);
         }
 
-        /**
-         * Reverses the direction of travel
-         */
-        @Override
-        protected void ChangeDirectionOfTravel() {
-            state = new ElevatorMovingDown();
-        }
     }
 
     /**
@@ -384,31 +408,17 @@ public class Elevator implements Runnable, ElevatorApi {
         /**
          * Gets the number of floors between the current and destination floors
          *
-         * @param floorNumber The destination floor number
-         * @param isUp        The direction of travel (true = up, false = down)
+         * @param destination Potential destination for the elevator
          * @return the distance between the two floors
          */
         @Override
-        public int handleDistanceTheFloor(int floorNumber, boolean isUp) {
-            return abs(floorNumber - currentFloorNumber) + currentFloorNumber;
+        public int handleDistanceTheFloor(Destination destination) {
+            return abs(destination.getFloorNumber() - currentFloorNumber) + currentFloorNumber;
         }
 
-        /**
-         * Adds the specified floor number to the list of destinations
-         *
-         * @param floorNumber The number of destination floor to add
-         * @param isUp        The direction of the elevator
-         */
         @Override
-        public void handleAddDestination(int floorNumber, boolean isUp) {
-            if (arrivalSensor.isNotRunning()) {
-                new Thread(arrivalSensor).start();
-            }
-            if (!isUp && floorNumber < currentFloorNumber) {
-                destinationsInPath.add(floorNumber);
-            } else {
-                destinationsOutOfPath.add(floorNumber);
-            }
+        public boolean handleCanAddDestination(Destination destination) {
+            return !destination.isUp() && destination.getFloorNumber() < currentFloorNumber;
         }
 
         /**
@@ -416,7 +426,7 @@ public class Elevator implements Runnable, ElevatorApi {
          */
         @Override
         public boolean handleStopForNextFloor() {
-            return destinationsInPath.contains(--currentFloorNumber);
+            return destinations.contains(--currentFloorNumber);
         }
 
         /**
@@ -431,17 +441,11 @@ public class Elevator implements Runnable, ElevatorApi {
          * @return the set of floors with people waiting for an elevator moving downwards
          */
         @Override
-        protected Set<Integer> getWaitingPeople() throws IOException, ClassNotFoundException {
+        protected Floors getWaitingPeople() throws IOException, ClassNotFoundException {
             return scheduler.getWaitingPeopleDown(currentFloorNumber);
         }
 
-        /**
-         * Reverses the direction of travel
-         */
-        @Override
-        protected void ChangeDirectionOfTravel() {
-            state = new ElevatorMovingUp();
-        }
+
     }
 }
 

@@ -2,10 +2,14 @@ package FloorSubsystem;
 
 import SchedulerSubsystem.SchedulerApi;
 import model.Event;
+import stub.SchedulerClient;
 import utill.Config;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.net.InetAddress;
+import java.net.SocketException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -24,7 +28,7 @@ public class FloorSubsystem {
      * @param schedule  the list of events
      * @return The map of the floors
      */
-    public static Map<Integer, Floor> generateFloors(Config config, SchedulerApi scheduler, List<Event> schedule) {
+    public static Map<Integer, Floor> generateFloors(Config config, SchedulerApi scheduler, List<Event> schedule) throws SocketException {
         Map<Integer, Floor> floors = new HashMap<>();
 
         Map<Integer, List<Event>> schedule_by_floor = schedule.stream().collect(groupingBy(Event::getFloorNumber));
@@ -41,6 +45,11 @@ public class FloorSubsystem {
                 }
             }
         }
+
+        if (max_floor_number > config.getIntProperty("numFloors")){
+            throw new RuntimeException("csv has floor above max");
+        }
+        max_floor_number = config.getIntProperty("numFloors");
 
         floors.put(0, new BottomFloor(config, 0, scheduler, schedule_by_floor.getOrDefault(0, new ArrayList<>())));
         floors.put(max_floor_number, new TopFloor(config, max_floor_number, scheduler, schedule_by_floor.getOrDefault(max_floor_number, new ArrayList<>())));
@@ -60,7 +69,7 @@ public class FloorSubsystem {
      * @throws FileNotFoundException
      * @throws ParseException
      */
-    public static Map<Integer, Floor> generateFloors(Config config, SchedulerApi scheduler, String schedule_filename) throws FileNotFoundException, ParseException {
+    public static Map<Integer, Floor> generateFloors(Config config, SchedulerApi scheduler, String schedule_filename) throws FileNotFoundException, ParseException, SocketException {
         return generateFloors(config, scheduler, FloorSubsystem.readCSV(config, schedule_filename));
     }
 
@@ -83,5 +92,12 @@ public class FloorSubsystem {
 
         scanner.close();
         return schedule;
+    }
+
+    public static void main(String[] args) throws IOException, ParseException {
+        Config config = new Config();
+        SchedulerApi schedulerApi = new SchedulerClient(config, InetAddress.getLocalHost(), config.getIntProperty("schedulerPort"));
+        Map<Integer, Floor> floors = generateFloors(config, schedulerApi, config.getProperty("csvFileName"));
+        floors.forEach((floorNumber, floor) -> floor.start());
     }
 }

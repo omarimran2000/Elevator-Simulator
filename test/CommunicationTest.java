@@ -25,13 +25,14 @@ class CommunicationTest {
      */
     @Test
     void CommsTest() throws ParseException, IOException {
-        Scheduler scheduler = new Scheduler();
+
         Config config = new Config();
+        Scheduler scheduler = new Scheduler(config);
 
         Map<Integer, Floor> floors = generateFloors(config, scheduler, config.getProperty("csvFileName"));
         scheduler.setFloors(floors.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue)));
 
-        int maxFloor = config.getIntProperty("maxFloor");
+        int maxFloor = config.getIntProperty("numFloors");
         List<Elevator> elevators = ElevatorSubsystem.generateElevators(config, scheduler, maxFloor);
         scheduler.setElevators(new ArrayList<>(elevators));
 
@@ -41,7 +42,7 @@ class CommunicationTest {
         assertFalse(floors.get(0).getTop().isOn());
         assertEquals(0, elevator.getCurrentFloorNumber());
 
-        floors.get(0).run();
+        floors.get(0).start();
         assertEquals(0, elevator.getCurrentFloorNumber());
     }
 }

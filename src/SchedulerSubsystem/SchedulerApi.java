@@ -1,13 +1,16 @@
 package SchedulerSubsystem;
 
+import model.Destination;
+import model.Floors;
+
 import java.io.IOException;
-import java.util.Set;
 
 public interface SchedulerApi {
-    Set<Integer> getWaitingPeopleUp(int floorNumber) throws IOException, ClassNotFoundException;
+    Floors getWaitingPeopleUp(int floorNumber) throws IOException, ClassNotFoundException;
 
-    Set<Integer> getWaitingPeopleDown(int floorNumber) throws IOException, ClassNotFoundException;
+    Floors getWaitingPeopleDown(int floorNumber) throws IOException, ClassNotFoundException;
 
-    void handleFloorButton(int floorNumber, boolean isUp) throws IOException, ClassNotFoundException;
+    void handleFloorButton(Destination destination) throws IOException, ClassNotFoundException;
 
+    Floors getWaitingPeople(int floorNumber) throws IOException, ClassNotFoundException;
 }

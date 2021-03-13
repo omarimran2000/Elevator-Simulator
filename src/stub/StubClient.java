@@ -7,6 +7,7 @@ import java.io.*;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.net.SocketTimeoutException;
 import java.util.List;
 
 /**
@@ -132,18 +133,41 @@ public abstract class StubClient {
      * @throws IOException IOException is thrown if the server fails to send or receive to the port.
      */
     protected byte[] sendAndReceive(DatagramSocket datagramSocket, byte[] data, InetAddress inetAddress, int port) throws IOException {
-        //set socket to time
-        datagramSocket.setSoTimeout(config.getIntProperty("timeout"));
+        return sendAndReceive(datagramSocket, data, inetAddress, port, 2);
+    }
 
-        //response buff
-        byte[] buff = new byte[config.getIntProperty("maxMessageSize")];
-        DatagramPacket datagramPacket = new DatagramPacket(buff, buff.length);
+    /**
+     * sendAndReceive sends bytes on a given socket and wait for the response.
+     *
+     * @param datagramSocket The socket to send and receive bytes.
+     * @param data           The bytes to send.
+     * @param inetAddress    The IP address to send the bytes to.
+     * @param port           The port to send the bytes to.
+     * @param numRetries     The Nnmber of times to retry on timeout.
+     * @return The bytes receive on the socket.
+     * @throws IOException IOException is thrown if the server fails to send or receive to the port.
+     */
+    protected byte[] sendAndReceive(DatagramSocket datagramSocket, byte[] data, InetAddress inetAddress, int port, int numRetries) throws IOException {
+        if (numRetries > 0) {
+            //set socket to time
+            datagramSocket.setSoTimeout(config.getIntProperty("timeout"));
 
-        //send request
-        datagramSocket.send(new DatagramPacket(data, data.length, inetAddress, port));
+            //response buff
+            byte[] buff = new byte[config.getIntProperty("maxMessageSize")];
+            DatagramPacket datagramPacket = new DatagramPacket(buff, buff.length);
 
-        //receive response
-        datagramSocket.receive(datagramPacket);
-        return buff;
+            //send request
+            datagramSocket.send(new DatagramPacket(data, data.length, inetAddress, port));
+
+            //receive response
+            try {
+                datagramSocket.receive(datagramPacket);
+            } catch (SocketTimeoutException e) {
+                sendAndReceive(datagramSocket, data, inetAddress, port, --numRetries);
+            }
+            return buff;
+        } else {
+            throw new SocketTimeoutException();
+        }
     }
 }
