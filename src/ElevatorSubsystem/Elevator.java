@@ -94,6 +94,14 @@ public class Elevator implements Runnable, ElevatorApi {
      */
     @Override
     public void run() {
+        try {
+
+            StubServer.receiveAsync(socket, config.getIntProperty("numHandlerThreads"), config.getIntProperty("maxMessageSize"), Map.of(
+                    1, input -> distanceTheFloor((int)input.get(0), (boolean) input.get(1)),
+                    2, input -> addDestination((int)input.get(0), (boolean) input.get(1))));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -446,16 +454,7 @@ public class Elevator implements Runnable, ElevatorApi {
             state = new ElevatorMovingUp();
         }
 
-        public void run(){
-            try {
 
-                StubServer.receiveAsync(socket, config.getIntProperty("numHandlerThreads"), config.getIntProperty("maxMessageSize"), Map.of(
-                        1, input -> distanceTheFloor(input.get(0), input.get(1)),
-                        2, input -> addDestination(input.get(0), input.get(1))));
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
     }
 }
 
