@@ -9,7 +9,7 @@ import java.net.InetAddress;
 import java.util.List;
 import java.util.Set;
 
-public class Scheduler extends StubClient implements SchedulerApi {
+public class SchedulerClient extends StubClient implements SchedulerApi {
     private final InetAddress inetAddress;
     private final int port;
 
@@ -20,7 +20,7 @@ public class Scheduler extends StubClient implements SchedulerApi {
      * @param inetAddress
      * @param port
      */
-    public Scheduler(Config config, InetAddress inetAddress, int port) {
+    public SchedulerClient(Config config, InetAddress inetAddress, int port) {
         super(config);
         this.inetAddress = inetAddress;
         this.port = port;

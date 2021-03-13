@@ -6,6 +6,7 @@ import SchedulerSubsystem.Scheduler;
 import SchedulerSubsystem.SchedulerApi;
 import stub.ElevatorClient;
 import stub.FloorClient;
+import stub.SchedulerClient;
 import utill.Config;
 
 import java.io.FileNotFoundException;
@@ -37,7 +38,7 @@ public class Main {
         InetAddress localhost = InetAddress.getLocalHost();
         Config config = new Config();
         Scheduler scheduler = new Scheduler(config);
-        SchedulerApi schedulerApi = new stub.Scheduler(config,localhost,config.getIntProperty("schedulerPort") );
+        SchedulerApi schedulerApi = new SchedulerClient(config,localhost,config.getIntProperty("schedulerPort") );
         try {
             Map<Integer, Floor> floors = generateFloors(config, schedulerApi, config.getProperty("csvFileName"));
 
