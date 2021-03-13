@@ -19,8 +19,9 @@ The Floors will send UDP requests to the Scheduler which will find the best elev
 In this, the Floors are the Clients, Scheduler is the Host and the Elevators are the servers. The elevator will then move to the destination floor of the event. 
 This will keep happening until all the events in the CSV file have been passed.
 
-There are 6 tests included, 5 are from previous iterations (i.e. CSVTest, CommunicationTest, StateTest, ElevatorMotorTest, FloorsTest). The new test
-added is StubTest which tests the sendAndReceive and interrupt methods as well as the socket timeout.
+There are 7 tests included, 5 are from previous iterations (i.e. CSVTest, CommunicationTest, StateTest, ElevatorMotorTest, FloorsTest). The new test
+added is StubTest which tests the sendAndReceive and interrupt methods as well as the socket timeout. Another new test 
+is the MultipleElevatorsTest to check if the system is creating the multiple elevators.  
 
 Once the scheduler thread starts, the timer will also start. Events will be scheduled based on their priorities (i.e.
 their time) so that the first event to be called will be the earlier ones. The timings of the requests from the floor
@@ -85,6 +86,7 @@ In future project iterations, there will be faults introduced to see if the syst
     * FloorsTest.java: Testing the floors generation
     * StateTest.java: Testing the states
     * StubTest.java: Testing the stubs and remote procedure calls
+    * MultipleElevatorsTest.java: Testing the use of multiple elevators 
     
 * Main.java: the main class that starts the threads
 * test.csv: the input file that simulates the events
