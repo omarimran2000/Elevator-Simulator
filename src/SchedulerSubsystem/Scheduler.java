@@ -80,8 +80,20 @@ public class Scheduler implements Runnable, SchedulerApi {
         try {
             try {
                 StubServer.receiveAsync(socket, config.getIntProperty("numHandlerThreads"), config.getIntProperty("maxMessageSize"), Map.of(
-                        1, input -> getWaitingPeopleUp((int)input.get(0)),
-                        2, input -> getWaitingPeopleDown((int)input.get(0))));
+                        1, input -> {
+                            try {
+                                return getWaitingPeopleUp((int)input.get(0));
+                            } catch (IOException | ClassNotFoundException e) {
+                                e.printStackTrace();
+                            }
+                        },
+                        2, input -> {
+                            try {
+                                return getWaitingPeopleDown((int)input.get(0));
+                            } catch (IOException | ClassNotFoundException e) {
+                                e.printStackTrace();
+                            }
+                        }));
 
             } catch (IOException e) {
                 e.printStackTrace();
