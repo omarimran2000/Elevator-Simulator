@@ -1,10 +1,14 @@
 package ElevatorSubsystem;
 
 import SchedulerSubsystem.SchedulerApi;
+import stub.SchedulerClient;
 import utill.Config;
 
+import java.io.IOException;
+import java.net.InetAddress;
 import java.net.SocketException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class ElevatorSubsystem {
@@ -18,5 +22,12 @@ public class ElevatorSubsystem {
             new Thread(tempElev).start();
         }
         return elevators;
+    }
+
+    public static void main(String[] args) throws IOException {
+        InetAddress localhost = InetAddress.getLocalHost();
+        Config config = new Config();
+        SchedulerApi schedulerApi = new SchedulerClient(config,localhost,config.getIntProperty("schedulerPort") );
+        ElevatorSubsystem.generateElevators(config, schedulerApi, config.getIntProperty("maxFloors"));
     }
 }

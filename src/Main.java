@@ -35,26 +35,6 @@ public class Main {
      * @param args
      */
     public static void main(String[] args) throws IOException {
-        InetAddress localhost = InetAddress.getLocalHost();
-        Config config = new Config();
-        Scheduler scheduler = new Scheduler(config);
-        SchedulerApi schedulerApi = new SchedulerClient(config,localhost,config.getIntProperty("schedulerPort") );
-        try {
-            Map<Integer, Floor> floors = generateFloors(config, schedulerApi, config.getProperty("csvFileName"));
 
-            scheduler.setFloors(floors.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, e -> new FloorClient(config, localhost, config.getIntProperty("floorPort") + e.getKey()))));
-
-            List<Elevator> elevators = ElevatorSubsystem.generateElevators(config, schedulerApi, Collections.max(floors.keySet()));
-
-            List<ElevatorApi> elevatorClients = new ArrayList<>();
-            for (int i = 0; i < elevators.size(); i++) {
-                elevatorClients.add(new ElevatorClient(config, localhost, config.getIntProperty("elevatorPort") + i+1));
-            }
-            scheduler.setElevators(elevatorClients);
-            floors.forEach((floorNumber, floor) -> new Thread(floor, "Floor " + floorNumber).start());
-        } catch (FileNotFoundException | ParseException e) {
-            e.printStackTrace();
-        }
-        new Thread(scheduler, "Scheduler").start();
     }
 }

@@ -2,10 +2,14 @@ package FloorSubsystem;
 
 import SchedulerSubsystem.SchedulerApi;
 import model.Event;
+import stub.SchedulerClient;
 import utill.Config;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -83,5 +87,13 @@ public class FloorSubsystem {
 
         scanner.close();
         return schedule;
+    }
+
+    public static void main(String[] args) throws IOException, ParseException {
+        InetAddress localhost = InetAddress.getLocalHost();
+        Config config = new Config();
+        SchedulerApi schedulerApi = new SchedulerClient(config,localhost,config.getIntProperty("schedulerPort") );
+        Map<Integer, Floor> floors = generateFloors(config, schedulerApi, config.getProperty("csvFileName"));
+        floors.forEach((floorNumber, floor) -> new Thread(floor, "Floor " + floorNumber).start());
     }
 }
