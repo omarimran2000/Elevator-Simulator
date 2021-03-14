@@ -153,7 +153,9 @@ public class Scheduler extends Thread implements SchedulerApi {
         return elevators;
     }
 
-
+    /**
+     * Interupt method
+     */
     @Override
     public void interrupt() {
         super.interrupt();
@@ -162,7 +164,7 @@ public class Scheduler extends Thread implements SchedulerApi {
     }
 
     /**
-     *
+     * Get waiting people up
      * @param floorNumber The corresponding floor number for the requests
      * @return Floors The Floors object of people waiting to go up
      * @throws IOException
@@ -174,6 +176,13 @@ public class Scheduler extends Thread implements SchedulerApi {
         return floors.get(floorNumber).getWaitingPeopleUp();
     }
 
+    /**
+     * Get waiting people down
+     * @param floorNumber the corresponding floor number
+     * @return
+     * @throws IOException
+     * @throws ClassNotFoundException
+     */
     @Override
     public Floors getWaitingPeopleDown(int floorNumber) throws IOException, ClassNotFoundException {
         logger.info("getting people wait to go down on floor " + floorNumber);

@@ -7,6 +7,10 @@ import utill.Config;
 import java.io.IOException;
 import java.net.InetAddress;
 
+/**
+ * The Client to send to the Elevator
+ * @version March 13th 2021
+ */
 public class ElevatorClient extends StubClient implements ElevatorApi {
     private final InetAddress inetAddress;
     private final int port;
@@ -24,16 +28,36 @@ public class ElevatorClient extends StubClient implements ElevatorApi {
         this.port = port;
     }
 
+    /**
+     * The distance to the floor
+     * @param destination  floor
+     * @return distance
+     * @throws IOException
+     * @throws ClassNotFoundException
+     */
     @Override
     public int distanceTheFloor(Destination destination) throws IOException, ClassNotFoundException {
         return sendAndReceive(1, destination, inetAddress, port);
     }
 
+    /**
+     * Adding the destination to the floor
+     * @param destination
+     * @throws IOException
+     * @throws ClassNotFoundException
+     */
     @Override
     public void addDestination(Destination destination) throws IOException, ClassNotFoundException {
         sendAndReceive(2, destination, inetAddress, port);
     }
 
+    /**
+     * Returns if destination can be added
+     * @param destination floor
+     * @return if can be added
+     * @throws IOException
+     * @throws ClassNotFoundException
+     */
     @Override
     public boolean canAddDestination(Destination destination) throws IOException, ClassNotFoundException {
         return sendAndReceive(3, destination, inetAddress, port);

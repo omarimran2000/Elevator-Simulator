@@ -12,7 +12,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 public class MultipleElevatorsTest {
-
+    /**
+     * Tests multiple elevators
+     * @throws IOException
+     */
     @Test
     public void multiElevators() throws IOException {
         Config config = new Config();

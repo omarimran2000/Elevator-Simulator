@@ -10,8 +10,20 @@ import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Class for the ElevatorSubsystem
+ *
+ * @version March 13th 2021
+ */
 public class ElevatorSubsystem {
-
+    /**
+     * Generate elevators
+     * @param config config file
+     * @param scheduler scheduler
+     * @param maxFloor the max floor in the system
+     * @return the elevators
+     * @throws SocketException
+     */
     public static List<Elevator> generateElevators(Config config, SchedulerApi scheduler, int maxFloor) throws SocketException {
         List<Elevator> elevators = new ArrayList<>();
 
