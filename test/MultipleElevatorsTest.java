@@ -14,6 +14,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 public class MultipleElevatorsTest {
     /**
      * Tests multiple elevators
+     *
      * @throws IOException
      */
     @Test

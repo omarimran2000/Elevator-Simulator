@@ -7,6 +7,7 @@ import java.io.IOException;
 public interface ElevatorApi {
     /**
      * Returns the distance to the floor given the current destination of the elevator and the elevators current position
+     *
      * @param destination
      * @return distance between elevator and its destination
      * @throws IOException
@@ -16,6 +17,7 @@ public interface ElevatorApi {
 
     /**
      * Adds a desination for the elevator
+     *
      * @param destination
      * @throws IOException
      * @throws ClassNotFoundException
@@ -24,6 +26,7 @@ public interface ElevatorApi {
 
     /**
      * Checks if the elevator can add the desired destination to its queue list
+     *
      * @param destination
      * @return a boolean value that represents whether or not the destination can be added to its queue list
      * @throws IOException

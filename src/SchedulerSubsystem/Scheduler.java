@@ -66,6 +66,7 @@ public class Scheduler extends Thread implements SchedulerApi {
 
     /**
      * Handles a floorButton push request and adds its destination to one of the elevators
+     *
      * @param destination The current destination of the elevator event
      * @throws IOException
      * @throws ClassNotFoundException
@@ -96,6 +97,7 @@ public class Scheduler extends Thread implements SchedulerApi {
 
     /**
      * Returns the set of people waiting to go up at a specific floor
+     *
      * @param floorNumber
      * @return Floors
      */
@@ -147,6 +149,7 @@ public class Scheduler extends Thread implements SchedulerApi {
 
     /**
      * Getter method for the elevators List
+     *
      * @return elevators The List of elevators
      */
     public List<ElevatorApi> getElevators() {
@@ -165,6 +168,7 @@ public class Scheduler extends Thread implements SchedulerApi {
 
     /**
      * Get waiting people up
+     *
      * @param floorNumber The corresponding floor number for the requests
      * @return Floors The Floors object of people waiting to go up
      * @throws IOException
@@ -178,6 +182,7 @@ public class Scheduler extends Thread implements SchedulerApi {
 
     /**
      * Get waiting people down
+     *
      * @param floorNumber the corresponding floor number
      * @return
      * @throws IOException
