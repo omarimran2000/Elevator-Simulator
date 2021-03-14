@@ -64,6 +64,12 @@ public class Scheduler extends Thread implements SchedulerApi {
         }
     }
 
+    /**
+     * Handles a floorButton push request and adds its destination to one of the elevators
+     * @param destination The current destination of the elevator event
+     * @throws IOException
+     * @throws ClassNotFoundException
+     */
     @Override
     public void handleFloorButton(Destination destination) throws IOException, ClassNotFoundException {
         logger.info("Scheduler: scheduling event for floor " + destination.getFloorNumber());
@@ -88,6 +94,11 @@ public class Scheduler extends Thread implements SchedulerApi {
         }
     }
 
+    /**
+     * Returns the set of people waiting to go up at a specific floor
+     * @param floorNumber
+     * @return Floors
+     */
     @Override
     public Floors getWaitingPeople(int floorNumber) {
         logger.info("Stopped elevator on floor " + floorNumber + " asking for more destinations.");
@@ -134,9 +145,14 @@ public class Scheduler extends Thread implements SchedulerApi {
         }
     }
 
+    /**
+     * Getter method for the elevators List
+     * @return elevators The List of elevators
+     */
     public List<ElevatorApi> getElevators() {
         return elevators;
     }
+
 
     @Override
     public void interrupt() {
@@ -145,6 +161,13 @@ public class Scheduler extends Thread implements SchedulerApi {
         socket.close();
     }
 
+    /**
+     *
+     * @param floorNumber The corresponding floor number for the requests
+     * @return Floors The Floors object of people waiting to go up
+     * @throws IOException
+     * @throws ClassNotFoundException
+     */
     @Override
     public Floors getWaitingPeopleUp(int floorNumber) throws IOException, ClassNotFoundException {
         logger.info("getting people wait to go up on floor " + floorNumber);
