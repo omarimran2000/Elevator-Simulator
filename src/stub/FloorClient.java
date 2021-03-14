@@ -9,7 +9,7 @@ import java.net.InetAddress;
 
 /**
  * Client Socket that creates information packets (using Serializable) and sends them through the socket to
- * the server
+ * the other clients
  */
 public class FloorClient extends StubClient implements FloorApi {
     private final InetAddress inetAddress;

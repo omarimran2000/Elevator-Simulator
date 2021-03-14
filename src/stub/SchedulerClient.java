@@ -9,7 +9,8 @@ import java.io.IOException;
 import java.net.InetAddress;
 
 /**
- *
+ *The Client Socket that creates information packets (using serializable) to be sent through the socket
+ *to the other clients
  */
 public class SchedulerClient extends StubClient implements SchedulerApi {
     private final InetAddress inetAddress;
