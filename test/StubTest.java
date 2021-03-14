@@ -30,11 +30,17 @@ public class StubTest {
 
 
         HelloWorldClient helloWorldClient = new HelloWorldClient(config, InetAddress.getLocalHost(), port);
+        //Checks to see that the client receivces the message with the proper information (function number 1)
         assertEquals(new HelloWorld(testStringOutput), helloWorldClient.sendAndReceive(new HelloWorld(testStringInput1)));
+        //Checks that the number of calls is 1 since only 1 message has been sent
         assertEquals(1, helloWorldServer.getNumCalls().get());
+        //Checks to see that the client receivces the message with the proper information (function number 2)
         assertEquals(new HelloWorld(testStringOutput), helloWorldClient.sendAndReceive(new HelloWorld(testStringInput1), new HelloWorld(testStringInput2)));
+        //Checks that the number of calls has increased by 1 since last check
         assertEquals(2, helloWorldServer.getNumCalls().get());
+        //Checks to see that the client receivces the message with the proper information (function number 3)
         helloWorldClient.sendAndReceiveAck(new HelloWorld(testStringInput1));
+        //Checks that the number of calls has increased by 1 since last check
         assertEquals(3, helloWorldServer.getNumCalls().get());
 
         helloWorldServer.interrupt();
@@ -48,7 +54,7 @@ public class StubTest {
 
         HelloWorldClient helloWorldClient = new HelloWorldClient(config, InetAddress.getLocalHost(), port);
         assertThrows(SocketTimeoutException.class, () -> helloWorldClient.sendAndReceive(new HelloWorld(testStringInput1)));
-        //FIXME socket timeout bleeds across sockets
+
         Thread.sleep(config.getIntProperty("maxMessageSize") * 2L);
         assertThrows(SocketTimeoutException.class, () -> helloWorldClient.sendAndReceiveAck(new HelloWorld(testStringInput1)));
     }
@@ -63,6 +69,7 @@ public class StubTest {
         helloWorldServer.start();
         helloWorldServer.interrupt();
         Thread.sleep(100);
+        //Makes sure the thread is no longer active
         assertFalse(helloWorldServer.isAlive());
     }
 }

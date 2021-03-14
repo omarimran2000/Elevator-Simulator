@@ -6,7 +6,7 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
-public abstract class SendSet <T> implements Serializable {
+public abstract class SendSet<T> implements Serializable {
     protected final Set<T> items;
 
     public SendSet(Collection<T> items) {

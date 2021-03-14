@@ -32,7 +32,7 @@ public abstract class Floor extends Thread implements FloorApi {
     private final FloorLamp downLamp;
 
     private final int floorNumber;
-    private DatagramSocket socket;
+    private final DatagramSocket socket;
     private final Config config;
 
     /**

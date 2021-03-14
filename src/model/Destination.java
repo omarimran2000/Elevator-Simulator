@@ -12,10 +12,18 @@ public class Destination implements Serializable {
         this.isUp = isUp;
     }
 
+    /**
+     * Returns the isUp attribute
+     * @return isUp The isUp attribute
+     */
     public boolean isUp() {
         return isUp;
     }
 
+    /**
+     * Returns the floorNumber attribute
+     * @return floorNumber The floorNumber for the destination object
+     */
     public int getFloorNumber() {
         return floorNumber;
     }
