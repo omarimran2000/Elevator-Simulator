@@ -33,6 +33,7 @@ public class FloorClient extends StubClient implements FloorApi {
 
     /**
      * Gets the floors for waiting people up
+     *
      * @return floors
      * @throws IOException
      * @throws ClassNotFoundException
@@ -44,6 +45,7 @@ public class FloorClient extends StubClient implements FloorApi {
 
     /**
      * Gets the floors for waiting people down
+     *
      * @return floors
      * @throws IOException
      * @throws ClassNotFoundException

@@ -18,9 +18,10 @@ import java.util.List;
 public class ElevatorSubsystem {
     /**
      * Generate elevators
-     * @param config config file
+     *
+     * @param config    config file
      * @param scheduler scheduler
-     * @param maxFloor the max floor in the system
+     * @param maxFloor  the max floor in the system
      * @return the elevators
      * @throws SocketException
      */

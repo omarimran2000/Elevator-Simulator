@@ -10,6 +10,7 @@ import java.net.InetAddress;
 /**
  * The Client Socket that creates information packets (using serializable) to be sent through the socket
  * to the other clients
+ *
  * @version March 13th 2021
  */
 public class ElevatorClient extends StubClient implements ElevatorApi {
@@ -31,7 +32,8 @@ public class ElevatorClient extends StubClient implements ElevatorApi {
 
     /**
      * The distance to the floor
-     * @param destination  floor
+     *
+     * @param destination floor
      * @return distance
      * @throws IOException
      * @throws ClassNotFoundException
@@ -43,6 +45,7 @@ public class ElevatorClient extends StubClient implements ElevatorApi {
 
     /**
      * Adding the destination to the floor
+     *
      * @param destination
      * @throws IOException
      * @throws ClassNotFoundException
@@ -54,6 +57,7 @@ public class ElevatorClient extends StubClient implements ElevatorApi {
 
     /**
      * Returns if destination can be added
+     *
      * @param destination floor
      * @return if can be added
      * @throws IOException

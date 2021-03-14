@@ -18,6 +18,7 @@ public class Destination implements Serializable {
 
     /**
      * Returns the isUp attribute
+     *
      * @return isUp The isUp attribute
      */
     public boolean isUp() {
@@ -26,6 +27,7 @@ public class Destination implements Serializable {
 
     /**
      * Returns the floorNumber attribute
+     *
      * @return floorNumber The floorNumber for the destination object
      */
     public int getFloorNumber() {
