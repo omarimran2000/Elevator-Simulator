@@ -111,6 +111,9 @@ public class Elevator extends Thread implements ElevatorApi {
         }
     }
 
+    /**
+     * Interrupt method
+     */
     @Override
     public void interrupt() {
         super.interrupt();

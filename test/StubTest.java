@@ -21,6 +21,9 @@ public class StubTest {
 
     @Test
     @Order(1)
+    /**
+     * Tests send and receive
+     */
     public void sendAndReceive() throws IOException, ClassNotFoundException {
         int port = 8040;
         Config config = new Config();
@@ -48,6 +51,9 @@ public class StubTest {
 
     @Test
     @Order(3)
+    /**
+     * Tests timeout
+     */
     public void timeout() throws IOException, InterruptedException {
         int port = 8041;
         Config config = new Config();
@@ -61,6 +67,9 @@ public class StubTest {
 
     @Test
     @Order(2)
+    /**
+     * Tests interrupt
+     */
     public void interrupt() throws IOException, InterruptedException {
         int port = 8042;
         Config config = new Config();
