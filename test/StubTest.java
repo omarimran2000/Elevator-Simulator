@@ -54,7 +54,7 @@ public class StubTest {
 
         HelloWorldClient helloWorldClient = new HelloWorldClient(config, InetAddress.getLocalHost(), port);
         assertThrows(SocketTimeoutException.class, () -> helloWorldClient.sendAndReceive(new HelloWorld(testStringInput1)));
-        //FIXME socket timeout bleeds across sockets
+
         Thread.sleep(config.getIntProperty("maxMessageSize") * 2L);
         assertThrows(SocketTimeoutException.class, () -> helloWorldClient.sendAndReceiveAck(new HelloWorld(testStringInput1)));
     }
