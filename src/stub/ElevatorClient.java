@@ -8,7 +8,8 @@ import java.io.IOException;
 import java.net.InetAddress;
 
 /**
- * The Client to send to the Elevator
+ * The Client Socket that creates information packets (using serializable) to be sent through the socket
+ * to the other clients
  * @version March 13th 2021
  */
 public class ElevatorClient extends StubClient implements ElevatorApi {

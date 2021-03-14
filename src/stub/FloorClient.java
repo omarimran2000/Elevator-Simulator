@@ -8,7 +8,9 @@ import java.io.IOException;
 import java.net.InetAddress;
 
 /**
- * The client used to send to the floor
+ * Client Socket that creates information packets (using Serializable) and sends them through the socket to
+ * the other clients
+ *
  * @version March 13th 2021
  */
 public class FloorClient extends StubClient implements FloorApi {
