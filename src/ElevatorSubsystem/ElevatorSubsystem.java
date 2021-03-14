@@ -10,6 +10,9 @@ import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * The system for the elevators that creates the Elevator objects and the List that contains them
+ */
 public class ElevatorSubsystem {
 
     public static List<Elevator> generateElevators(Config config, SchedulerApi scheduler, int maxFloor) throws SocketException {

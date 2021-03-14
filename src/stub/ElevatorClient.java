@@ -7,6 +7,10 @@ import utill.Config;
 import java.io.IOException;
 import java.net.InetAddress;
 
+/**
+ * The Client Socket that creates information packets (using serializable) to be sent through the socket
+ * to the other clients
+ */
 public class ElevatorClient extends StubClient implements ElevatorApi {
     private final InetAddress inetAddress;
     private final int port;
