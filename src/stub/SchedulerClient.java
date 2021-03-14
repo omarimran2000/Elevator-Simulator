@@ -8,6 +8,9 @@ import utill.Config;
 import java.io.IOException;
 import java.net.InetAddress;
 
+/**
+ *
+ */
 public class SchedulerClient extends StubClient implements SchedulerApi {
     private final InetAddress inetAddress;
     private final int port;

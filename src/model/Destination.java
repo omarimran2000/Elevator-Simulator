@@ -3,6 +3,10 @@ package model;
 import java.io.Serializable;
 import java.util.Objects;
 
+/**
+ * Destination is an object that contains the information for a floorButton request. The information is contains is
+ * the floorNumber on which the floorButton was pressed and the direction with respect to the elevator
+ */
 public class Destination implements Serializable {
     private final int floorNumber;
     private final boolean isUp;
