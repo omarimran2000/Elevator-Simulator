@@ -102,7 +102,7 @@ public abstract class Floor extends Thread implements FloorApi {
                 }
             }
         }
-        thread.interrupt();
+        //thread.interrupt();
     }
 
     @Override
