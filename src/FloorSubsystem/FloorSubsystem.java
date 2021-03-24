@@ -87,7 +87,9 @@ public class FloorSubsystem {
 
         while (scanner.hasNext()) {
             String[] line = scanner.nextLine().split(",");
-            schedule.add(new Event(new SimpleDateFormat(config.getProperty("dateFormatPattern")).parse("01-01-2021 " + line[0]), Integer.parseInt(line[1]), line[2].equalsIgnoreCase("up"), Integer.parseInt(line[3])));
+            schedule.add(new Event((new SimpleDateFormat(config.getProperty("dateFormatPattern"))).parse(config.getProperty("startDate")),
+                    new SimpleDateFormat(config.getProperty("dateFormatPattern")).parse("01-01-2021 " + line[0]),
+                    Integer.parseInt(line[1]), line[2].equalsIgnoreCase("up"), Integer.parseInt(line[3])));
         }
 
         scanner.close();
