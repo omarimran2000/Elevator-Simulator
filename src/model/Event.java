@@ -1,6 +1,9 @@
 package model;
 
 import java.util.Date;
+import java.util.Objects;
+
+import static java.lang.Math.abs;
 
 
 /**
@@ -9,11 +12,10 @@ import java.util.Date;
  * @version Feb 27, 2021
  */
 public class Event implements Comparable<Event> {
-    private final Date time;
     private final int floorNumber;
     private final boolean floorButtonIsUp;
     private final int carButton;
-    private long timeToEvent;
+    private final long timeToEvent;
 
     /**
      * Constructor for Event
@@ -24,8 +26,8 @@ public class Event implements Comparable<Event> {
      * @param floor_button_is_up The direction of the elevator
      * @param car_button         The button pressed inside the elevator
      */
-    public Event(Date time, int floorNumber, boolean floor_button_is_up, int car_button) {
-        this.time = time;
+    public Event(Date startTime, Date time, int floorNumber, boolean floor_button_is_up, int car_button) {
+        this.timeToEvent = abs(startTime.getTime() - time.getTime());
         this.floorNumber = floorNumber;
         this.floorButtonIsUp = floor_button_is_up;
         this.carButton = car_button;
@@ -48,14 +50,6 @@ public class Event implements Comparable<Event> {
         return floorNumber;
     }
 
-    /**
-     * Getter for the time of the event
-     *
-     * @return Time of the start of the event
-     */
-    public Date getTime() {
-        return time;
-    }
 
     /**
      * Getter for floor button up
@@ -75,38 +69,37 @@ public class Event implements Comparable<Event> {
         return timeToEvent;
     }
 
-    /**
-     * Setting the time to event for the event
-     *
-     * @param timeToEvent relative time
-     */
-    public void setTimeToEvent(long timeToEvent) {
-        this.timeToEvent = timeToEvent;
-    }
-
-    /**
-     * @return A string representation of the event
-     */
     @Override
     public String toString() {
         return "Event{" +
-                "time=" + time +
-                ", floorNumber=" + floorNumber +
+                "floorNumber=" + floorNumber +
                 ", floorButtonIsUp=" + floorButtonIsUp +
                 ", carButton=" + carButton +
+                ", timeToEvent=" + timeToEvent +
                 '}';
     }
 
     /**
-     * Compare to method for the priority queue
+     * Compare to event for the priority queue
      *
-     * @param o the method to compare to
+     * @param event the event to compare to
      * @return an integer representing if it is bigger or not
      */
     @Override
-    public int compareTo(Event o) {
-        long thisTime = this.time.getTime();
-        long anotherTime = o.time.getTime();
-        return (thisTime < anotherTime ? -1 : 1);
+    public int compareTo(Event event) {
+        return Long.compare(timeToEvent, event.timeToEvent);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Event event = (Event) o;
+        return floorNumber == event.floorNumber && floorButtonIsUp == event.floorButtonIsUp && carButton == event.carButton && timeToEvent == event.timeToEvent;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(floorNumber, floorButtonIsUp, carButton, timeToEvent);
     }
 }
