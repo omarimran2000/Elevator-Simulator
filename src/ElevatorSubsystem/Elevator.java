@@ -14,6 +14,9 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
 import static java.lang.Math.abs;
@@ -35,6 +38,7 @@ public class Elevator extends Thread implements ElevatorApi {
     protected final Set<Integer> destinations;
     protected final int elevatorNumber;
     protected final int maxFloors;
+    private final ScheduledExecutorService executor;
     private final Logger logger;
     private final DatagramSocket socket;
     protected int currentFloorNumber;
@@ -66,6 +70,7 @@ public class Elevator extends Thread implements ElevatorApi {
         }
         destinations = new HashSet<>();
         socket = new DatagramSocket(config.getIntProperty("elevatorPort") + elevatorNumber);
+        executor = Executors.newSingleThreadScheduledExecutor();
     }
 
     /**
@@ -160,6 +165,7 @@ public class Elevator extends Thread implements ElevatorApi {
     public synchronized void passFloor() {
         state.handleSetLamps();
         logger.info("Elevator " + elevatorNumber + " passing floor " + currentFloorNumber);
+        state.scheduleCheckIfStuck();
     }
 
     /**
@@ -170,6 +176,14 @@ public class Elevator extends Thread implements ElevatorApi {
             state.handleAtFloor();
         } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
+        }
+        state.scheduleCheckIfStuck();
+    }
+
+    private synchronized void checkIfStuck(int floor, boolean isUp) {
+        if (isUp ? currentFloorNumber < floor : currentFloorNumber > floor) {
+            logger.warning("Elevator" + elevatorNumber + " is stuck");
+            state = new ElevatorStuck();
         }
     }
 
@@ -205,6 +219,8 @@ public class Elevator extends Thread implements ElevatorApi {
         void handleAtFloor() throws IOException, ClassNotFoundException;
 
         boolean handleCanAddDestination(Destination destination);
+
+        void scheduleCheckIfStuck();
     }
 
     /**
@@ -263,6 +279,12 @@ public class Elevator extends Thread implements ElevatorApi {
         public boolean handleCanAddDestination(Destination destination) {
             return true;
         }
+
+        @Override
+        public void scheduleCheckIfStuck() {
+            throw new RuntimeException();
+        }
+
     }
 
     /**
@@ -382,6 +404,11 @@ public class Elevator extends Thread implements ElevatorApi {
             return destination.isUp() && destination.getFloorNumber() > currentFloorNumber;
         }
 
+        @Override
+        public void scheduleCheckIfStuck() {
+            executor.schedule(() -> checkIfStuck(currentFloorNumber + 1, true), config.getIntProperty("checkIfStuckDelay"), TimeUnit.SECONDS);
+        }
+
         /**
          * @return the previously lit elevator lamp
          */
@@ -432,6 +459,11 @@ public class Elevator extends Thread implements ElevatorApi {
             return destinations.contains(--currentFloorNumber);
         }
 
+        @Override
+        public void scheduleCheckIfStuck() {
+            executor.schedule(() -> checkIfStuck(currentFloorNumber - 1, false), config.getIntProperty("checkIfStuckDelay"), TimeUnit.SECONDS);
+        }
+
         /**
          * @return the previously lit elevator lamp
          */
@@ -447,7 +479,48 @@ public class Elevator extends Thread implements ElevatorApi {
         protected Floors getWaitingPeople() throws IOException, ClassNotFoundException {
             return scheduler.getWaitingPeopleDown(currentFloorNumber);
         }
+    }
 
+    private class ElevatorStuck implements State {
+        public ElevatorStuck() {
+            arrivalSensor.interrupt();
+            motor.setMoving(false);
+        }
+
+        @Override
+        public void handleSetLamps() {
+            throw new RuntimeException();
+        }
+
+        @Override
+        public int handleDistanceTheFloor(Destination destination) {
+            throw new RuntimeException();
+        }
+
+        @Override
+        public void handleAddDestination(Destination destination) {
+            throw new RuntimeException();
+        }
+
+        @Override
+        public boolean handleStopForNextFloor() {
+            return false;
+        }
+
+        @Override
+        public void handleAtFloor() {
+            throw new RuntimeException();
+        }
+
+        @Override
+        public boolean handleCanAddDestination(Destination destination) {
+            return false;
+        }
+
+        @Override
+        public void scheduleCheckIfStuck() {
+            throw new RuntimeException();
+        }
 
     }
 }
