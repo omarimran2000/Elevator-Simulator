@@ -56,7 +56,7 @@ public class Elevator extends Thread implements ElevatorApi {
         this.maxFloors = maxFloors;
         this.elevatorNumber = elevatorNumber;
         logger = Logger.getLogger(this.getClass().getName());
-        door = new Door();
+        door = new Door(config);
         arrivalSensor = new ArrivalSensor(config, this);
         motor = new Motor();
         buttons = new HashMap<>();
@@ -342,9 +342,9 @@ public class Elevator extends Thread implements ElevatorApi {
                     door.open();
 
                     if(!door.isOpen()){
-                        logger.info("Elevator " + elevatorNumber + " doors stuck at floor " + currentFloorNumber);
+                        logger.warning("Elevator " + elevatorNumber + " doors stuck open at floor " + currentFloorNumber);
                         try {
-                            Thread.sleep(config.getIntProperty("waitTime"));
+                            Thread.sleep(config.getIntProperty("checkIfStuckDelay") * 1000);
                         } catch (InterruptedException e) {
                             e.printStackTrace();
                         }
@@ -374,9 +374,9 @@ public class Elevator extends Thread implements ElevatorApi {
                     door.close();
 
                     if(door.isOpen()){
-                        logger.info("Elevator " + elevatorNumber + " doors stuck at floor " + currentFloorNumber);
+                        logger.warning("Elevator " + elevatorNumber + " doors stuck closed at floor " + currentFloorNumber);
                         try {
-                            Thread.sleep(config.getIntProperty("waitTime"));
+                            Thread.sleep(config.getIntProperty("checkIfStuckDelay") * 1000);
                         } catch (InterruptedException e) {
                             e.printStackTrace();
                         }
