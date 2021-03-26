@@ -314,7 +314,29 @@ public class Elevator extends Thread implements ElevatorApi {
             handleSetLamps();
             logger.info("Elevator " + elevatorNumber + " stopped at floor " + currentFloorNumber);
             motor.setMoving(false);
-            door.open();
+
+            Thread thread = new Thread(()-> {
+                while(!door.isOpen()){
+                    door.open();
+
+                    if(!door.isOpen()){
+                        logger.info("Elevator " + elevatorNumber + " doors stuck at floor " + currentFloorNumber);
+                        try {
+                            Thread.sleep(config.getIntProperty("waitTime"));
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }
+
+                }
+
+            });
+            thread.start();
+            try {
+                thread.join();
+            } catch(InterruptedException e){
+                e.printStackTrace();
+            }
             destinations.remove(currentFloorNumber);
             Floors floors = getWaitingPeople();
             floors.getFloors().forEach(destination -> buttons.get(destination).setOn(true));
@@ -324,7 +346,29 @@ public class Elevator extends Thread implements ElevatorApi {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            door.close();
+
+            thread = new Thread(()-> {
+                while(door.isOpen()){
+                    door.close();
+
+                    if(door.isOpen()){
+                        logger.info("Elevator " + elevatorNumber + " doors stuck at floor " + currentFloorNumber);
+                        try {
+                            Thread.sleep(config.getIntProperty("waitTime"));
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }
+
+                }
+
+            });
+            thread.start();
+            try {
+                thread.join();
+            }catch(InterruptedException e){
+                e.printStackTrace();
+            }
             if (destinations.isEmpty()) {
                 destinations.addAll(scheduler.getWaitingPeople(currentFloorNumber).getFloors());
                 if (destinations.isEmpty()) {
