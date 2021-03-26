@@ -42,15 +42,22 @@ public class Scheduler extends Thread implements SchedulerApi {
         destinations = new ConcurrentSkipListSet<>();
     }
 
-    /**
-     * Set the list of elevators
-     *
-     * @param elevators The elevators
-     */
-    public void setElevators(List<ElevatorApi> elevators) {
-        if (this.elevators == null) {
-            this.elevators = Collections.unmodifiableList(elevators);
+    public static void main(String[] args) throws IOException {
+        InetAddress localhost = InetAddress.getLocalHost();
+        Config config = new Config();
+        Scheduler scheduler = new Scheduler(config);
+        Map<Integer, FloorApi> floors = new HashMap<>();
+        for (int i = 0; i < config.getIntProperty("numFloors"); i++) {
+            floors.put(i, new FloorClient(config, localhost, config.getIntProperty("floorPort") + i));
         }
+        scheduler.setFloors(floors);
+        List<ElevatorApi> elevatorClients = new ArrayList<>();
+        for (int i = 0; i < config.getIntProperty("numElevators"); i++) {
+            elevatorClients.add(new ElevatorClient(config, localhost, config.getIntProperty("elevatorPort") + i));
+        }
+        scheduler.setElevators(elevatorClients);
+
+        scheduler.start();
     }
 
     /**
@@ -157,6 +164,17 @@ public class Scheduler extends Thread implements SchedulerApi {
     }
 
     /**
+     * Set the list of elevators
+     *
+     * @param elevators The elevators
+     */
+    public void setElevators(List<ElevatorApi> elevators) {
+        if (this.elevators == null) {
+            this.elevators = Collections.unmodifiableList(elevators);
+        }
+    }
+
+    /**
      * Interupt method
      */
     @Override
@@ -192,23 +210,5 @@ public class Scheduler extends Thread implements SchedulerApi {
     public Floors getWaitingPeopleDown(int floorNumber) throws IOException, ClassNotFoundException {
         logger.info("getting people wait to go down on floor " + floorNumber);
         return floors.get(floorNumber).getWaitingPeopleDown();
-    }
-
-    public static void main(String[] args) throws IOException {
-        InetAddress localhost = InetAddress.getLocalHost();
-        Config config = new Config();
-        Scheduler scheduler = new Scheduler(config);
-        Map<Integer, FloorApi> floors = new HashMap<>();
-        for (int i = 0; i < config.getIntProperty("numFloors"); i++) {
-            floors.put(i, new FloorClient(config, localhost, config.getIntProperty("floorPort") + i));
-        }
-        scheduler.setFloors(floors);
-        List<ElevatorApi> elevatorClients = new ArrayList<>();
-        for (int i = 0; i < config.getIntProperty("numElevators"); i++) {
-            elevatorClients.add(new ElevatorClient(config, localhost, config.getIntProperty("elevatorPort") + i));
-        }
-        scheduler.setElevators(elevatorClients);
-
-        scheduler.start();
     }
 }

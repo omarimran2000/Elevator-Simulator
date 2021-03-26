@@ -10,12 +10,8 @@ import utill.Config;
 import java.io.IOException;
 import java.net.DatagramSocket;
 import java.net.SocketException;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.logging.Logger;
-
-import static java.lang.Math.abs;
 
 /**
  * The Floor class represents a single floor in the building
@@ -53,13 +49,6 @@ public abstract class Floor extends Thread implements FloorApi {
         upLamp = new FloorLamp();
         downLamp = new FloorLamp();
         socket = new DatagramSocket(config.getIntProperty("floorPort") + floorNumber);
-        schedule.forEach(event -> {
-            try {
-                event.setTimeToEvent(abs((new SimpleDateFormat(config.getProperty("dateFormatPattern"))).parse(config.getProperty("startDate")).getTime() - event.getTime().getTime()));
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
-        });
     }
 
     /**
@@ -102,7 +91,6 @@ public abstract class Floor extends Thread implements FloorApi {
                 }
             }
         }
-        thread.interrupt();
     }
 
     @Override
@@ -234,7 +222,7 @@ class TopFloor extends Floor {
      */
     @Override
     public FloorButton getTop() {
-        return null;
+        throw new RuntimeException();
     }
 }
 
@@ -282,7 +270,7 @@ class BottomFloor extends Floor {
      */
     @Override
     public FloorButton getBottom() {
-        return null;
+        throw new RuntimeException();
     }
 
     /**

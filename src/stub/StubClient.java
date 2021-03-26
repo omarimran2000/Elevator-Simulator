@@ -162,10 +162,10 @@ public abstract class StubClient {
             //receive response
             try {
                 datagramSocket.receive(datagramPacket);
+                return buff;
             } catch (SocketTimeoutException e) {
-                sendAndReceive(datagramSocket, data, inetAddress, port, --numRetries);
+                return sendAndReceive(datagramSocket, data, inetAddress, port, --numRetries);
             }
-            return buff;
         } else {
             throw new SocketTimeoutException();
         }
