@@ -3,6 +3,7 @@ package ElevatorSubsystem;
 import SchedulerSubsystem.SchedulerApi;
 import model.AckMessage;
 import model.Destination;
+import model.ElevatorState;
 import model.Floors;
 import stub.StubServer;
 import utill.Config;
@@ -56,7 +57,7 @@ public class Elevator extends Thread implements ElevatorApi {
         this.maxFloors = maxFloors;
         this.elevatorNumber = elevatorNumber;
         logger = Logger.getLogger(this.getClass().getName());
-        door = new Door();
+        door = new Door(config);
         arrivalSensor = new ArrivalSensor(config, this);
         motor = new Motor();
         buttons = new HashMap<>();
@@ -187,6 +188,14 @@ public class Elevator extends Thread implements ElevatorApi {
         }
     }
 
+    public synchronized ElevatorState getElevatorState() {
+        return state.getElevatorState();
+    }
+
+    public Door getDoor(){
+        return door;
+    }
+
     interface State {
         /**
          * Turns off the previous lamp and turns on the next one
@@ -221,6 +230,8 @@ public class Elevator extends Thread implements ElevatorApi {
         boolean handleCanAddDestination(Destination destination);
 
         void scheduleCheckIfStuck();
+
+        ElevatorState getElevatorState();
     }
 
     /**
@@ -282,7 +293,11 @@ public class Elevator extends Thread implements ElevatorApi {
 
         @Override
         public void scheduleCheckIfStuck() {
-            throw new RuntimeException();
+        }
+
+        @Override
+        public ElevatorState getElevatorState() {
+            return ElevatorState.NotMoving;
         }
 
     }
@@ -336,17 +351,31 @@ public class Elevator extends Thread implements ElevatorApi {
             handleSetLamps();
             logger.info("Elevator " + elevatorNumber + " stopped at floor " + currentFloorNumber);
             motor.setMoving(false);
-            door.open();
-            destinations.remove(currentFloorNumber);
-            Floors floors = getWaitingPeople();
-            floors.getFloors().forEach(destination -> buttons.get(destination).setOn(true));
-            destinations.addAll(floors.getFloors());
+
+            while (!door.isOpen()) {
+                door.open();
+                if (!door.isOpen())
+                    logger.warning("Elevator " + elevatorNumber + " doors stuck closed at floor " + currentFloorNumber);
+            }
+
             try {
                 Thread.sleep(config.getIntProperty("waitTime"));
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            door.close();
+
+            destinations.remove(currentFloorNumber);
+            Floors floors = getWaitingPeople();
+            floors.getFloors().forEach(destination -> buttons.get(destination).setOn(true));
+            destinations.addAll(floors.getFloors());
+
+            while (door.isOpen()) {
+
+                door.close();
+                if (door.isOpen())
+                    logger.warning("Elevator " + elevatorNumber + " doors stuck open at floor " + currentFloorNumber);
+            }
+
             if (destinations.isEmpty()) {
                 destinations.addAll(scheduler.getWaitingPeople(currentFloorNumber).getFloors());
                 if (destinations.isEmpty()) {
@@ -409,6 +438,11 @@ public class Elevator extends Thread implements ElevatorApi {
             executor.schedule(() -> checkIfStuck(currentFloorNumber + 1, true), config.getIntProperty("checkIfStuckDelay"), TimeUnit.SECONDS);
         }
 
+        @Override
+        public ElevatorState getElevatorState() {
+            return ElevatorState.MovingUp;
+        }
+
         /**
          * @return the previously lit elevator lamp
          */
@@ -462,6 +496,11 @@ public class Elevator extends Thread implements ElevatorApi {
         @Override
         public void scheduleCheckIfStuck() {
             executor.schedule(() -> checkIfStuck(currentFloorNumber - 1, false), config.getIntProperty("checkIfStuckDelay"), TimeUnit.SECONDS);
+        }
+
+        @Override
+        public ElevatorState getElevatorState() {
+            return ElevatorState.MovingDown;
         }
 
         /**
@@ -522,6 +561,9 @@ public class Elevator extends Thread implements ElevatorApi {
             throw new RuntimeException();
         }
 
+        @Override
+        public ElevatorState getElevatorState() {
+            return ElevatorState.Stuck;
+        }
     }
 }
-
