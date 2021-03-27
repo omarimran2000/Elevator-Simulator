@@ -349,34 +349,6 @@ public class Elevator extends Thread implements ElevatorApi {
                     }
                 }
             }
-            /*
-            Thread thread = new Thread(()-> {
-                while(!door.isOpen()){
-                    door.open();
-
-                    if(!door.isOpen()){
-                        logger.warning("Elevator " + elevatorNumber + " doors stuck open at floor " + currentFloorNumber);
-                        try {
-                            Thread.sleep(config.getIntProperty("checkIfStuckDelay") * 1000);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                    }
-
-                }
-
-            });
-            thread.start();
-            try {
-                thread.join();
-            } catch(InterruptedException e){
-                e.printStackTrace();
-            }
-            destinations.remove(currentFloorNumber);
-            Floors floors = getWaitingPeople();
-            floors.getFloors().forEach(destination -> buttons.get(destination).setOn(true));
-            destinations.addAll(floors.getFloors());
-            */
             try {
                 Thread.sleep(config.getIntProperty("waitTime"));
             } catch (InterruptedException e) {
@@ -395,30 +367,6 @@ public class Elevator extends Thread implements ElevatorApi {
                     }
                 }
             }
-            /*
-            thread = new Thread(()-> {
-                while(door.isOpen()){
-                    door.close();
-
-                    if(door.isOpen()){
-                        logger.warning("Elevator " + elevatorNumber + " doors stuck closed at floor " + currentFloorNumber);
-                        try {
-                            Thread.sleep(config.getIntProperty("checkIfStuckDelay") * 1000);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                    }
-
-                }
-
-            });
-            thread.start();
-            try {
-                thread.join();
-            }catch(InterruptedException e){
-                e.printStackTrace();
-            }
-            */
 
             if (destinations.isEmpty()) {
                 destinations.addAll(scheduler.getWaitingPeople(currentFloorNumber).getFloors());
