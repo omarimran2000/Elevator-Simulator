@@ -257,6 +257,7 @@ public class Elevator extends Thread implements ElevatorApi {
             arrivalSensor.start();
             destinations.add(destination.getFloorNumber());
             state = destination.getFloorNumber() > currentFloorNumber ? new ElevatorMovingUp() : new ElevatorMovingDown();
+            state.scheduleCheckIfStuck();
         }
 
         /**
