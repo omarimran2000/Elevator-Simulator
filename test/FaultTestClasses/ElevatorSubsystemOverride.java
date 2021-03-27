@@ -1,12 +1,16 @@
 package FaultTestClasses;
 
-import ElevatorSubsystem.ElevatorSubsystem;
+import ElevatorSubsystem.*;
+
+import SchedulerSubsystem.Scheduler;
 import SchedulerSubsystem.SchedulerApi;
+import model.Destination;
 import stub.SchedulerClient;
 import utill.TestConfig;
 
 import java.io.IOException;
 import java.net.InetAddress;
+import java.util.List;
 
 public class ElevatorSubsystemOverride extends ElevatorSubsystem {
 
