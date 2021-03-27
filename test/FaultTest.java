@@ -18,7 +18,12 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class FaultTest {
 
-
+    /**
+     * Tests the door fault
+     * @throws IOException
+     * @throws ParseException
+     * @throws InterruptedException
+     */
     @Test
     void DoorFaultTest() throws IOException, ParseException, InterruptedException {
 
@@ -47,6 +52,12 @@ class FaultTest {
 
     }
 
+    /**
+     * Tests the floor fault
+     * @throws IOException
+     * @throws ParseException
+     * @throws InterruptedException
+     */
     @Test
     void FloorFaultTest() throws IOException, ParseException, InterruptedException {
         TestConfig config = new TestConfig();
