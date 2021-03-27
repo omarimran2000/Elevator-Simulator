@@ -1,6 +1,6 @@
 package ElevatorSubsystem;
 
-import java.util.Random;
+
 import java.util.logging.Logger;
 import utill.Config;
 
@@ -27,7 +27,8 @@ public class Door {
      * Open the door
      */
     public void open() {
-        if(Math.random() * 100 < config.getIntProperty("probabilityStuck")) {
+
+        if(Math.random() * 100 < config.getIntProperty("probabilityDoorStuck")) {
              return;
         }
         this.isOpen = true;
@@ -41,7 +42,8 @@ public class Door {
      * Close the door
      */
     public void close() {
-        if(Math.random() * 100 < config.getIntProperty("probabilityStuck")) {
+
+        if(Math.random() * 100 < config.getIntProperty("probabilityDoorStuck")) {
             return;
         }
         this.isOpen = false;
