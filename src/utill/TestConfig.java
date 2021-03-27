@@ -2,11 +2,10 @@ package utill;
 
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.Map;
 
 public class TestConfig extends Config {
 
-    private final Map<String, String> dictionary;
+    private HashMap<String, String> dictionary;
 
     /**
      * The default constructor to load the configuration file.
@@ -18,24 +17,14 @@ public class TestConfig extends Config {
     }
 
     /**
-     * Get a property from the configuration file.
-     *
-     * @param key The key/label of the property in the file.
-     * @return The property as a string.
-     */
-    public String getProperty(String key) {
-        return dictionary.getOrDefault(key, super.getProperty(key));
-    }
-
-    /**
      * Get a property as a integer from the configuration file.
      *
      * @param key The key/label of the property in the file.
      * @return The property as a integer.
      * @throws NumberFormatException If the property does not contain a parsable integer.
      */
-    public int getIntProperty(String key) {
-        return Integer.parseInt(getProperty(key));
+    public String getProperty(String key) {
+        return dictionary.getOrDefault(key, super.getProperty(key));
     }
 
     /**
