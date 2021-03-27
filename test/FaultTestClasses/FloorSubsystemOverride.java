@@ -15,6 +15,8 @@ public class FloorSubsystemOverride extends FloorSubsystem {
         super();
     }
 
+    //Overriding of the main class allows us to make changes to config file
+    //and then runt the tests with the TestConfig
     public static void main(String[] args) throws IOException, ParseException {
         TestConfig config = new TestConfig();
         SchedulerApi schedulerApi = new SchedulerClient(config, InetAddress.getLocalHost(), config.getIntProperty("schedulerPort"));
