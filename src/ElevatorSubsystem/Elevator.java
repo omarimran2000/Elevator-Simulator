@@ -348,6 +348,10 @@ public class Elevator extends Thread implements ElevatorApi {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
+            destinations.remove(currentFloorNumber);
+            Floors floors = getWaitingPeople();
+            floors.getFloors().forEach(destination -> buttons.get(destination).setOn(true));
+            destinations.addAll(floors.getFloors());
 
             while (door.isOpen()) {
                 door.close();

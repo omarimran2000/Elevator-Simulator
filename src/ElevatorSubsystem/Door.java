@@ -1,8 +1,9 @@
 package ElevatorSubsystem;
 
 
-import java.util.logging.Logger;
 import utill.Config;
+
+import java.util.logging.Logger;
 
 /**
  * The Door class represents the elevator doors
@@ -27,32 +28,24 @@ public class Door {
      * Open the door
      */
     public void open() {
-
-        if(Math.random() * 100 < config.getIntProperty("probabilityDoorStuck")) {
-             return;
+        if (Math.random() * 100 > config.getFloatProperty("probabilityDoorStuck")) {
+            isOpen = true;
+            logger.info("Opening elevator doors");
         }
-        this.isOpen = true;
-        logger.info("Opening elevator doors");
-
-        }
-
+    }
 
 
     /**
      * Close the door
      */
     public void close() {
-
-        if(Math.random() * 100 < config.getIntProperty("probabilityDoorStuck")) {
-            return;
+        if (Math.random() * 100 > config.getFloatProperty("probabilityDoorStuck")) {
+            isOpen = false;
+            logger.info("Closing elevators doors");
         }
-        this.isOpen = false;
-        logger.info("Closing elevators doors");
     }
 
-
-    public boolean isOpen(){
+    public boolean isOpen() {
         return isOpen;
     }
-
 }
