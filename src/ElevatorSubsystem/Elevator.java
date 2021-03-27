@@ -338,17 +338,10 @@ public class Elevator extends Thread implements ElevatorApi {
             logger.info("Elevator " + elevatorNumber + " stopped at floor " + currentFloorNumber);
             motor.setMoving(false);
 
-            while(!door.isOpen()){
+            while (!door.isOpen()) {
                 door.open();
-
-                if(!door.isOpen()){
+                if (!door.isOpen())
                     logger.warning("Elevator " + elevatorNumber + " doors stuck open at floor " + currentFloorNumber);
-                    try {
-                        Thread.sleep( (long) config.getIntProperty("checkIfStuckDelay") * 1000);
-                    } catch(InterruptedException e){
-                        e.printStackTrace();
-                    }
-                }
             }
             try {
                 Thread.sleep(config.getIntProperty("waitTime"));
@@ -356,17 +349,10 @@ public class Elevator extends Thread implements ElevatorApi {
                 e.printStackTrace();
             }
 
-            while(door.isOpen()){
+            while (door.isOpen()) {
                 door.close();
-
-                if(door.isOpen()){
+                if (door.isOpen())
                     logger.warning("Elevator " + elevatorNumber + " doors stuck closed at floor " + currentFloorNumber);
-                    try {
-                        Thread.sleep((long) config.getIntProperty("checkIfStuckDelay") * 1000);
-                    } catch(InterruptedException e){
-                        e.printStackTrace();
-                    }
-                }
             }
 
             if (destinations.isEmpty()) {
