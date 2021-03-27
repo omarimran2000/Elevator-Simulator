@@ -12,12 +12,17 @@ public class TestConfig extends Config {
      *
      * @throws IOException If there is a problem loading the file.
      */
-    public TestConfig() throws IOException {
+    public TestConfig(int type) throws IOException {
         dictionary = new HashMap<>();
 
+        if(type==0){
+            dictionary.put("probabilityDoorStuck","0.9");
+    }else if(type==1){
+            dictionary.put("probabilityStuck","0.9");
+        }
         dictionary.put("dateFormatPattern","dd-MM-yyyy HH:mm:ss");
         dictionary.put("waitTime","9175");
-        dictionary.put("csvFilename", "test.csv");
+        dictionary.put("csvFileName", "test.csv");
         dictionary.put("distanceBetweenFloors", "3.5");
         dictionary.put("startDate", "01-01-2021 14:00:00");
         dictionary.put("velocity", "1.27");
