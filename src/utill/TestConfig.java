@@ -17,7 +17,18 @@ public class TestConfig extends Config {
 
         dictionary.put("dateFormatPattern","dd-MM-yyyy HH:mm:ss");
         dictionary.put("waitTime","9175");
+        dictionary.put("csvFilename", "test.csv");
         dictionary.put("distanceBetweenFloors", "3.5");
+        dictionary.put("startDate", "01-01-2021 14:00:00");
+        dictionary.put("velocity", "1.27");
+        dictionary.put("numElevators","4");
+        dictionary.put("numFloors","22");
+        dictionary.put("numHandlerThreads", "10");
+        dictionary.put("timeout","50000");
+        dictionary.put("maxMessageSize","1024");
+        dictionary.put("schedulerPort","8000");
+        dictionary.put("floorPort","9000");
+        dictionary.put("elevatorPort","7000");
     }
     /**
      * Get a property from the configuration file.
@@ -49,5 +60,9 @@ public class TestConfig extends Config {
      */
     public float getFloatProperty(String key) {
         return Float.parseFloat(getProperty(key));
+    }
+
+    public void addDictElem(String s1, String s2){
+        dictionary.put(s1,s2);
     }
 }
