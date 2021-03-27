@@ -17,7 +17,6 @@ public class FloorSubsystemOverride extends FloorSubsystem {
 
     public static void main(String[] args) throws IOException, ParseException {
         TestConfig config = new TestConfig();
-        config.addProperty("probabilityDoorStuck", "0.9");
         SchedulerApi schedulerApi = new SchedulerClient(config, InetAddress.getLocalHost(), config.getIntProperty("schedulerPort"));
         Map<Integer, Floor> floors = generateFloors(config, schedulerApi, config.getProperty("csvFileName"));
         floors.forEach((floorNumber, floor) -> floor.start());

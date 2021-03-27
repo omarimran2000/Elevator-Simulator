@@ -22,7 +22,6 @@ public class SchedulerOverride extends Scheduler {
 
     public static void main(String[] args) throws IOException {
         TestConfig config = new TestConfig();
-        config.addProperty("probabilityDoorStuck", "0.9");
         InetAddress localhost = InetAddress.getLocalHost();
         SchedulerOverride schedulerOverride = new SchedulerOverride(config);
         Map<Integer, FloorApi> floors = new HashMap<>();
