@@ -41,8 +41,9 @@ public class ArrivalSensor extends Thread {
         run = true;
         while (!Thread.interrupted()) {
             try {
-                if (Math.random() * 100 < config.getFloatProperty("probabilityStuck"))
+                if (Math.random() * 100 < config.getFloatProperty("probabilityStuck") && (elevator.elevatorNumber == config.getIntProperty("elevatorStuck"))) {
                     Thread.sleep(100000);
+                }
                 Thread.sleep((long) (config.getFloatProperty("distanceBetweenFloors") / config.getFloatProperty("velocity") * 500));
                 if (elevator.stopForNextFloor()) {
                     Thread.sleep((long) (config.getFloatProperty("distanceBetweenFloors") / config.getFloatProperty("velocity") * 500));

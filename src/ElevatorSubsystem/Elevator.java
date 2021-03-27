@@ -166,7 +166,8 @@ public class Elevator extends Thread implements ElevatorApi {
     public synchronized void passFloor() {
         state.handleSetLamps();
         logger.info("Elevator " + elevatorNumber + " passing floor " + currentFloorNumber);
-        state.scheduleCheckIfStuck();
+
+        if(this.elevatorNumber == config.getIntProperty("elevatorStuck")) state.scheduleCheckIfStuck();
     }
 
     /**
@@ -178,7 +179,7 @@ public class Elevator extends Thread implements ElevatorApi {
         } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
         }
-        state.scheduleCheckIfStuck();
+        if(this.elevatorNumber == config.getIntProperty("elevatorStuck")) state.scheduleCheckIfStuck();
     }
 
     private synchronized void checkIfStuck(int floor, boolean isUp) {
