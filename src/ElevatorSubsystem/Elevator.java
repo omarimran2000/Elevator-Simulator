@@ -3,6 +3,7 @@ package ElevatorSubsystem;
 import SchedulerSubsystem.SchedulerApi;
 import model.AckMessage;
 import model.Destination;
+import model.ElevatorState;
 import model.Floors;
 import stub.StubServer;
 import utill.Config;
@@ -187,6 +188,10 @@ public class Elevator extends Thread implements ElevatorApi {
         }
     }
 
+    public synchronized ElevatorState getElevatorState() {
+        return state.getElevatorState();
+    }
+
     interface State {
         /**
          * Turns off the previous lamp and turns on the next one
@@ -221,6 +226,8 @@ public class Elevator extends Thread implements ElevatorApi {
         boolean handleCanAddDestination(Destination destination);
 
         void scheduleCheckIfStuck();
+
+        ElevatorState getElevatorState();
     }
 
     /**
@@ -281,7 +288,13 @@ public class Elevator extends Thread implements ElevatorApi {
         }
 
         @Override
-        public void scheduleCheckIfStuck() { }
+        public void scheduleCheckIfStuck() {
+        }
+
+        @Override
+        public ElevatorState getElevatorState() {
+            return ElevatorState.NotMoving;
+        }
 
     }
 
@@ -420,6 +433,11 @@ public class Elevator extends Thread implements ElevatorApi {
             executor.schedule(() -> checkIfStuck(currentFloorNumber + 1, true), config.getIntProperty("checkIfStuckDelay"), TimeUnit.SECONDS);
         }
 
+        @Override
+        public ElevatorState getElevatorState() {
+            return ElevatorState.MovingUp;
+        }
+
         /**
          * @return the previously lit elevator lamp
          */
@@ -473,6 +491,11 @@ public class Elevator extends Thread implements ElevatorApi {
         @Override
         public void scheduleCheckIfStuck() {
             executor.schedule(() -> checkIfStuck(currentFloorNumber - 1, false), config.getIntProperty("checkIfStuckDelay"), TimeUnit.SECONDS);
+        }
+
+        @Override
+        public ElevatorState getElevatorState() {
+            return ElevatorState.MovingDown;
         }
 
         /**
@@ -532,6 +555,10 @@ public class Elevator extends Thread implements ElevatorApi {
         public void scheduleCheckIfStuck() {
             throw new RuntimeException();
         }
+
+        @Override
+        public ElevatorState getElevatorState() {
+            return ElevatorState.Stuck;
+        }
     }
 }
-
