@@ -281,9 +281,7 @@ public class Elevator extends Thread implements ElevatorApi {
         }
 
         @Override
-        public void scheduleCheckIfStuck() {
-            throw new RuntimeException();
-        }
+        public void scheduleCheckIfStuck() { }
 
     }
 
@@ -342,11 +340,13 @@ public class Elevator extends Thread implements ElevatorApi {
                 if (!door.isOpen())
                     logger.warning("Elevator " + elevatorNumber + " doors stuck open at floor " + currentFloorNumber);
             }
+
             try {
                 Thread.sleep(config.getIntProperty("waitTime"));
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
+
             destinations.remove(currentFloorNumber);
             Floors floors = getWaitingPeople();
             floors.getFloors().forEach(destination -> buttons.get(destination).setOn(true));
@@ -532,7 +532,6 @@ public class Elevator extends Thread implements ElevatorApi {
         public void scheduleCheckIfStuck() {
             throw new RuntimeException();
         }
-
     }
 }
 
