@@ -4,6 +4,7 @@ import FaultTestClasses.FloorSubsystemOverride;
 import FloorSubsystem.*;
 import SchedulerSubsystem.Scheduler;
 import model.Destination;
+import model.ElevatorState;
 import org.junit.jupiter.api.Test;
 
 import utill.*;
@@ -39,8 +40,8 @@ class FaultTest {
 
         elevator.addDestination(new Destination(1, true));
 
-        Thread.sleep(5000);
+        Thread.sleep(3000);
         assertFalse(elevator.getDoor().isOpen());
-
+        assertEquals(ElevatorState.Stuck,elevator.getElevatorState());
     }
 }
