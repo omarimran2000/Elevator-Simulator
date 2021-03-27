@@ -167,7 +167,7 @@ public class Elevator extends Thread implements ElevatorApi {
         state.handleSetLamps();
         logger.info("Elevator " + elevatorNumber + " passing floor " + currentFloorNumber);
 
-        if(this.elevatorNumber == config.getIntProperty("elevatorStuck")) state.scheduleCheckIfStuck();
+        if (this.elevatorNumber == config.getIntProperty("elevatorStuck")) state.scheduleCheckIfStuck();
     }
 
     /**
@@ -179,13 +179,14 @@ public class Elevator extends Thread implements ElevatorApi {
         } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
         }
-        if(this.elevatorNumber == config.getIntProperty("elevatorStuck")) state.scheduleCheckIfStuck();
+        if (this.elevatorNumber == config.getIntProperty("elevatorStuck")) state.scheduleCheckIfStuck();
     }
 
     /**
      * Used to check if the elevator is stuck
+     *
      * @param floor the next floor the elevator should be on
-     * @param isUp if it's going up
+     * @param isUp  if it's going up
      */
     private synchronized void checkIfStuck(int floor, boolean isUp) {
         if (isUp ? currentFloorNumber < floor : currentFloorNumber > floor) {
@@ -196,6 +197,7 @@ public class Elevator extends Thread implements ElevatorApi {
 
     /**
      * Returns elevator state
+     *
      * @return the state elevator
      */
     public synchronized ElevatorState getElevatorState() {
@@ -204,9 +206,10 @@ public class Elevator extends Thread implements ElevatorApi {
 
     /**
      * Getter method for the door
+     *
      * @return the door
      */
-    public Door getDoor(){
+    public Door getDoor() {
         return door;
     }
 
@@ -243,6 +246,7 @@ public class Elevator extends Thread implements ElevatorApi {
 
         /**
          * Check if elevator can add destination
+         *
          * @param destination
          * @return if can be added
          */
@@ -255,6 +259,7 @@ public class Elevator extends Thread implements ElevatorApi {
 
         /**
          * Getter method for state
+         *
          * @return the state of the elevator
          */
         ElevatorState getElevatorState();
@@ -314,6 +319,7 @@ public class Elevator extends Thread implements ElevatorApi {
 
         /**
          * Check if elevator can add destination
+         *
          * @param destination
          * @return if can be added
          */
@@ -321,6 +327,7 @@ public class Elevator extends Thread implements ElevatorApi {
         public boolean handleCanAddDestination(Destination destination) {
             return true;
         }
+
         /**
          * Checks to see if elevator is stuck
          */
@@ -330,6 +337,7 @@ public class Elevator extends Thread implements ElevatorApi {
 
         /**
          * Get Elevator state
+         *
          * @return the state
          */
         @Override
@@ -464,8 +472,10 @@ public class Elevator extends Thread implements ElevatorApi {
         public boolean handleStopForNextFloor() {
             return destinations.contains(++currentFloorNumber);
         }
+
         /**
          * Check if elevator can add destination
+         *
          * @param destination
          * @return if can be added
          */
@@ -526,6 +536,7 @@ public class Elevator extends Thread implements ElevatorApi {
 
         /**
          * Returns if destination can be added
+         *
          * @param destination
          * @return if it can be added
          */
@@ -541,6 +552,7 @@ public class Elevator extends Thread implements ElevatorApi {
         public boolean handleStopForNextFloor() {
             return destinations.contains(--currentFloorNumber);
         }
+
         /**
          * Checks to see if elevator is stuck
          */

@@ -16,6 +16,7 @@ public abstract class SendSet<T> implements Serializable {
 
     /**
      * Constructor for SendSet
+     *
      * @param items the items to be used
      */
     public SendSet(Collection<T> items) {
@@ -24,6 +25,7 @@ public abstract class SendSet<T> implements Serializable {
 
     /**
      * Override method for ToString
+     *
      * @return string
      */
     @Override
@@ -32,8 +34,10 @@ public abstract class SendSet<T> implements Serializable {
                 "items=" + items +
                 '}';
     }
+
     /**
      * Override method for equals
+     *
      * @param o
      * @return if equal
      */
@@ -47,6 +51,7 @@ public abstract class SendSet<T> implements Serializable {
 
     /**
      * Override method for hashcode
+     *
      * @return hased items
      */
     @Override

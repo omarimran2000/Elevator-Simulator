@@ -5,7 +5,7 @@ import java.util.HashMap;
 
 public class TestConfig extends Config {
 
-    private HashMap<String, String> dictionary;
+    private final HashMap<String, String> dictionary;
 
     /**
      * The default constructor to load the configuration file.
