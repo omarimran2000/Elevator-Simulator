@@ -192,6 +192,10 @@ public class Elevator extends Thread implements ElevatorApi {
         return state.getElevatorState();
     }
 
+    public Door getDoor(){
+        return door;
+    }
+
     interface State {
         /**
          * Turns off the previous lamp and turns on the next one

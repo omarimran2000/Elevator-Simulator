@@ -22,7 +22,7 @@ class FaultTest {
 
 
     @Test
-    void DoorFaultTest() throws IOException, ParseException {
+    void DoorFaultTest() throws IOException, ParseException, InterruptedException {
 
         TestConfig config = new TestConfig();
         config.addProperty("probabilityDoorStuck", "100");
@@ -37,11 +37,10 @@ class FaultTest {
 
         Elevator elevator = elevators.get(0);
 
-        elevator.addDestination(new Destination(3, true));
-        elevator.addDestination(new Destination(12, true));
-        elevator.addDestination(new Destination(14, true));
-        elevator.addDestination(new Destination(18, true));
-        elevator.addDestination(new Destination(21, true));
+        elevator.addDestination(new Destination(1, true));
+
+        Thread.sleep(5000);
+        assertFalse(elevator.getDoor().isOpen());
 
     }
 }
