@@ -352,10 +352,10 @@ public class Elevator extends Thread implements ElevatorApi {
             logger.info("Elevator " + elevatorNumber + " stopped at floor " + currentFloorNumber);
             motor.setMoving(false);
 
-            while (!door.isOpen() && getElevatorState()!=ElevatorState.Stuck) {
+            while (!door.isOpen()) {
                 door.open();
                 if (!door.isOpen())
-                    logger.warning("Elevator " + elevatorNumber + " doors stuck open at floor " + currentFloorNumber);
+                    logger.warning("Elevator " + elevatorNumber + " doors stuck closed at floor " + currentFloorNumber);
             }
 
             try {
@@ -369,10 +369,11 @@ public class Elevator extends Thread implements ElevatorApi {
             floors.getFloors().forEach(destination -> buttons.get(destination).setOn(true));
             destinations.addAll(floors.getFloors());
 
-            while (door.isOpen() && getElevatorState()!=ElevatorState.Stuck) {
+            while (door.isOpen()) {
+
                 door.close();
                 if (door.isOpen())
-                    logger.warning("Elevator " + elevatorNumber + " doors stuck closed at floor " + currentFloorNumber);
+                    logger.warning("Elevator " + elevatorNumber + " doors stuck open at floor " + currentFloorNumber);
             }
 
             if (destinations.isEmpty()) {
