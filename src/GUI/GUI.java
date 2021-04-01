@@ -1,6 +1,7 @@
 package GUI;
 
 import model.AckMessage;
+import model.ElevatorState;
 import stub.StubServer;
 import utill.Config;
 
@@ -24,7 +25,6 @@ public class GUI implements GuiApi, Runnable {
     private final int numFloors;
     private final DatagramSocket socket;
 
-    //just for testing until UDP is set up
     public static void main(String[] args) throws IOException {
         Config config = new Config();
         new Thread(new GUI(config)).start();
@@ -109,7 +109,7 @@ public class GUI implements GuiApi, Runnable {
      * @param elevatorNumber
      * @param state
      */
-    public void setState(int elevatorNumber, String state) {
+    public void setState(int elevatorNumber, ElevatorState state) {
         elevators.get(elevatorNumber).setStateText(state);
     }
 
@@ -171,7 +171,7 @@ public class GUI implements GuiApi, Runnable {
                     },
                     4, input ->
                     {
-                        setState((int) input.get(0), (String) input.get(1));
+                        setState((int) input.get(0), (ElevatorState) input.get(1));
                         return new AckMessage();
                     },
                     5, input ->

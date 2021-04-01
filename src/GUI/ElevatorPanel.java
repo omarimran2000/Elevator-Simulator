@@ -1,5 +1,7 @@
 package GUI;
 
+import model.ElevatorState;
+
 import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
@@ -58,7 +60,7 @@ public class ElevatorPanel extends JPanel {
 
         stateText = new JLabel();
         stateText.setVisible(true);
-        setStateText("IDLE");
+        setStateText(ElevatorState.NotMoving);
 
         doorsStuckText = new JLabel();
         setDoorsStuck(false, false);
@@ -88,7 +90,7 @@ public class ElevatorPanel extends JPanel {
         floorNumberText.setText("Current floor: " + floorNumber);
     }
 
-    public void setStateText(String state) {
+    public void setStateText(ElevatorState state) {
         stateText.setText("Elevator state: " + state);
     }
 

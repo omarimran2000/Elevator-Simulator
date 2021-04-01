@@ -1,5 +1,7 @@
 package GUI;
 
+import model.ElevatorState;
+
 import java.io.IOException;
 
 public interface GuiApi {
@@ -9,7 +11,7 @@ public interface GuiApi {
 
     void setDoorsOpen(int elevatorNumber, boolean open) throws IOException, ClassNotFoundException;
 
-    void setState(int elevatorNumber, String state) throws IOException, ClassNotFoundException;
+    void setState(int elevatorNumber, ElevatorState state) throws IOException, ClassNotFoundException;
 
     void setDoorsStuck(int elevatorNumber, boolean doorsStuck, boolean open) throws IOException, ClassNotFoundException;
 
