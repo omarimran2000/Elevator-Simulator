@@ -463,6 +463,8 @@ public class Elevator extends Thread implements ElevatorApi {
             }
 
             destinations.remove(currentFloorNumber);
+            gui.setElevatorButton(elevatorNumber,currentFloorNumber,false);
+
             Floors floors = getWaitingPeople();
             if (floors.getFloors().isEmpty() && wasIdle) {
                 floors = getWaitingPeopleTurnAround();
@@ -470,6 +472,14 @@ public class Elevator extends Thread implements ElevatorApi {
             wasIdle = false;
             floors.getFloors().forEach(destination -> buttons.get(destination).setOn(true));
             destinations.addAll(floors.getFloors());
+
+            for (Integer i:buttons.keySet())
+            {
+                if(buttons.get(i).isOn())
+                {
+                    gui.setElevatorButton(elevatorNumber,i,true);
+                }
+            }
 
             while (door.isOpen()) {
                 door.close();
@@ -597,6 +607,13 @@ public class Elevator extends Thread implements ElevatorApi {
         public ElevatorMovingDown() {
 
             motor.setDirectionIsUp(false);
+            try {
+                gui.setMotorDirection(elevatorNumber,false);
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace();
+            }
         }
 
         /**
