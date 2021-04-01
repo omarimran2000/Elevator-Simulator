@@ -12,7 +12,6 @@ import utill.Config;
 import java.io.IOException;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
-import java.net.SocketException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -46,8 +45,8 @@ public class Elevator extends Thread implements ElevatorApi {
     private final DatagramSocket socket;
     protected int currentFloorNumber;
     private State state;
-    private GuiClient gui;
-    private boolean wasIdle;
+    private final GuiClient gui;
+    private int idleDestination;
 
     /**
      * Constructor for Elevator
@@ -79,7 +78,7 @@ public class Elevator extends Thread implements ElevatorApi {
 
         gui = new GuiClient(config, InetAddress.getLocalHost(), config.getIntProperty("GUIPort"));
         try {
-            gui.setCurrentFloorNumber(elevatorNumber,currentFloorNumber);
+            gui.setCurrentFloorNumber(elevatorNumber, currentFloorNumber);
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         }
@@ -178,7 +177,7 @@ public class Elevator extends Thread implements ElevatorApi {
         state.handleSetLamps();
         logger.info("Elevator " + elevatorNumber + " passing floor " + currentFloorNumber);
 
-        if (this.elevatorNumber == config.getIntProperty("elevatorStuck")) state.scheduleCheckIfStuck();
+        if (elevatorNumber == config.getIntProperty("elevatorStuck")) state.scheduleCheckIfStuck();
     }
 
     /**
@@ -190,7 +189,7 @@ public class Elevator extends Thread implements ElevatorApi {
         } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
         }
-        if (this.elevatorNumber == config.getIntProperty("elevatorStuck")) state.scheduleCheckIfStuck();
+        if (elevatorNumber == config.getIntProperty("elevatorStuck")) state.scheduleCheckIfStuck();
     }
 
     /**
@@ -282,7 +281,6 @@ public class Elevator extends Thread implements ElevatorApi {
     class ElevatorNotMoving implements State {
         public ElevatorNotMoving() {
             logger.info("Elevator " + elevatorNumber + " State Changed to: Idle");
-            wasIdle = true;
         }
 
         @Override
@@ -311,6 +309,7 @@ public class Elevator extends Thread implements ElevatorApi {
             arrivalSensor.start();
             destinations.add(destination.getFloorNumber());
             state = destination.getFloorNumber() > currentFloorNumber ? new ElevatorMovingUp() : new ElevatorMovingDown();
+            idleDestination = destination.getFloorNumber();
         }
 
         /**
@@ -430,15 +429,14 @@ public class Elevator extends Thread implements ElevatorApi {
 
             destinations.remove(currentFloorNumber);
             Floors floors = getWaitingPeople();
-            if (floors.getFloors().isEmpty() && wasIdle) {
+            if (floors.getFloors().isEmpty() && idleDestination == currentFloorNumber) {
                 floors = getWaitingPeopleTurnAround();
-                wasIdle = false;
+                idleDestination = maxFloors + 1;
             }
             floors.getFloors().forEach(destination -> buttons.get(destination).setOn(true));
             destinations.addAll(floors.getFloors());
 
             while (door.isOpen()) {
-
                 door.close();
                 if (door.isOpen())
                     logger.warning("Elevator " + elevatorNumber + " doors stuck open at floor " + currentFloorNumber);
@@ -504,7 +502,8 @@ public class Elevator extends Thread implements ElevatorApi {
          */
         @Override
         public boolean handleCanAddDestination(Destination destination) {
-            return destination.isUp() && destination.getFloorNumber() > currentFloorNumber;
+            return destination.isUp() && destination.getFloorNumber() > currentFloorNumber &&
+                    (idleDestination == maxFloors + 1 || destination.getFloorNumber() < idleDestination);
         }
 
         /**
@@ -573,7 +572,8 @@ public class Elevator extends Thread implements ElevatorApi {
          */
         @Override
         public boolean handleCanAddDestination(Destination destination) {
-            return !destination.isUp() && destination.getFloorNumber() < currentFloorNumber;
+            return !destination.isUp() && destination.getFloorNumber() < currentFloorNumber &&
+                    (idleDestination == maxFloors + 1 || destination.getFloorNumber() > idleDestination);
         }
 
         /**

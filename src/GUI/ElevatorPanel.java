@@ -5,78 +5,72 @@ import model.ElevatorState;
 import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Contains an elevator's info consisting of elevator number,
  * current floor number, State, destinations queue, doors stuck status
  */
 public class ElevatorPanel extends JPanel {
-
-    private final JPanel topPanel;
-    private final JPanel statePanel;
-    private final JPanel buttonsPanel;
     private final JLabel doorsOpenText;
     private final JLabel motorDirectionText;
     private final JLabel floorNumberText;
     private final JLabel stateText;
     private final JLabel doorsStuckText;
-    private final ArrayList<JTextField> buttons;
+    private final List<JTextField> buttons;
 
     public ElevatorPanel(int numFloors, int elevatorNumber) {
-        this.setVisible(true);
-        this.setLayout(new BorderLayout());
-        this.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+        setVisible(true);
+        setLayout(new BorderLayout());
+        setBorder(BorderFactory.createLineBorder(Color.BLACK));
 
         buttons = new ArrayList<>();
 
-        topPanel = new JPanel();
+        JPanel topPanel = new JPanel();
         topPanel.setVisible(true);
-        this.add(topPanel, BorderLayout.NORTH);
+        add(topPanel, BorderLayout.NORTH);
 
         JLabel eNumber = new JLabel("Elevator " + elevatorNumber);
         topPanel.add(eNumber);
         eNumber.setVisible(true);
 
-        statePanel = new JPanel();
+        JPanel statePanel = new JPanel();
         statePanel.setVisible(true);
-        this.add(statePanel, BorderLayout.SOUTH);
-
-        buttonsPanel = new JPanel();
-        buttonsPanel.setVisible(true);
-        this.add(buttonsPanel, BorderLayout.CENTER);
+        add(statePanel, BorderLayout.SOUTH);
 
         doorsOpenText = new JLabel();
         doorsOpenText.setVisible(true);
         setDoorsOpen(true);
+        topPanel.add(doorsOpenText);
 
         motorDirectionText = new JLabel();
         motorDirectionText.setVisible(true);
         setMotorDirection(true);
+        topPanel.add(motorDirectionText);
 
         floorNumberText = new JLabel();
         floorNumberText.setVisible(true);
         floorNumberText.setText("");
         setFloor(0);
+        topPanel.add(floorNumberText);
 
         stateText = new JLabel();
         stateText.setVisible(true);
+        statePanel.add(stateText);
         setStateText(ElevatorState.NotMoving);
 
         doorsStuckText = new JLabel();
         setDoorsStuck(false, false);
-
-        topPanel.add(motorDirectionText);
-        topPanel.add(floorNumberText);
-        topPanel.add(doorsOpenText);
-
-        statePanel.add(stateText);
         statePanel.add(doorsStuckText);
+
+        JPanel buttonsPanel = new JPanel();
+        buttonsPanel.setVisible(true);
+        add(buttonsPanel, BorderLayout.CENTER);
 
         int gridDimension = (int) Math.ceil(Math.sqrt(numFloors));
         buttonsPanel.setLayout(new GridLayout(gridDimension, gridDimension));
-        int n = 0;
-        while (n < numFloors) {
-            JTextField text = new JTextField(String.valueOf(n));
+        for (int i = 0; i < numFloors; i++) {
+            JTextField text = new JTextField(String.valueOf(i));
             text.setVisible(true);
             text.setEditable(false);
             text.setBackground(Color.white);
@@ -115,8 +109,6 @@ public class ElevatorPanel extends JPanel {
      * @param on
      */
     public void setDestination(int floorNumber, boolean on) {
-        JTextField b = buttons.get(floorNumber);
-        if (on) b.setBackground(Color.green);
-        else b.setBackground(Color.white);
+        buttons.get(floorNumber).setBackground(on? Color.green: Color.white);
     }
 }
