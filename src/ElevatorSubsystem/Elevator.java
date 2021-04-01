@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
+
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -45,9 +46,10 @@ public class Elevator extends Thread implements ElevatorApi {
     private final Logger logger;
     private final DatagramSocket socket;
     protected int currentFloorNumber;
-    private State state;
     protected final GuiClient gui;
-    private boolean wasIdle;
+    private final GuiClient gui;
+    private int idleDestination;
+
 
     /**
      * Constructor for Elevator
@@ -82,8 +84,12 @@ public class Elevator extends Thread implements ElevatorApi {
         destinations = new HashSet<>();
         socket = new DatagramSocket(config.getIntProperty("elevatorPort") + elevatorNumber);
         executor = Executors.newSingleThreadScheduledExecutor();
-
-
+        gui = new GuiClient(config, InetAddress.getLocalHost(), config.getIntProperty("GUIPort"));
+        try {
+            gui.setCurrentFloorNumber(elevatorNumber, currentFloorNumber);
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
     }
 
     /**
