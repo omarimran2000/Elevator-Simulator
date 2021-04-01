@@ -44,6 +44,7 @@ public class Elevator extends Thread implements ElevatorApi {
     private final DatagramSocket socket;
     protected int currentFloorNumber;
     private State state;
+    private boolean wasIdle;
 
     /**
      * Constructor for Elevator
@@ -271,6 +272,7 @@ public class Elevator extends Thread implements ElevatorApi {
     class ElevatorNotMoving implements State {
         public ElevatorNotMoving() {
             logger.info("Elevator " + elevatorNumber + " State Changed to: Idle");
+            wasIdle = true;
         }
 
         @Override
@@ -363,6 +365,13 @@ public class Elevator extends Thread implements ElevatorApi {
         abstract protected Floors getWaitingPeople() throws IOException, ClassNotFoundException;
 
         /**
+         * Turn around before getting people
+         *
+         * @return the set of floors with people waiting for an elevator moving in the opposite direction
+         */
+        abstract protected Floors getWaitingPeopleTurnAround() throws IOException, ClassNotFoundException;
+
+        /**
          * Adds the specified floor number to the list of destinations
          *
          * @param destination The new destination for the Elevator
@@ -411,6 +420,10 @@ public class Elevator extends Thread implements ElevatorApi {
 
             destinations.remove(currentFloorNumber);
             Floors floors = getWaitingPeople();
+            if (floors.getFloors().isEmpty() && wasIdle) {
+                floors = getWaitingPeopleTurnAround();
+                wasIdle = false;
+            }
             floors.getFloors().forEach(destination -> buttons.get(destination).setOn(true));
             destinations.addAll(floors.getFloors());
 
@@ -513,6 +526,14 @@ public class Elevator extends Thread implements ElevatorApi {
             return scheduler.getWaitingPeopleUp(currentFloorNumber);
         }
 
+        /**
+         * @return the set of floors with people waiting for an elevator moving downwards
+         */
+        @Override
+        protected Floors getWaitingPeopleTurnAround() throws IOException, ClassNotFoundException {
+            state = new ElevatorMovingDown();
+            return scheduler.getWaitingPeopleDown(currentFloorNumber);
+        }
     }
 
     /**
@@ -580,6 +601,15 @@ public class Elevator extends Thread implements ElevatorApi {
         @Override
         protected Floors getWaitingPeople() throws IOException, ClassNotFoundException {
             return scheduler.getWaitingPeopleDown(currentFloorNumber);
+        }
+
+        /**
+         * @return the set of floors with people waiting for an elevator moving upwards
+         */
+        @Override
+        protected Floors getWaitingPeopleTurnAround() throws IOException, ClassNotFoundException {
+            state = new ElevatorMovingUp();
+            return scheduler.getWaitingPeopleUp(currentFloorNumber);
         }
     }
 
