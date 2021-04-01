@@ -5,11 +5,13 @@ import model.AckMessage;
 import model.Destination;
 import model.ElevatorState;
 import model.Floors;
+import stub.GuiClient;
 import stub.StubServer;
 import utill.Config;
 
 import java.io.IOException;
 import java.net.DatagramSocket;
+import java.net.InetAddress;
 import java.net.SocketException;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -44,6 +46,7 @@ public class Elevator extends Thread implements ElevatorApi {
     private final DatagramSocket socket;
     protected int currentFloorNumber;
     private State state;
+    private GuiClient gui;
     private boolean wasIdle;
 
     /**
@@ -52,7 +55,7 @@ public class Elevator extends Thread implements ElevatorApi {
      * @param config
      * @param scheduler The system scheduler
      */
-    public Elevator(Config config, SchedulerApi scheduler, int elevatorNumber, int maxFloors) throws SocketException {
+    public Elevator(Config config, SchedulerApi scheduler, int elevatorNumber, int maxFloors) throws IOException {
         this.config = config;
         this.scheduler = scheduler;
         this.maxFloors = maxFloors;
@@ -73,6 +76,13 @@ public class Elevator extends Thread implements ElevatorApi {
         destinations = new HashSet<>();
         socket = new DatagramSocket(config.getIntProperty("elevatorPort") + elevatorNumber);
         executor = Executors.newSingleThreadScheduledExecutor();
+
+        gui = new GuiClient(config, InetAddress.getLocalHost(), config.getIntProperty("GUIPort"));
+        try {
+            gui.setCurrentFloorNumber(elevatorNumber,currentFloorNumber);
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
     }
 
     /**
