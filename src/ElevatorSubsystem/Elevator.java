@@ -422,13 +422,12 @@ public class Elevator extends Thread implements ElevatorApi {
             Floors floors = getWaitingPeople();
             if (floors.getFloors().isEmpty() && wasIdle) {
                 floors = getWaitingPeopleTurnAround();
-                wasIdle = false;
             }
+            wasIdle = false;
             floors.getFloors().forEach(destination -> buttons.get(destination).setOn(true));
             destinations.addAll(floors.getFloors());
 
             while (door.isOpen()) {
-
                 door.close();
                 if (door.isOpen())
                     logger.warning("Elevator " + elevatorNumber + " doors stuck open at floor " + currentFloorNumber);
