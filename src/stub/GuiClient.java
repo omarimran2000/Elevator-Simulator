@@ -16,7 +16,7 @@ public class GuiClient extends StubClient implements GuiApi {
      *
      * @param config The application configuration file loader.
      */
-    protected GuiClient(Config config, InetAddress inetAddress, int port) {
+    public GuiClient(Config config, InetAddress inetAddress, int port) {
         super(config);
         this.inetAddress = inetAddress;
         this.port = port;

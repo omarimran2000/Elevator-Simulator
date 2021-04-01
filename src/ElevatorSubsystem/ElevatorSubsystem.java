@@ -25,7 +25,7 @@ public class ElevatorSubsystem {
      * @return the elevators
      * @throws SocketException
      */
-    public static List<Elevator> generateElevators(Config config, SchedulerApi scheduler, int maxFloor) throws SocketException {
+    public static List<Elevator> generateElevators(Config config, SchedulerApi scheduler, int maxFloor) throws IOException {
         List<Elevator> elevators = new ArrayList<>();
 
         for (int i = 0; i < config.getIntProperty("numElevators"); i++) {
