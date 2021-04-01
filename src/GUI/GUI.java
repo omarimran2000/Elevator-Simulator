@@ -9,13 +9,13 @@ import java.util.ArrayList;
 
 public class GUI implements GuiApi{
     private final Config config;
-
     private final JFrame frame;
     private Container contentPane, elevatorsContainer, floorsContainer;
     private ArrayList<ElevatorPanel> elevators;
     private ArrayList<FloorPanel> floors;
     private int numElevators, numFloors;
 
+    //just for testing until UDP is set up
     public static void main(String[] args) throws IOException {
         Config config = new Config();
         new GUI(config);
@@ -62,28 +62,71 @@ public class GUI implements GuiApi{
         }
     }
 
+    /**
+     * Sets the elevator's current floor number
+     * @param elevatorNumber
+     * @param floorNumber
+     */
     public void setCurrentFloorNumber(int elevatorNumber, int floorNumber){
         elevators.get(elevatorNumber).setFloor(floorNumber);
     }
 
+    /**
+     * Sets the elevator's current direction of travel
+     * @param elevatorNumber
+     * @param direction
+     */
     public void setMotorDirection(int elevatorNumber, boolean direction) {
-
+        elevators.get(elevatorNumber).setMotorDirection(direction);
     }
+
+    /**
+     * Opens or closes the elevator doors
+     * @param elevatorNumber
+     * @param open
+     */
     public void setDoorsOpen(int elevatorNumber, boolean open){
-
+        elevators.get(elevatorNumber).setDoorsOpen(open);
     }
+
+    /**
+     * Sets the elevator;'s state: idle, moving, or stuck
+     * @param elevatorNumber
+     * @param state
+     */
     public void setState(int elevatorNumber, String state){
-
+        elevators.get(elevatorNumber).setStateText(state);
     }
-    public void setDoorsStuck(int elevatorNumber, boolean doorsStuck){
 
+    /**
+     * Sets the elevator's doors stuck open or closed
+     * @param elevatorNumber
+     * @param doorsStuck
+     */
+    public void setDoorsStuck(int elevatorNumber, boolean doorsStuck, boolean open){
+        elevators.get(elevatorNumber).setDoorsStuck(doorsStuck, open);
     }
+
+    /**
+     * Turns the button in the elevator corresponding to the floorNumber on or off
+     * @param elevatorNumber
+     * @param floorNumber
+     * @param on
+     */
     public void setElevatorButton(int elevatorNumber, int floorNumber, boolean on){
-
-    }
-    public void setFloorButton(int floorButton, boolean direction, boolean on){
-
+        elevators.get(elevatorNumber).setDestination(floorNumber, on);
     }
 
-
+    /**
+     * Sets the up or down floor button on or off
+     * @param floorNumber
+     * @param direction
+     * @param on
+     */
+    public void setFloorButton(int floorNumber, boolean direction, boolean on){
+        if (direction) {
+            floors.get(floorNumber).setUp(on);
+        }
+        else floors.get(floorNumber).setDown(on);
+    }
 }

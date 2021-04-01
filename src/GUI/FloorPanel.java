@@ -33,10 +33,18 @@ public class FloorPanel extends JPanel {
         this.add(downLabel);
     }
 
+    /**
+     * Show that the up button on this floor is turned on/off
+     * @param on True if the button is on, false for off
+     */
     public void setUp(boolean on){
         upLabel.setVisible(on);
     }
 
+    /**
+     * Show that the down button on this floor is turned on/off
+     * @param on True if the button is on, false for off
+     */
     public void setDown(boolean on){
         downLabel.setVisible(on);
     }

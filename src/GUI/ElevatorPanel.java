@@ -5,8 +5,8 @@ import java.awt.*;
 import java.util.ArrayList;
 
 /**
- * Represents an elevator's info
- * Consists of the elevator's number, direction of motion, current floor number
+ * Contains an elevator's info consisting of elevator number,
+ * current floor number, State, destinations queue, doors stuck status
  */
 public class ElevatorPanel extends JPanel {
 

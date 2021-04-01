@@ -3,7 +3,9 @@ package stub;
 import GUI.GuiApi;
 import utill.Config;
 
+import java.io.Serializable;
 import java.net.InetAddress;
+import java.util.List;
 
 public class GuiClient extends StubClient implements GuiApi {
     private final InetAddress inetAddress;
@@ -32,7 +34,7 @@ public class GuiClient extends StubClient implements GuiApi {
     public void setState(int elevatorNumber, String state){
 
     }
-    public void setDoorsStuck(int elevatorNumber, boolean doorsStuck){
+    public void setDoorsStuck(int elevatorNumber, boolean doorsStuck, boolean open){
 
     }
     public void setElevatorButton(int elevatorNumber, int floorNumber, boolean on){
