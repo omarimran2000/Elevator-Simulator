@@ -6,71 +6,73 @@ import utill.Config;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.IOException;
 import java.net.DatagramSocket;
 import java.net.SocketException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
-public class GUI implements GuiApi, Runnable {
+public class GUI extends Thread implements GuiApi {
     private final Config config;
-    private final JFrame frame;
-    private final Container contentPane;
-    private final Container elevatorsContainer;
-    private final Container floorsContainer;
-    private final ArrayList<ElevatorPanel> elevators;
-    private final ArrayList<FloorPanel> floors;
-    private final int numElevators;
-    private final int numFloors;
+    private final List<ElevatorPanel> elevators;
+    private final List<FloorPanel> floors;
     private final DatagramSocket socket;
-
-    //just for testing until UDP is set up
-    public static void main(String[] args) throws IOException {
-        Config config = new Config();
-        new Thread(new GUI(config)).start();
-    }
 
     public GUI(Config config) throws SocketException {
         this.config = config;
         elevators = new ArrayList<>();
         floors = new ArrayList<>();
-        numElevators = config.getIntProperty("numElevators");
-        numFloors = config.getIntProperty("numFloors");
+        JFrame frame = new JFrame();
+        frame.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
+        frame.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                interrupt();
+                socket.close();
+                System.exit(0);
+            }
+        });
 
-        frame = new JFrame();
-        frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        frame.setVisible(true);
-
-        contentPane = new Container();
+        Container contentPane = new Container();
         contentPane.setLayout(new BoxLayout(contentPane, BoxLayout.PAGE_AXIS));
         contentPane.setVisible(true);
-
-        elevatorsContainer = new Container();
-        elevatorsContainer.setLayout(new GridLayout(0, numElevators));
-        elevatorsContainer.setVisible(true);
-        floorsContainer = new Container();
-
         frame.add(contentPane);
-        contentPane.add(elevatorsContainer, BorderLayout.CENTER);
-        contentPane.add(floorsContainer, BorderLayout.PAGE_END);
 
-        for (int i = 0; i < numElevators; i++) {
-            ElevatorPanel e = new ElevatorPanel(numFloors, i);
+        Container elevatorsContainer = new Container();
+        elevatorsContainer.setLayout(new GridLayout(0, config.getIntProperty("numElevators")));
+        elevatorsContainer.setVisible(true);
+        for (int i = 0; i < config.getIntProperty("numElevators"); i++) {
+            ElevatorPanel e = new ElevatorPanel(config.getIntProperty("numFloors"), i);
             elevators.add(e);
             elevatorsContainer.add(e);
         }
+        contentPane.add(elevatorsContainer, BorderLayout.CENTER);
 
-        int dim = (int) Math.ceil(Math.sqrt(numFloors));
+        Container floorsContainer = new Container();
+        int dim = (int) Math.ceil(Math.sqrt(config.getIntProperty("numFloors")));
         floorsContainer.setLayout(new GridLayout(dim, dim));
         floorsContainer.setVisible(true);
-        for (int i = 0; i < numFloors; i++) {
+        for (int i = 0; i < config.getIntProperty("numFloors"); i++) {
             FloorPanel f = new FloorPanel(i);
             floors.add(f);
             floorsContainer.add(f);
         }
+        contentPane.add(floorsContainer, BorderLayout.PAGE_END);
+
         frame.pack();
         frame.setSize(1250, 700);
+        frame.setVisible(true);
+
         socket = new DatagramSocket(config.getIntProperty("GUIPort"));
+    }
+
+    //just for testing until UDP is set up
+    public static void main(String[] args) throws IOException {
+        Config config = new Config();
+        new GUI(config).start();
     }
 
     /**
@@ -142,6 +144,7 @@ public class GUI implements GuiApi, Runnable {
      * @param on
      */
     public void setFloorButton(int floorNumber, boolean direction, boolean on) {
+
         if (direction) {
             floors.get(floorNumber).setUp(on);
         } else floors.get(floorNumber).setDown(on);
@@ -154,43 +157,40 @@ public class GUI implements GuiApi, Runnable {
     public void run() {
         try {
             StubServer.receiveAsync(socket, config.getIntProperty("numHandlerThreads"), config.getIntProperty("maxMessageSize"), Map.of(
-                    1, input ->
-                    {
+                    1, input -> {
                         setCurrentFloorNumber((int) input.get(0), (int) input.get(1));
                         return new AckMessage();
                     },
-                    2, input ->
-                    {
+                    2, input -> {
                         setMotorDirection((int) input.get(0), (boolean) input.get(1));
                         return new AckMessage();
                     },
-                    3, input ->
-                    {
+                    3, input -> {
                         setDoorsOpen((int) input.get(0), (boolean) input.get(1));
                         return new AckMessage();
                     },
-                    4, input ->
-                    {
+                    4, input -> {
                         setState((int) input.get(0), (String) input.get(1));
                         return new AckMessage();
                     },
-                    5, input ->
-                    {
+                    5, input -> {
                         setDoorsStuck((int) input.get(0), (boolean) input.get(1), (boolean) input.get(2));
                         return new AckMessage();
                     },
-                    6, input ->
-                    {
+                    6, input -> {
                         setElevatorButton((int) input.get(0), (int) input.get(1), (boolean) input.get(2));
                         return new AckMessage();
                     },
-                    7, input ->
-                    {
+                    7, input -> {
                         setFloorButton((int) input.get(0), (boolean) input.get(1), (boolean) input.get(2));
                         return new AckMessage();
                     }
 
             ));
+        } catch (SocketException e) {
+            if (!Thread.interrupted()) {
+                e.printStackTrace();
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }

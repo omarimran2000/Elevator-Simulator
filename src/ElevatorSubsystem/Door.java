@@ -12,8 +12,8 @@ import java.util.logging.Logger;
  */
 public class Door {
     private final Logger logger;
-    private boolean isOpen;
     private final Config config;
+    private boolean isOpen;
 
     /**
      * Constructor for Door
