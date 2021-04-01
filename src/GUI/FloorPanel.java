@@ -8,31 +8,28 @@ import java.awt.*;
  * The up/down text fields should become visible when the corresponding floor button is activated
  */
 public class FloorPanel extends JPanel {
-    private final JLabel floorNumberLabel;
     private final JLabel upLabel;
     private final JLabel downLabel;
 
     public FloorPanel(int floorNumber) {
-        this.setVisible(true);
+        setVisible(true);
 
-        floorNumberLabel = new JLabel();
-        upLabel = new JLabel();
-        downLabel = new JLabel();
-
+        JLabel floorNumberLabel = new JLabel();
         floorNumberLabel.setText("Floor " + floorNumber);
         floorNumberLabel.setVisible(true);
+        add(floorNumberLabel);
 
+        upLabel = new JLabel();
         upLabel.setText("UP");
         upLabel.setVisible(false);
         upLabel.setForeground(Color.green);
+        add(upLabel);
 
+        downLabel = new JLabel();
         downLabel.setText("DOWN");
         downLabel.setVisible(false);
         downLabel.setForeground(Color.red);
-
-        this.add(floorNumberLabel);
-        this.add(upLabel);
-        this.add(downLabel);
+        add(downLabel);
     }
 
     /**
