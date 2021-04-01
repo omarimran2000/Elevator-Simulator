@@ -10,9 +10,15 @@ import java.util.ArrayList;
  */
 public class ElevatorPanel extends JPanel {
 
-    private JPanel topPanel, statePanel, buttonsPanel;
-    private JLabel doorsOpenText, motorDirectionText, floorNumberText, stateText, doorsStuckText;
-    private ArrayList<JTextField> buttons;
+    private final JPanel topPanel;
+    private final JPanel statePanel;
+    private final JPanel buttonsPanel;
+    private final JLabel doorsOpenText;
+    private final JLabel motorDirectionText;
+    private final JLabel floorNumberText;
+    private final JLabel stateText;
+    private final JLabel doorsStuckText;
+    private final ArrayList<JTextField> buttons;
 
     public ElevatorPanel(int numFloors, int elevatorNumber) {
         this.setVisible(true);
@@ -25,7 +31,7 @@ public class ElevatorPanel extends JPanel {
         topPanel.setVisible(true);
         this.add(topPanel, BorderLayout.NORTH);
 
-        JLabel eNumber = new JLabel("Elevator "+ elevatorNumber);
+        JLabel eNumber = new JLabel("Elevator " + elevatorNumber);
         topPanel.add(eNumber);
         eNumber.setVisible(true);
 
@@ -67,7 +73,7 @@ public class ElevatorPanel extends JPanel {
         int gridDimension = (int) Math.ceil(Math.sqrt(numFloors));
         buttonsPanel.setLayout(new GridLayout(gridDimension, gridDimension));
         int n = 0;
-        while (n < numFloors){
+        while (n < numFloors) {
             JTextField text = new JTextField(String.valueOf(n));
             text.setVisible(true);
             text.setEditable(false);
@@ -78,7 +84,7 @@ public class ElevatorPanel extends JPanel {
         }
     }
 
-    public void setFloor(int floorNumber){
+    public void setFloor(int floorNumber) {
         floorNumberText.setText("Current floor: " + floorNumber);
     }
 
@@ -86,27 +92,27 @@ public class ElevatorPanel extends JPanel {
         stateText.setText("Elevator state: " + state);
     }
 
-    public void setMotorDirection(boolean direction){
-        motorDirectionText.setText("Direction: " + (direction? "UP":"DOWN"));
+    public void setMotorDirection(boolean direction) {
+        motorDirectionText.setText("Direction: " + (direction ? "UP" : "DOWN"));
     }
 
-    public void setDoorsOpen(boolean open){
-        doorsOpenText.setText("Doors: " + (open? "OPEN":"CLOSED"));
+    public void setDoorsOpen(boolean open) {
+        doorsOpenText.setText("Doors: " + (open ? "OPEN" : "CLOSED"));
     }
 
     /**
      * If "stuck" is false then this label is invisible so "open" does not matter
      */
-    public void setDoorsStuck(boolean stuck, boolean open){
+    public void setDoorsStuck(boolean stuck, boolean open) {
         doorsStuckText.setVisible(stuck);
-        doorsStuckText.setText("Doors stuck " + (open? "open":"closed"));
+        doorsStuckText.setText("Doors stuck " + (open ? "open" : "closed"));
     }
 
     /**
      * @param floorNumber
      * @param on
      */
-    public void setDestination(int floorNumber, boolean on){
+    public void setDestination(int floorNumber, boolean on) {
         JTextField b = buttons.get(floorNumber);
         if (on) b.setBackground(Color.green);
         else b.setBackground(Color.white);
