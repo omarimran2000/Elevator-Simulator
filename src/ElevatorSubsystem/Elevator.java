@@ -46,7 +46,7 @@ public class Elevator extends Thread implements ElevatorApi {
     private final DatagramSocket socket;
     protected int currentFloorNumber;
     private State state;
-    private GuiClient gui;
+    protected final GuiClient gui;
     private boolean wasIdle;
 
     /**
@@ -67,6 +67,12 @@ public class Elevator extends Thread implements ElevatorApi {
         buttons = new HashMap<>();
         lamps = new HashMap<>();
         currentFloorNumber = 0;
+        gui = new GuiClient(config, InetAddress.getLocalHost(), config.getIntProperty("GUIPort"));
+        try {
+            gui.setDoorsOpen(this.elevatorNumber,false);
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
         state = new ElevatorNotMoving();
 
         for (int i = 0; i <= maxFloors; i++) {
@@ -77,12 +83,7 @@ public class Elevator extends Thread implements ElevatorApi {
         socket = new DatagramSocket(config.getIntProperty("elevatorPort") + elevatorNumber);
         executor = Executors.newSingleThreadScheduledExecutor();
 
-        gui = new GuiClient(config, InetAddress.getLocalHost(), config.getIntProperty("GUIPort"));
-        try {
-            gui.setCurrentFloorNumber(elevatorNumber,currentFloorNumber);
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        }
+
     }
 
     /**
@@ -178,6 +179,14 @@ public class Elevator extends Thread implements ElevatorApi {
         state.handleSetLamps();
         logger.info("Elevator " + elevatorNumber + " passing floor " + currentFloorNumber);
 
+        try {
+            gui.setCurrentFloorNumber(this.elevatorNumber,this.currentFloorNumber);
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+
         if (this.elevatorNumber == config.getIntProperty("elevatorStuck")) state.scheduleCheckIfStuck();
     }
 
@@ -202,6 +211,13 @@ public class Elevator extends Thread implements ElevatorApi {
     private synchronized void checkIfStuck(int floor, boolean isUp) {
         if (isUp ? currentFloorNumber < floor : currentFloorNumber > floor) {
             logger.warning("Elevator" + elevatorNumber + " is stuck");
+            try {
+                gui.setState(this.elevatorNumber,"STUCK");
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace();
+            }
             state = new ElevatorStuck();
         }
     }
@@ -282,6 +298,13 @@ public class Elevator extends Thread implements ElevatorApi {
     class ElevatorNotMoving implements State {
         public ElevatorNotMoving() {
             logger.info("Elevator " + elevatorNumber + " State Changed to: Idle");
+            try {
+                gui.setState(elevatorNumber,"IDLE");
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace();
+            }
             wasIdle = true;
         }
 
@@ -365,6 +388,13 @@ public class Elevator extends Thread implements ElevatorApi {
     abstract class MovingState implements State {
         public MovingState() {
             logger.info("Elevator " + elevatorNumber + " State Changed to: Moving");
+            try {
+                gui.setState(elevatorNumber,"MOVING");
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace();
+            }
         }
 
         abstract protected ElevatorLamp getPreviousLamp();
@@ -414,14 +444,18 @@ public class Elevator extends Thread implements ElevatorApi {
             buttons.get(currentFloorNumber).setOn(false);
             handleSetLamps();
             logger.info("Elevator " + elevatorNumber + " stopped at floor " + currentFloorNumber);
+            gui.setCurrentFloorNumber(elevatorNumber,currentFloorNumber);
             motor.setMoving(false);
 
             while (!door.isOpen()) {
                 door.open();
-                if (!door.isOpen())
+                if (!door.isOpen()) {
                     logger.warning("Elevator " + elevatorNumber + " doors stuck closed at floor " + currentFloorNumber);
+                    gui.setDoorsStuck(elevatorNumber,true,false);
+                }
             }
-
+            gui.setDoorsStuck(elevatorNumber,false,true);
+            gui.setDoorsOpen(elevatorNumber,true);
             try {
                 Thread.sleep(config.getIntProperty("waitTime"));
             } catch (InterruptedException e) {
@@ -439,10 +473,13 @@ public class Elevator extends Thread implements ElevatorApi {
 
             while (door.isOpen()) {
                 door.close();
-                if (door.isOpen())
+                if (door.isOpen()) {
                     logger.warning("Elevator " + elevatorNumber + " doors stuck open at floor " + currentFloorNumber);
+                    gui.setDoorsStuck(elevatorNumber,true,false);
+                }
             }
-
+            gui.setDoorsStuck(elevatorNumber,false,false);
+            gui.setDoorsOpen(elevatorNumber,false);
             if (destinations.isEmpty()) {
                 destinations.addAll(scheduler.getWaitingPeople(currentFloorNumber).getFloors());
                 if (destinations.isEmpty()) {
@@ -472,7 +509,15 @@ public class Elevator extends Thread implements ElevatorApi {
     class ElevatorMovingUp extends MovingState {
 
         public ElevatorMovingUp() {
+
             motor.setDirectionIsUp(true);
+            try {
+                gui.setMotorDirection(elevatorNumber,true);
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace();
+            }
         }
 
         /**
@@ -550,6 +595,7 @@ public class Elevator extends Thread implements ElevatorApi {
      */
     private class ElevatorMovingDown extends MovingState {
         public ElevatorMovingDown() {
+
             motor.setDirectionIsUp(false);
         }
 
