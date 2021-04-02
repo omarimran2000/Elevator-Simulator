@@ -6,6 +6,7 @@ import stub.StubServer;
 import utill.Config;
 
 import javax.swing.*;
+import javax.swing.border.Border;
 import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -21,7 +22,8 @@ public class GUI extends Thread implements GuiApi {
     private final List<ElevatorPanel> elevators;
     private final List<FloorPanel> floors;
     private final DatagramSocket socket;
-    private final JLabel scheduler;
+    private final JLabel schedulerMessage;
+    private final JLabel schedulerDestinations;
 
     public GUI(Config config) throws SocketException {
         this.config = config;
@@ -62,11 +64,26 @@ public class GUI extends Thread implements GuiApi {
             floors.add(f);
             floorsContainer.add(f);
         }
-        contentPane.add(floorsContainer, BorderLayout.PAGE_END);
+        //contentPane.add(floorsContainer, BorderLayout.PAGE_END);
+        Container c = new Container();
+        c.setLayout(new BoxLayout(c, BoxLayout.PAGE_AXIS));
+        contentPane.add(c, BorderLayout.PAGE_END);
+        c.add(floorsContainer);
 
-        scheduler = new JLabel();
-        contentPane.add(scheduler, BorderLayout.PAGE_END);
-        scheduler.setVisible(true);
+        Container schedulerContainer = new Container();
+        schedulerContainer.setLayout(new BoxLayout(schedulerContainer, BoxLayout.PAGE_AXIS));
+        c.add(schedulerContainer);
+
+        schedulerMessage = new JLabel();
+        schedulerDestinations = new JLabel();
+        schedulerContainer.add(schedulerMessage);
+        schedulerContainer.add(schedulerDestinations);
+        setSchedulerMessage("");
+        setSchedulerDestinations("");
+
+        //scheduler = new JLabel();
+        //contentPane.add(scheduler, BorderLayout.PAGE_END);
+        //scheduler.setVisible(true);
 
         frame.pack();
         frame.setSize(1750, 700);
@@ -154,14 +171,12 @@ public class GUI extends Thread implements GuiApi {
         } else floors.get(floorNumber).setDown(on);
     }
 
-    /**
-     * Sets the scheduler message
-     * @param message
-     * @throws IOException
-     * @throws ClassNotFoundException
-     */
-    public void setScheduler(String message){
-        scheduler.setText("Scheduler: "+message);
+    public void setSchedulerMessage(String message) {
+        schedulerMessage.setText("Scheduler info: " + message);
+    }
+
+    public void setSchedulerDestinations(String destinations) {
+        schedulerDestinations.setText("Destinations to be scheduled: " + destinations);
     }
 
     /**
@@ -200,7 +215,11 @@ public class GUI extends Thread implements GuiApi {
                         return new AckMessage();
                     },
                     8, input -> {
-                        setScheduler((String) input.get(0));
+                        setSchedulerMessage((String) input.get(0));
+                        return new AckMessage();
+                    },
+                    9, input -> {
+                        setSchedulerMessage((String) input.get(0));
                         return new AckMessage();
                     }
 
