@@ -21,6 +21,7 @@ public class GUI extends Thread implements GuiApi {
     private final List<ElevatorPanel> elevators;
     private final List<FloorPanel> floors;
     private final DatagramSocket socket;
+    private final JLabel scheduler;
 
     public GUI(Config config) throws SocketException {
         this.config = config;
@@ -62,6 +63,10 @@ public class GUI extends Thread implements GuiApi {
             floorsContainer.add(f);
         }
         contentPane.add(floorsContainer, BorderLayout.PAGE_END);
+
+        scheduler = new JLabel();
+        contentPane.add(scheduler, BorderLayout.PAGE_END);
+        scheduler.setVisible(true);
 
         frame.pack();
         frame.setSize(1250, 700);
@@ -150,6 +155,16 @@ public class GUI extends Thread implements GuiApi {
     }
 
     /**
+     * Sets the scheduler message
+     * @param message
+     * @throws IOException
+     * @throws ClassNotFoundException
+     */
+    public void setScheduler(String message){
+        scheduler.setText("Scheduler: "+message);
+    }
+
+    /**
      * Run method for the GUI
      */
     @Override
@@ -182,6 +197,10 @@ public class GUI extends Thread implements GuiApi {
                     },
                     7, input -> {
                         setFloorButton((int) input.get(0), (boolean) input.get(1), (boolean) input.get(2));
+                        return new AckMessage();
+                    },
+                    8, input -> {
+                        setScheduler((String) input.get(0));
                         return new AckMessage();
                     }
 

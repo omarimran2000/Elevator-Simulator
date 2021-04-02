@@ -50,4 +50,8 @@ public class GuiClient extends StubClient implements GuiApi {
     public void setFloorButton(int floorButton, boolean direction, boolean on) throws IOException, ClassNotFoundException {
         sendAndReceive(7, List.of(floorButton, direction, on), inetAddress, port);
     }
+
+    public void setScheduler(String message) throws IOException, ClassNotFoundException {
+        sendAndReceive(8, message, inetAddress, port);
+    }
 }

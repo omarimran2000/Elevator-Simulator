@@ -76,7 +76,6 @@ public class ElevatorPanel extends JPanel {
             text.setBackground(Color.white);
             buttonsPanel.add(text);
             buttons.add(text);
-            n++;
         }
     }
 
