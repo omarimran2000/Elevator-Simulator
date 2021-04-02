@@ -51,7 +51,11 @@ public class GuiClient extends StubClient implements GuiApi {
         sendAndReceive(7, List.of(floorButton, direction, on), inetAddress, port);
     }
 
-    public void setScheduler(String message) throws IOException, ClassNotFoundException {
+    public void setSchedulerMessage(String message) throws IOException, ClassNotFoundException {
         sendAndReceive(8, message, inetAddress, port);
+    }
+
+    public void setSchedulerDestinations(String destinations) throws IOException, ClassNotFoundException {
+        sendAndReceive(9, destinations, inetAddress, port);
     }
 }
