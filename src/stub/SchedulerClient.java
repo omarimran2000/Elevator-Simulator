@@ -81,7 +81,9 @@ public class SchedulerClient extends StubClient implements SchedulerApi {
     }
 
     @Override
-    public void interrupt() {
-
+    public boolean interruptThread() {
+        return false;
     }
+
+
 }
