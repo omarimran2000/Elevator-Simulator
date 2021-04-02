@@ -10,6 +10,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.SocketException;
+import java.net.UnknownHostException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -28,7 +29,7 @@ public class FloorSubsystem {
      * @param schedule  the list of events
      * @return The map of the floors
      */
-    public static Map<Integer, Floor> generateFloors(Config config, SchedulerApi scheduler, List<Event> schedule) throws SocketException {
+    public static Map<Integer, Floor> generateFloors(Config config, SchedulerApi scheduler, List<Event> schedule) throws SocketException, UnknownHostException {
         Map<Integer, Floor> floors = new HashMap<>();
 
         Map<Integer, List<Event>> schedule_by_floor = schedule.stream().collect(groupingBy(Event::getFloorNumber));
@@ -69,7 +70,7 @@ public class FloorSubsystem {
      * @throws FileNotFoundException
      * @throws ParseException
      */
-    public static Map<Integer, Floor> generateFloors(Config config, SchedulerApi scheduler, String schedule_filename) throws FileNotFoundException, ParseException, SocketException {
+    public static Map<Integer, Floor> generateFloors(Config config, SchedulerApi scheduler, String schedule_filename) throws FileNotFoundException, ParseException, SocketException, UnknownHostException {
         return generateFloors(config, scheduler, FloorSubsystem.readCSV(config, schedule_filename));
     }
 

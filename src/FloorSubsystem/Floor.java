@@ -4,12 +4,15 @@ import SchedulerSubsystem.SchedulerApi;
 import model.Destination;
 import model.Event;
 import model.Floors;
+import stub.GuiClient;
 import stub.StubServer;
 import utill.Config;
 
 import java.io.IOException;
 import java.net.DatagramSocket;
+import java.net.InetAddress;
 import java.net.SocketException;
+import java.net.UnknownHostException;
 import java.util.*;
 import java.util.logging.Logger;
 
@@ -26,10 +29,10 @@ public abstract class Floor extends Thread implements FloorApi {
     private final Set<Integer> waitingPeopleDown;
     private final FloorLamp upLamp;
     private final FloorLamp downLamp;
-
     private final int floorNumber;
     private final DatagramSocket socket;
     private final Config config;
+    private final GuiClient gui;
 
     /**
      * Constructor
@@ -38,7 +41,7 @@ public abstract class Floor extends Thread implements FloorApi {
      * @param scheduler
      * @param schedule    A list of events
      */
-    public Floor(Config config, int floorNumber, SchedulerApi scheduler, List<Event> schedule) throws SocketException {
+    public Floor(Config config, int floorNumber, SchedulerApi scheduler, List<Event> schedule) throws SocketException, UnknownHostException {
         logger = Logger.getLogger(this.getClass().getName());
         this.floorNumber = floorNumber;
         this.scheduler = scheduler;
@@ -49,6 +52,10 @@ public abstract class Floor extends Thread implements FloorApi {
         upLamp = new FloorLamp();
         downLamp = new FloorLamp();
         socket = new DatagramSocket(config.getIntProperty("floorPort") + floorNumber);
+        gui = new GuiClient(config, InetAddress.getLocalHost(), config.getIntProperty("GUIPort"));
+
+
+
     }
 
     /**
@@ -73,9 +80,19 @@ public abstract class Floor extends Thread implements FloorApi {
                 Event event = schedule.remove();
                 if (event.isFloorButtonIsUp()) {
                     turnUpButtonOn();
+                    try {
+                        gui.setFloorButton(floorNumber, true, true);
+                    } catch (IOException | ClassNotFoundException e) {
+                        e.printStackTrace();
+                    }
                     waitingPeopleUp.add(event.getCarButton());
                 } else {
                     turnDownButtonOn();
+                    try {
+                        gui.setFloorButton(floorNumber, false, true);
+                    } catch (IOException | ClassNotFoundException e) {
+                        e.printStackTrace();
+                    }
                     waitingPeopleDown.add(event.getCarButton());
                 }
                 try {
@@ -106,6 +123,11 @@ public abstract class Floor extends Thread implements FloorApi {
     public Floors getWaitingPeopleUp() {
         logger.info("Loading people onto the elevator going up");
         turnUpButtonOff();
+        try {
+            gui.setFloorButton(floorNumber, true, false);
+        } catch (IOException | ClassNotFoundException e) {
+            e.printStackTrace();
+        }
         Floors waitingPeople = new Floors(waitingPeopleUp);
         waitingPeopleUp.clear();
         return waitingPeople;
@@ -117,6 +139,11 @@ public abstract class Floor extends Thread implements FloorApi {
     public Floors getWaitingPeopleDown() {
         logger.info("Loading people onto the elevator going down");
         turnDownButtonOff();
+        try {
+            gui.setFloorButton(floorNumber, false, false);
+        } catch (IOException | ClassNotFoundException e) {
+            e.printStackTrace();
+        }
         Floors waitingPeople = new Floors(waitingPeopleDown);
         waitingPeopleDown.clear();
         return waitingPeople;
@@ -180,7 +207,7 @@ class TopFloor extends Floor {
      * @param scheduler   The scheduler
      * @param schedule    The list of scheduled events
      */
-    public TopFloor(Config config, int floorNumber, SchedulerApi scheduler, List<Event> schedule) throws SocketException {
+    public TopFloor(Config config, int floorNumber, SchedulerApi scheduler, List<Event> schedule) throws SocketException, UnknownHostException {
         super(config, floorNumber, scheduler, schedule);
         downButton = new FloorButton(floorNumber, false);
     }
@@ -236,7 +263,7 @@ class BottomFloor extends Floor {
      * @param scheduler   The scheduler
      * @param schedule    The list of scheduled events
      */
-    public BottomFloor(Config config, int floorNumber, SchedulerApi scheduler, List<Event> schedule) throws SocketException {
+    public BottomFloor(Config config, int floorNumber, SchedulerApi scheduler, List<Event> schedule) throws SocketException, UnknownHostException {
         super(config, floorNumber, scheduler, schedule);
         upButton = new FloorButton(floorNumber, true);
     }
@@ -293,7 +320,7 @@ class MiddleFloor extends Floor {
      * @param scheduler   The scheduler
      * @param schedule    The list of scheduled events
      */
-    public MiddleFloor(Config config, int floorNumber, SchedulerApi scheduler, List<Event> schedule) throws SocketException {
+    public MiddleFloor(Config config, int floorNumber, SchedulerApi scheduler, List<Event> schedule) throws SocketException, UnknownHostException {
         super(config, floorNumber, scheduler, schedule);
         upButton = new FloorButton(floorNumber, true);
         downButton = new FloorButton(floorNumber, false);
