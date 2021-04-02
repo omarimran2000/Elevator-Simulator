@@ -43,4 +43,6 @@ public interface SchedulerApi {
      * @throws ClassNotFoundException
      */
     Floors getWaitingPeople(int floorNumber) throws IOException, ClassNotFoundException;
+
+    boolean interruptThread();
 }

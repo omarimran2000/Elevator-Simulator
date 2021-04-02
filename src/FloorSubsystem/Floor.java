@@ -60,7 +60,8 @@ public abstract class Floor extends Thread implements FloorApi {
             try {
                 StubServer.receiveAsync(socket, config.getIntProperty("numHandlerThreads"), config.getIntProperty("maxMessageSize"), Map.of(
                         1, input -> getWaitingPeopleUp(),
-                        2, input -> getWaitingPeopleDown()));
+                        2, input -> getWaitingPeopleDown(),
+                        3, input -> interruptThread()   ) );
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -91,6 +92,12 @@ public abstract class Floor extends Thread implements FloorApi {
                 }
             }
         }
+    }
+
+    @Override
+    public boolean interruptThread(){
+        interrupt();
+        return true;
     }
 
     @Override

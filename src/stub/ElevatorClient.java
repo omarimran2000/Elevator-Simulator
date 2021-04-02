@@ -5,6 +5,7 @@ import model.Destination;
 import utill.Config;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.net.InetAddress;
 
 /**
@@ -67,4 +68,10 @@ public class ElevatorClient extends StubClient implements ElevatorApi {
     public boolean canAddDestination(Destination destination) throws IOException, ClassNotFoundException {
         return sendAndReceive(3, destination, inetAddress, port);
     }
+
+
+    public boolean interruptThread() throws IOException, ClassNotFoundException {
+        return sendAndReceive(4, (Serializable) null, inetAddress, port);
+    }
+
 }

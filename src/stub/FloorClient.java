@@ -54,4 +54,9 @@ public class FloorClient extends StubClient implements FloorApi {
     public Floors getWaitingPeopleDown() throws IOException, ClassNotFoundException {
         return sendAndReceive(2, inetAddress, port);
     }
+
+    @Override
+    public boolean interruptThread() {
+        return false;
+    }
 }

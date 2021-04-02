@@ -111,18 +111,23 @@ public class Elevator extends Thread implements ElevatorApi {
                         addDestination((Destination) input.get(0));
                         return new AckMessage();
                     },
-                    3, input -> canAddDestination((Destination) input.get(0))));
+                    3, input -> canAddDestination((Destination) input.get(0)),
+                    4, input -> interruptThread()   ) );
 
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
+    public boolean interruptThread(){
+        interrupt();
+        return true;
+    }
     /**
      * Interrupt method
      */
     @Override
-    public void interrupt() {
+    public  void interrupt() {
         super.interrupt();
         // close socket to interrupt receive
         socket.close();
