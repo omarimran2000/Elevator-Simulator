@@ -1,6 +1,7 @@
 package GUI;
 
 import model.AckMessage;
+import model.ElevatorState;
 import stub.StubServer;
 import utill.Config;
 
@@ -20,6 +21,7 @@ public class GUI extends Thread implements GuiApi {
     private final List<ElevatorPanel> elevators;
     private final List<FloorPanel> floors;
     private final DatagramSocket socket;
+    private final JLabel scheduler;
 
     public GUI(Config config) throws SocketException {
         this.config = config;
@@ -62,6 +64,10 @@ public class GUI extends Thread implements GuiApi {
         }
         contentPane.add(floorsContainer, BorderLayout.PAGE_END);
 
+        scheduler = new JLabel();
+        contentPane.add(scheduler, BorderLayout.PAGE_END);
+        scheduler.setVisible(true);
+
         frame.pack();
         frame.setSize(1250, 700);
         frame.setVisible(true);
@@ -69,7 +75,6 @@ public class GUI extends Thread implements GuiApi {
         socket = new DatagramSocket(config.getIntProperty("GUIPort"));
     }
 
-    //just for testing until UDP is set up
     public static void main(String[] args) throws IOException {
         Config config = new Config();
         new GUI(config).start();
@@ -111,7 +116,7 @@ public class GUI extends Thread implements GuiApi {
      * @param elevatorNumber
      * @param state
      */
-    public void setState(int elevatorNumber, String state) {
+    public void setState(int elevatorNumber, ElevatorState state) {
         elevators.get(elevatorNumber).setStateText(state);
     }
 
@@ -144,10 +149,19 @@ public class GUI extends Thread implements GuiApi {
      * @param on
      */
     public void setFloorButton(int floorNumber, boolean direction, boolean on) {
-
         if (direction) {
             floors.get(floorNumber).setUp(on);
         } else floors.get(floorNumber).setDown(on);
+    }
+
+    /**
+     * Sets the scheduler message
+     * @param message
+     * @throws IOException
+     * @throws ClassNotFoundException
+     */
+    public void setScheduler(String message){
+        scheduler.setText("Scheduler: "+message);
     }
 
     /**
@@ -170,7 +184,7 @@ public class GUI extends Thread implements GuiApi {
                         return new AckMessage();
                     },
                     4, input -> {
-                        setState((int) input.get(0), (String) input.get(1));
+                        setState((int) input.get(0), (ElevatorState) input.get(1));
                         return new AckMessage();
                     },
                     5, input -> {
@@ -183,6 +197,10 @@ public class GUI extends Thread implements GuiApi {
                     },
                     7, input -> {
                         setFloorButton((int) input.get(0), (boolean) input.get(1), (boolean) input.get(2));
+                        return new AckMessage();
+                    },
+                    8, input -> {
+                        setScheduler((String) input.get(0));
                         return new AckMessage();
                     }
 

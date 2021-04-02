@@ -1,6 +1,7 @@
 package stub;
 
 import GUI.GuiApi;
+import model.ElevatorState;
 import utill.Config;
 
 import java.io.IOException;
@@ -34,7 +35,7 @@ public class GuiClient extends StubClient implements GuiApi {
         sendAndReceive(3, List.of(elevatorNumber, open), inetAddress, port);
     }
 
-    public void setState(int elevatorNumber, String state) throws IOException, ClassNotFoundException {
+    public void setState(int elevatorNumber, ElevatorState state) throws IOException, ClassNotFoundException {
         sendAndReceive(4, List.of(elevatorNumber, state), inetAddress, port);
     }
 
@@ -48,5 +49,9 @@ public class GuiClient extends StubClient implements GuiApi {
 
     public void setFloorButton(int floorButton, boolean direction, boolean on) throws IOException, ClassNotFoundException {
         sendAndReceive(7, List.of(floorButton, direction, on), inetAddress, port);
+    }
+
+    public void setScheduler(String message) throws IOException, ClassNotFoundException {
+        sendAndReceive(8, message, inetAddress, port);
     }
 }
