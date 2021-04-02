@@ -149,7 +149,7 @@ public class Scheduler extends Thread implements SchedulerApi {
                             throw new UndeclaredThrowableException(e);
                         }
                     }, 4, input -> getWaitingPeople((Integer) input.get(0)),
-                    5, input -> interruptThread()));
+                       20, input -> {interrupt(); return new AckMessage();}  ) );
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -174,13 +174,6 @@ public class Scheduler extends Thread implements SchedulerApi {
             this.elevators = Collections.unmodifiableList(elevators);
         }
     }
-
-    @Override
-    public boolean interruptThread() {
-        interrupt();
-        return true;
-    }
-
     /**
      * Interupt method
      */

@@ -25,6 +25,4 @@ public interface FloorApi {
      * @throws ClassNotFoundException
      */
     Floors getWaitingPeopleDown() throws IOException, ClassNotFoundException;
-
-    boolean interruptThread();
 }

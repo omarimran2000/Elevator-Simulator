@@ -1,6 +1,7 @@
 package FloorSubsystem;
 
 import SchedulerSubsystem.SchedulerApi;
+import model.AckMessage;
 import model.Destination;
 import model.Event;
 import model.Floors;
@@ -61,7 +62,7 @@ public abstract class Floor extends Thread implements FloorApi {
                 StubServer.receiveAsync(socket, config.getIntProperty("numHandlerThreads"), config.getIntProperty("maxMessageSize"), Map.of(
                         1, input -> getWaitingPeopleUp(),
                         2, input -> getWaitingPeopleDown(),
-                        3, input -> interruptThread()   ) );
+                        20, input -> {interrupt(); return new AckMessage();}  ) );
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -94,13 +95,7 @@ public abstract class Floor extends Thread implements FloorApi {
         }
     }
 
-    @Override
-    public boolean interruptThread(){
-        interrupt();
-        return true;
-    }
-
-    @Override
+     @Override
     public void interrupt() {
         super.interrupt();
         // close socket to interrupt receive

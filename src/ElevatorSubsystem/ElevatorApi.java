@@ -33,6 +33,4 @@ public interface ElevatorApi {
      * @throws ClassNotFoundException
      */
     boolean canAddDestination(Destination destination) throws IOException, ClassNotFoundException;
-
-    boolean interruptThread() throws IOException, ClassNotFoundException;
 }
