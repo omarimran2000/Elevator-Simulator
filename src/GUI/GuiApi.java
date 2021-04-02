@@ -19,5 +19,5 @@ public interface GuiApi {
 
     void setFloorButton(int floorNumber, boolean direction, boolean on) throws IOException, ClassNotFoundException;
 
-    void setScheduler(String message) throws IOException, ClassNotFoundException;
+    void setSchedulerDestination(int floorNumber, boolean on) throws IOException, ClassNotFoundException;
 }

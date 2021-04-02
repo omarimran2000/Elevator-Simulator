@@ -20,8 +20,8 @@ public class GUI extends Thread implements GuiApi {
     private final Config config;
     private final List<ElevatorPanel> elevators;
     private final List<FloorPanel> floors;
+    private final SchedulerPanel schedulerPanel;
     private final DatagramSocket socket;
-    private final JLabel scheduler;
 
     public GUI(Config config) throws SocketException {
         this.config = config;
@@ -64,9 +64,8 @@ public class GUI extends Thread implements GuiApi {
         }
         contentPane.add(floorsContainer, BorderLayout.PAGE_END);
 
-        scheduler = new JLabel();
-        contentPane.add(scheduler, BorderLayout.PAGE_END);
-        scheduler.setVisible(true);
+        schedulerPanel = new SchedulerPanel(config.getIntProperty("numFloors"));
+        contentPane.add(schedulerPanel, BorderLayout.WEST);
 
         frame.pack();
         frame.setSize(1250, 700);
@@ -154,14 +153,8 @@ public class GUI extends Thread implements GuiApi {
         } else floors.get(floorNumber).setDown(on);
     }
 
-    /**
-     * Sets the scheduler message
-     * @param message
-     * @throws IOException
-     * @throws ClassNotFoundException
-     */
-    public void setScheduler(String message){
-        scheduler.setText("Scheduler: "+message);
+    public void setSchedulerDestination(int floorNumber, boolean on) {
+        schedulerPanel.setDestination(floorNumber, on);
     }
 
     /**
@@ -200,10 +193,9 @@ public class GUI extends Thread implements GuiApi {
                         return new AckMessage();
                     },
                     8, input -> {
-                        setScheduler((String) input.get(0));
+                        setSchedulerDestination((int) input.get(0), (boolean) input.get(1));
                         return new AckMessage();
                     }
-
             ));
         } catch (SocketException e) {
             if (!Thread.interrupted()) {

@@ -45,7 +45,6 @@ public class Elevator extends Thread implements ElevatorApi {
     private final DatagramSocket socket;
     protected int currentFloorNumber;
     private State state;
-    private final GuiClient gui;
     private int idleDestination;
 
     /**
@@ -75,13 +74,6 @@ public class Elevator extends Thread implements ElevatorApi {
         destinations = new HashSet<>();
         socket = new DatagramSocket(config.getIntProperty("elevatorPort") + elevatorNumber);
         executor = Executors.newSingleThreadScheduledExecutor();
-
-        gui = new GuiClient(config, InetAddress.getLocalHost(), config.getIntProperty("GUIPort"));
-        try {
-            gui.setCurrentFloorNumber(elevatorNumber, currentFloorNumber);
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        }
     }
 
     /**
