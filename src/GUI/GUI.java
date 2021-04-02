@@ -69,7 +69,7 @@ public class GUI extends Thread implements GuiApi {
         scheduler.setVisible(true);
 
         frame.pack();
-        frame.setSize(1250, 700);
+        frame.setSize(1750, 700);
         frame.setVisible(true);
 
         socket = new DatagramSocket(config.getIntProperty("GUIPort"));
