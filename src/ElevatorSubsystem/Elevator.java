@@ -212,7 +212,7 @@ public class Elevator extends Thread implements ElevatorApi {
         if (isUp ? currentFloorNumber < floor : currentFloorNumber > floor) {
             logger.warning("Elevator" + elevatorNumber + " is stuck");
             try {
-                gui.setState(this.elevatorNumber,"STUCK");
+                gui.setState(this.elevatorNumber,ElevatorState.Stuck);
             } catch (IOException e) {
                 e.printStackTrace();
             } catch (ClassNotFoundException e) {
@@ -299,7 +299,7 @@ public class Elevator extends Thread implements ElevatorApi {
         public ElevatorNotMoving() {
             logger.info("Elevator " + elevatorNumber + " State Changed to: Idle");
             try {
-                gui.setState(elevatorNumber,"IDLE");
+                gui.setState(elevatorNumber,ElevatorState.NotMoving);
             } catch (IOException e) {
                 e.printStackTrace();
             } catch (ClassNotFoundException e) {
@@ -388,13 +388,6 @@ public class Elevator extends Thread implements ElevatorApi {
     abstract class MovingState implements State {
         public MovingState() {
             logger.info("Elevator " + elevatorNumber + " State Changed to: Moving");
-            try {
-                gui.setState(elevatorNumber,"MOVING");
-            } catch (IOException e) {
-                e.printStackTrace();
-            } catch (ClassNotFoundException e) {
-                e.printStackTrace();
-            }
         }
 
         abstract protected ElevatorLamp getPreviousLamp();
@@ -523,6 +516,7 @@ public class Elevator extends Thread implements ElevatorApi {
             motor.setDirectionIsUp(true);
             try {
                 gui.setMotorDirection(elevatorNumber,true);
+                gui.setState(elevatorNumber,ElevatorState.MovingUp);
             } catch (IOException e) {
                 e.printStackTrace();
             } catch (ClassNotFoundException e) {
@@ -610,6 +604,7 @@ public class Elevator extends Thread implements ElevatorApi {
             motor.setDirectionIsUp(false);
             try {
                 gui.setMotorDirection(elevatorNumber,false);
+                gui.setState(elevatorNumber,ElevatorState.MovingDown);
             } catch (IOException e) {
                 e.printStackTrace();
             } catch (ClassNotFoundException e) {
