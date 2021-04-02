@@ -6,17 +6,26 @@ import utill.Config;
 import java.util.logging.Logger;
 
 /**
- * The Door class represents the elevator doors
- *
- * @version Feb 27, 2021
+ * Door is a class meant to simulate the door of a real elevator.
  */
 public class Door {
+    /**
+     * The Door's instance of Logger.
+     */
     private final Logger logger;
+    /**
+     * If the Door is open.
+     */
     private boolean isOpen;
+    /**
+     * The application configuration loader.
+     */
     private final Config config;
 
     /**
-     * Constructor for Door
+     * The default constructor for the Door.
+     *
+     * @param config The application configuration loader.
      */
     public Door(Config config) {
         isOpen = false;
@@ -25,7 +34,7 @@ public class Door {
     }
 
     /**
-     * Open the door
+     * Attempt to open the Door. This has a random chance of failing, which is configurable in the config file.
      */
     public void open() {
         if (Math.random() * 100 > config.getFloatProperty("probabilityDoorStuck")) {
@@ -36,7 +45,7 @@ public class Door {
 
 
     /**
-     * Close the door
+     * Attempt to close the Door. This has a random chance of failing, which is configurable in the config file.
      */
     public void close() {
         if (Math.random() * 100 > config.getFloatProperty("probabilityDoorStuck")) {
@@ -45,6 +54,11 @@ public class Door {
         }
     }
 
+    /**
+     * Get if the Door is currently open.
+     *
+     * @return If the Door is open.
+     */
     public boolean isOpen() {
         return isOpen;
     }
