@@ -149,7 +149,7 @@ public class Elevator extends Thread implements ElevatorApi {
     public synchronized void addDestination(Destination destination) {
         try {
             state.handleAddDestination(destination);
-            gui.setElevatorButton(elevatorNumber, destination.getFloorNumber(), true);
+            gui.setElevatorButton(elevatorNumber, destination.getFloorNumber(), false, true);
         } catch (IOException | ClassNotFoundException e) {
             throw new UndeclaredThrowableException(e);
         }
@@ -445,14 +445,14 @@ public class Elevator extends Thread implements ElevatorApi {
             } else {
                 destinations.remove(currentFloorNumber);
                 buttons.get(currentFloorNumber).setOn(false);
-                gui.setElevatorButton(elevatorNumber, currentFloorNumber, false);
+                gui.setElevatorButton(elevatorNumber, currentFloorNumber, false, false);
                 floors = getWaitingPeople();
             }
 
             floors.getFloors().forEach(destination -> {
                 buttons.get(destination).setOn(true);
                 try {
-                    gui.setElevatorButton(elevatorNumber, destination, true);
+                    gui.setElevatorButton(elevatorNumber, destination, true, true);
                 } catch (IOException | ClassNotFoundException e) {
                     e.printStackTrace();
                 }
@@ -565,7 +565,7 @@ public class Elevator extends Thread implements ElevatorApi {
             if (idleDestination.isUp()) {
                 destinations.remove(currentFloorNumber);
                 buttons.get(currentFloorNumber).setOn(false);
-                gui.setElevatorButton(elevatorNumber, currentFloorNumber, false);
+                gui.setElevatorButton(elevatorNumber, currentFloorNumber, false, false);
                 Floors floors = getWaitingPeople();
                 if (floors.getFloors().isEmpty()) {
                     floors = getWaitingPeopleTurnAround();
@@ -578,7 +578,7 @@ public class Elevator extends Thread implements ElevatorApi {
                 if (currentFloorNumber == maxDestination) {
                     destinations.remove(currentFloorNumber);
                     buttons.get(currentFloorNumber).setOn(false);
-                    gui.setElevatorButton(elevatorNumber, currentFloorNumber, false);
+                    gui.setElevatorButton(elevatorNumber, currentFloorNumber, false, false);
                     idleDestination = null;
                     return getWaitingPeopleTurnAround();
                 } else {
@@ -660,7 +660,7 @@ public class Elevator extends Thread implements ElevatorApi {
             if (!idleDestination.isUp()) {
                 destinations.remove(currentFloorNumber);
                 buttons.get(currentFloorNumber).setOn(false);
-                gui.setElevatorButton(elevatorNumber, currentFloorNumber, false);
+                gui.setElevatorButton(elevatorNumber, currentFloorNumber, false, false);
                 Floors floors = getWaitingPeople();
                 if (floors.getFloors().isEmpty()) {
                     floors = getWaitingPeopleTurnAround();
@@ -673,7 +673,7 @@ public class Elevator extends Thread implements ElevatorApi {
                 if (currentFloorNumber == minDestination) {
                     destinations.remove(currentFloorNumber);
                     buttons.get(currentFloorNumber).setOn(false);
-                    gui.setElevatorButton(elevatorNumber, currentFloorNumber, false);
+                    gui.setElevatorButton(elevatorNumber, currentFloorNumber, false, false);
                     idleDestination = null;
                     return getWaitingPeopleTurnAround();
                 } else {

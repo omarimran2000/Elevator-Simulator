@@ -109,8 +109,8 @@ public class GUI extends Thread implements GuiApi {
     }
 
     @Override
-    public void setElevatorButton(int elevatorNumber, int floorNumber, boolean on) {
-        elevators.get(elevatorNumber).setDestination(floorNumber, on);
+    public void setElevatorButton(int elevatorNumber, int floorNumber, boolean isButton, boolean on) {
+        elevators.get(elevatorNumber).setElevatorButton(floorNumber, isButton, on);
     }
 
     @Override
@@ -158,7 +158,7 @@ public class GUI extends Thread implements GuiApi {
                         return new AckMessage();
                     },
                     6, input -> {
-                        setElevatorButton((int) input.get(0), (int) input.get(1), (boolean) input.get(2));
+                        setElevatorButton((int) input.get(0), (int) input.get(1), (boolean) input.get(2), (boolean) input.get(3));
                         return new AckMessage();
                     },
                     7, input -> {
