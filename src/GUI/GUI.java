@@ -65,7 +65,8 @@ public class GUI extends Thread implements GuiApi {
         contentPane.add(floorsContainer, BorderLayout.PAGE_END);
 
         schedulerPanel = new SchedulerPanel(config.getIntProperty("numFloors"));
-        contentPane.add(schedulerPanel, BorderLayout.WEST);
+        contentPane.add(schedulerPanel);
+        schedulerPanel.setSize(1250, 100);
 
         frame.pack();
         frame.setSize(1250, 700);
