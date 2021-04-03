@@ -25,6 +25,7 @@ public abstract class Floor extends Thread implements FloorApi {
     private final PriorityQueue<Event> schedule;
     private final Set<Integer> waitingPeopleUp;
     private final Set<Integer> waitingPeopleDown;
+    private final Thread receiveThread;
     private final FloorLamp upLamp;
     private final FloorLamp downLamp;
 
@@ -50,14 +51,7 @@ public abstract class Floor extends Thread implements FloorApi {
         upLamp = new FloorLamp();
         downLamp = new FloorLamp();
         socket = new DatagramSocket(config.getIntProperty("floorPort") + floorNumber);
-    }
-
-    /**
-     * Method to run the thread
-     */
-    @Override
-    public void run() {
-        Thread thread = new Thread(() -> {
+        receiveThread = new Thread(() -> {
             try {
                 StubServer.receiveAsync(socket, config.getIntProperty("numHandlerThreads"), config.getIntProperty("maxMessageSize"), Map.of(
                         1, input -> getWaitingPeopleUp(),
@@ -70,7 +64,14 @@ public abstract class Floor extends Thread implements FloorApi {
                 e.printStackTrace();
             }
         });
-        thread.start();
+    }
+
+    /**
+     * Method to run the thread
+     */
+    @Override
+    public void run() {
+        receiveThread.start();
         //currentTimeMillis use the time Of the underlying operating system and therefore will be adjusted automatically using NTP.
         long startTime = System.currentTimeMillis();
         while (!schedule.isEmpty() && !Thread.interrupted()) {
@@ -100,6 +101,7 @@ public abstract class Floor extends Thread implements FloorApi {
 
     @Override
     public void interrupt() {
+        receiveThread.interrupt();
         super.interrupt();
         // close socket to interrupt receive
         socket.close();
