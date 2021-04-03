@@ -1,5 +1,9 @@
 package ElevatorSubsystem;
 
+import GUI.GuiApi;
+
+import java.io.IOException;
+import java.lang.reflect.UndeclaredThrowableException;
 import java.util.logging.Logger;
 
 /**
@@ -9,15 +13,22 @@ import java.util.logging.Logger;
  * @version Feb 27, 2021
  */
 public class Motor {
+    private final int elevatorNumber;
     private final Logger logger;
+    private final GuiApi gui;
     private boolean directionIsUp;
     private boolean isMoving;
 
 
     /**
      * Constructor for Motor
+     *
+     * @param elevatorNumber
+     * @param gui
      */
-    public Motor() {
+    public Motor(int elevatorNumber, GuiApi gui) {
+        this.elevatorNumber = elevatorNumber;
+        this.gui = gui;
         logger = Logger.getLogger(this.getClass().getName());
         directionIsUp = true;
         isMoving = false;
@@ -28,8 +39,9 @@ public class Motor {
      *
      * @param directionIsUp The direction - true for up, false for down
      */
-    public void setDirectionIsUp(boolean directionIsUp) {
+    public void setDirectionIsUp(boolean directionIsUp) throws IOException, ClassNotFoundException {
         logger.info("The motor direction is " + (directionIsUp ? "up" : "down"));
+        gui.setMotorDirection(elevatorNumber, directionIsUp);
         this.directionIsUp = directionIsUp;
     }
 

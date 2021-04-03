@@ -2,7 +2,6 @@ package SchedulerSubsystem;
 
 
 import ElevatorSubsystem.ElevatorApi;
-import FloorSubsystem.Floor;
 import FloorSubsystem.FloorApi;
 import GUI.GuiApi;
 import model.AckMessage;
@@ -62,7 +61,6 @@ public class Scheduler extends Thread implements SchedulerApi {
             elevatorClients.add(new ElevatorClient(config, localhost, config.getIntProperty("elevatorPort") + i));
         }
         scheduler.setElevators(elevatorClients);
-
         scheduler.start();
     }
 
@@ -120,14 +118,17 @@ public class Scheduler extends Thread implements SchedulerApi {
         HashSet<Destination> destinations = new HashSet<>(this.destinations.stream()
                 .collect(Collectors.groupingBy(destination -> destination.getFloorNumber() > floorNumber)).values().stream()
                 .max(Comparator.comparingInt(List::size)).orElse(new ArrayList<>()));
-        this.destinations.removeAll(destinations);
         logger.info("returning " + destinations.size() + " to the stopped elevator");
-        try {
-            gui.removeSchedulerDestinations(destinations);
-        } catch (IOException | ClassNotFoundException e) {
-            throw new UndeclaredThrowableException(e);
+        if (destinations.size() > 0) {
+            this.destinations.removeAll(destinations);
+            try {
+                gui.removeSchedulerDestinations(destinations);
+            } catch (IOException | ClassNotFoundException e) {
+                throw new UndeclaredThrowableException(e);
+            }
+            return new Floors(destinations.stream().map(Destination::getFloorNumber).collect(Collectors.toSet()));
         }
-        return new Floors(destinations.stream().map(Destination::getFloorNumber).collect(Collectors.toSet()));
+        return new Floors(new HashSet<>());
     }
 
 

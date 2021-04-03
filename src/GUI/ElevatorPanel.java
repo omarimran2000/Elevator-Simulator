@@ -84,7 +84,7 @@ public class ElevatorPanel extends JPanel {
     }
 
     public void setStateText(ElevatorState state) {
-        stateText.setText("Elevator state: " + state);
+        stateText.setText("Elevator state: " + state.name());
     }
 
     public void setMotorDirection(boolean direction) {
