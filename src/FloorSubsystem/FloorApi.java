@@ -1,8 +1,7 @@
 package FloorSubsystem;
 
-import model.Floors;
-
 import java.io.IOException;
+import java.util.HashSet;
 
 /**
  * API for the floor
@@ -15,7 +14,7 @@ public interface FloorApi {
      * @throws IOException
      * @throws ClassNotFoundException
      */
-    Floors getWaitingPeopleUp() throws IOException, ClassNotFoundException;
+    HashSet<Integer> getWaitingPeopleUp() throws IOException, ClassNotFoundException;
 
     /**
      * Gets floors for people waiting down
@@ -24,7 +23,7 @@ public interface FloorApi {
      * @throws IOException
      * @throws ClassNotFoundException
      */
-    Floors getWaitingPeopleDown() throws IOException, ClassNotFoundException;
+    HashSet<Integer> getWaitingPeopleDown() throws IOException, ClassNotFoundException;
 
     void interrupt() throws IOException, ClassNotFoundException;
 }

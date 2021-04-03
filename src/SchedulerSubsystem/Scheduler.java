@@ -6,7 +6,6 @@ import FloorSubsystem.FloorApi;
 import GUI.GuiApi;
 import model.AckMessage;
 import model.Destination;
-import model.Floors;
 import stub.ElevatorClient;
 import stub.FloorClient;
 import stub.GuiClient;
@@ -113,7 +112,7 @@ public class Scheduler extends Thread implements SchedulerApi {
      * @return Floors
      */
     @Override
-    public Floors getWaitingPeople(int floorNumber) {
+    public HashSet<Integer> getWaitingPeople(int floorNumber) {
         logger.info("Stopped elevator on floor " + floorNumber + " asking for more destinations.");
         HashSet<Destination> destinations = new HashSet<>(this.destinations.stream()
                 .collect(Collectors.groupingBy(destination -> destination.getFloorNumber() > floorNumber)).values().stream()
@@ -126,9 +125,9 @@ public class Scheduler extends Thread implements SchedulerApi {
             } catch (IOException | ClassNotFoundException e) {
                 throw new UndeclaredThrowableException(e);
             }
-            return new Floors(destinations.stream().map(Destination::getFloorNumber).collect(Collectors.toSet()));
+            return (HashSet<Integer>) destinations.stream().map(Destination::getFloorNumber).collect(Collectors.toSet());
         }
-        return new Floors(new HashSet<>());
+        return new HashSet<>();
     }
 
 
@@ -209,7 +208,7 @@ public class Scheduler extends Thread implements SchedulerApi {
      * @throws ClassNotFoundException
      */
     @Override
-    public Floors getWaitingPeopleUp(int floorNumber) throws IOException, ClassNotFoundException {
+    public HashSet<Integer> getWaitingPeopleUp(int floorNumber) throws IOException, ClassNotFoundException {
         logger.info("getting people wait to go up on floor " + floorNumber);
         return floors.get(floorNumber).getWaitingPeopleUp();
     }
@@ -223,7 +222,7 @@ public class Scheduler extends Thread implements SchedulerApi {
      * @throws ClassNotFoundException
      */
     @Override
-    public Floors getWaitingPeopleDown(int floorNumber) throws IOException, ClassNotFoundException {
+    public HashSet<Integer> getWaitingPeopleDown(int floorNumber) throws IOException, ClassNotFoundException {
         logger.info("getting people wait to go down on floor " + floorNumber);
         return floors.get(floorNumber).getWaitingPeopleDown();
     }

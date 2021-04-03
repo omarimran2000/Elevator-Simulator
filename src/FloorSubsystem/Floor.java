@@ -5,7 +5,6 @@ import SchedulerSubsystem.SchedulerApi;
 import model.AckMessage;
 import model.Destination;
 import model.Event;
-import model.Floors;
 import stub.StubServer;
 import utill.Config;
 
@@ -118,14 +117,15 @@ public abstract class Floor extends Thread implements FloorApi {
     /**
      * @return the set of floors with people waiting to go up
      */
-    public Floors getWaitingPeopleUp() {
+    @Override
+    public HashSet<Integer> getWaitingPeopleUp() {
         logger.info("Loading people from floor " + floorNumber + " onto the elevator going up");
         try {
             turnUpButtonOff();
         } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
         }
-        Floors waitingPeople = new Floors(waitingPeopleUp);
+        HashSet<Integer> waitingPeople = new HashSet<>(waitingPeopleUp);
         waitingPeopleUp.clear();
         return waitingPeople;
     }
@@ -133,14 +133,15 @@ public abstract class Floor extends Thread implements FloorApi {
     /**
      * @return the set of floors with people waiting to go down
      */
-    public Floors getWaitingPeopleDown() {
+    @Override
+    public HashSet<Integer> getWaitingPeopleDown() {
         logger.info("Loading people from floor " + floorNumber + " onto the elevator going down");
         try {
             turnDownButtonOff();
         } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
         }
-        Floors waitingPeople = new Floors(waitingPeopleDown);
+        HashSet<Integer> waitingPeople = new HashSet<>(waitingPeopleDown);
         waitingPeopleDown.clear();
         return waitingPeople;
     }

@@ -2,11 +2,11 @@ package stub;
 
 import SchedulerSubsystem.SchedulerApi;
 import model.Destination;
-import model.Floors;
 import utill.Config;
 
 import java.io.IOException;
 import java.net.InetAddress;
+import java.util.HashSet;
 
 /**
  * The client used to send UDP messages to the Scheduler
@@ -39,7 +39,7 @@ public class SchedulerClient extends StubClient implements SchedulerApi {
      * @throws ClassNotFoundException
      */
     @Override
-    public Floors getWaitingPeopleUp(int floorNumber) throws IOException, ClassNotFoundException {
+    public HashSet<Integer> getWaitingPeopleUp(int floorNumber) throws IOException, ClassNotFoundException {
         return sendAndReceive(1, floorNumber, inetAddress, port);
     }
 
@@ -52,7 +52,7 @@ public class SchedulerClient extends StubClient implements SchedulerApi {
      * @throws ClassNotFoundException
      */
     @Override
-    public Floors getWaitingPeopleDown(int floorNumber) throws IOException, ClassNotFoundException {
+    public HashSet<Integer> getWaitingPeopleDown(int floorNumber) throws IOException, ClassNotFoundException {
         return sendAndReceive(2, floorNumber, inetAddress, port);
     }
 
@@ -72,11 +72,12 @@ public class SchedulerClient extends StubClient implements SchedulerApi {
      * Get waiting people
      *
      * @param floorNumber the destination
+     * @return
      * @throws IOException
      * @throws ClassNotFoundException
      */
     @Override
-    public Floors getWaitingPeople(int floorNumber) throws IOException, ClassNotFoundException {
+    public HashSet<Integer> getWaitingPeople(int floorNumber) throws IOException, ClassNotFoundException {
         return sendAndReceive(4, floorNumber, inetAddress, port);
     }
 

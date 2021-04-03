@@ -1,11 +1,11 @@
 package stub;
 
 import FloorSubsystem.FloorApi;
-import model.Floors;
 import utill.Config;
 
 import java.io.IOException;
 import java.net.InetAddress;
+import java.util.HashSet;
 
 /**
  * Client Socket that creates information packets (using Serializable) and sends them through the socket to
@@ -39,7 +39,7 @@ public class FloorClient extends StubClient implements FloorApi {
      * @throws ClassNotFoundException
      */
     @Override
-    public Floors getWaitingPeopleUp() throws IOException, ClassNotFoundException {
+    public HashSet<Integer> getWaitingPeopleUp() throws IOException, ClassNotFoundException {
         return sendAndReceive(1, inetAddress, port);
     }
 
@@ -51,7 +51,7 @@ public class FloorClient extends StubClient implements FloorApi {
      * @throws ClassNotFoundException
      */
     @Override
-    public Floors getWaitingPeopleDown() throws IOException, ClassNotFoundException {
+    public HashSet<Integer> getWaitingPeopleDown() throws IOException, ClassNotFoundException {
         return sendAndReceive(2, inetAddress, port);
     }
 

@@ -5,7 +5,6 @@ import SchedulerSubsystem.SchedulerApi;
 import model.AckMessage;
 import model.Destination;
 import model.ElevatorState;
-import model.Floors;
 import stub.StubServer;
 import utill.Config;
 
@@ -381,21 +380,22 @@ public class Elevator extends Thread implements ElevatorApi {
         /**
          * @return the set of floors with people waiting for an elevator moving in the specified direction
          */
-        abstract protected Floors getWaitingPeople() throws IOException, ClassNotFoundException;
+        abstract protected Set<Integer> getWaitingPeople() throws IOException, ClassNotFoundException;
 
-        abstract protected Floors tryToTurnAround() throws IOException, ClassNotFoundException;
+        abstract protected Set<Integer> tryToTurnAround() throws IOException, ClassNotFoundException;
 
 
-        abstract protected Floors getWaitingPeopleTurnAround() throws IOException, ClassNotFoundException;
+        abstract protected Set<Integer> getWaitingPeopleTurnAround() throws IOException, ClassNotFoundException;
 
-        protected Floors tryToTurnAround(boolean rightDirection, Destination alternateDestination, Function<Floors, Destination> genAlternateDestination) throws IOException, ClassNotFoundException {
+        protected Set<Integer> tryToTurnAround(boolean rightDirection, Function<Set<Integer>, Destination> genAlternateDestination) throws IOException, ClassNotFoundException {
+            Destination alternateDestination = genAlternateDestination.apply(destinations);
             if (currentFloorNumber == alternateDestination.getFloorNumber()) {
                 if (rightDirection) {
                     destinations.remove(currentFloorNumber);
                     buttons.get(currentFloorNumber).setOn(false);
                     gui.setElevatorButton(elevatorNumber, currentFloorNumber, false);
-                    Floors floors = getWaitingPeople();
-                    if (floors.getFloors().isEmpty()) {
+                    Set<Integer> floors = getWaitingPeople();
+                    if (floors.isEmpty()) {
                         idleDestination = null;
                         floors = getWaitingPeopleTurnAround();
                     } else {
@@ -411,7 +411,7 @@ public class Elevator extends Thread implements ElevatorApi {
                 }
             } else {
                 idleDestination = alternateDestination;
-                return new Floors(new HashSet<>());
+                return new HashSet<>();
             }
         }
 
@@ -475,7 +475,7 @@ public class Elevator extends Thread implements ElevatorApi {
             } catch (InterruptedException e) {
                 return;
             }
-            Floors floors;
+            Set<Integer> floors;
             if (idleDestination != null && idleDestination.getFloorNumber() == currentFloorNumber) {
                 floors = tryToTurnAround();
             } else {
@@ -485,7 +485,7 @@ public class Elevator extends Thread implements ElevatorApi {
                 floors = getWaitingPeople();
             }
 
-            floors.getFloors().forEach(destination -> {
+            floors.forEach(destination -> {
                 buttons.get(destination).setOn(true);
                 try {
                     gui.setElevatorButton(elevatorNumber, destination, true);
@@ -493,7 +493,7 @@ public class Elevator extends Thread implements ElevatorApi {
                     e.printStackTrace();
                 }
             });
-            destinations.addAll(floors.getFloors());
+            destinations.addAll(floors);
 
             while (door.isOpen()) {
                 door.close();
@@ -506,7 +506,7 @@ public class Elevator extends Thread implements ElevatorApi {
             }
 
             if (destinations.isEmpty()) {
-                destinations.addAll(scheduler.getWaitingPeople(currentFloorNumber).getFloors());
+                destinations.addAll(scheduler.getWaitingPeople(currentFloorNumber));
                 if (destinations.isEmpty()) {
                     arrivalSensor.interrupt();
                     state = new ElevatorNotMoving();
@@ -584,7 +584,7 @@ public class Elevator extends Thread implements ElevatorApi {
          * @return the set of floors with people waiting for an elevator moving upwards
          */
         @Override
-        protected Floors getWaitingPeople() throws IOException, ClassNotFoundException {
+        protected Set<Integer> getWaitingPeople() throws IOException, ClassNotFoundException {
             return scheduler.getWaitingPeopleUp(currentFloorNumber);
         }
 
@@ -592,14 +592,14 @@ public class Elevator extends Thread implements ElevatorApi {
          * @return the set of floors with people waiting for an elevator moving downwards
          */
         @Override
-        protected Floors getWaitingPeopleTurnAround() throws IOException, ClassNotFoundException {
+        protected Set<Integer> getWaitingPeopleTurnAround() throws IOException, ClassNotFoundException {
             state = new ElevatorMovingDown();
             return scheduler.getWaitingPeopleDown(currentFloorNumber);
         }
 
         @Override
-        protected Floors tryToTurnAround() throws IOException, ClassNotFoundException {
-            return tryToTurnAround(idleDestination.isUp(), new Destination(Collections.max(destinations), true), floors -> new Destination(Collections.max(floors.getFloors()), true));
+        protected Set<Integer> tryToTurnAround() throws IOException, ClassNotFoundException {
+            return tryToTurnAround(idleDestination.isUp(), floors -> new Destination(Collections.max(floors), true));
         }
     }
 
@@ -657,7 +657,7 @@ public class Elevator extends Thread implements ElevatorApi {
          * @return the set of floors with people waiting for an elevator moving downwards
          */
         @Override
-        protected Floors getWaitingPeople() throws IOException, ClassNotFoundException {
+        protected Set<Integer> getWaitingPeople() throws IOException, ClassNotFoundException {
             return scheduler.getWaitingPeopleDown(currentFloorNumber);
         }
 
@@ -665,14 +665,14 @@ public class Elevator extends Thread implements ElevatorApi {
          * @return the set of floors with people waiting for an elevator moving upwards
          */
         @Override
-        protected Floors getWaitingPeopleTurnAround() throws IOException, ClassNotFoundException {
+        protected Set<Integer> getWaitingPeopleTurnAround() throws IOException, ClassNotFoundException {
             state = new ElevatorMovingUp();
             return scheduler.getWaitingPeopleUp(currentFloorNumber);
         }
 
         @Override
-        protected Floors tryToTurnAround() throws IOException, ClassNotFoundException {
-            return tryToTurnAround(!idleDestination.isUp(), new Destination(Collections.min(destinations), false), floors -> new Destination(Collections.min(floors.getFloors()), false));
+        protected Set<Integer> tryToTurnAround() throws IOException, ClassNotFoundException {
+            return tryToTurnAround(!idleDestination.isUp(), floors -> new Destination(Collections.min(floors), false));
         }
     }
 
