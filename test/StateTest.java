@@ -1,6 +1,7 @@
 import ElevatorSubsystem.Elevator;
 import ElevatorSubsystem.ElevatorSubsystem;
 import FloorSubsystem.Floor;
+import GUI.GUI;
 import SchedulerSubsystem.Scheduler;
 import model.Destination;
 import org.junit.jupiter.api.Test;
@@ -28,7 +29,7 @@ class StateTest {
     void StateMethodsTest() throws ParseException, IOException, InterruptedException {
 
         Config config = new Config();
-        Scheduler scheduler = new Scheduler(config);
+        Scheduler scheduler = new Scheduler(config, new GUI(config));
 
         Map<Integer, Floor> floors = generateFloors(config, scheduler, config.getProperty("csvFileName"));
         scheduler.setFloors(floors.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue)));

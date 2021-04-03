@@ -2,12 +2,15 @@ package SchedulerSubsystem;
 
 
 import ElevatorSubsystem.ElevatorApi;
+import FloorSubsystem.Floor;
 import FloorSubsystem.FloorApi;
+import GUI.GuiApi;
 import model.AckMessage;
 import model.Destination;
 import model.Floors;
 import stub.ElevatorClient;
 import stub.FloorClient;
+import stub.GuiClient;
 import stub.StubServer;
 import utill.Config;
 
@@ -31,11 +34,13 @@ public class Scheduler extends Thread implements SchedulerApi {
     private final DatagramSocket socket;
     private final Config config;
     private final ConcurrentSkipListSet<Destination> destinations;
+    private final GuiApi gui;
     private List<ElevatorApi> elevators;
     private Map<Integer, FloorApi> floors;
 
 
-    public Scheduler(Config config) throws SocketException {
+    public Scheduler(Config config, GuiApi gui) throws SocketException {
+        this.gui = gui;
         logger = Logger.getLogger(this.getClass().getName());
         this.config = config;
         socket = new DatagramSocket(config.getIntProperty("schedulerPort"));
@@ -45,7 +50,8 @@ public class Scheduler extends Thread implements SchedulerApi {
     public static void main(String[] args) throws IOException {
         InetAddress localhost = InetAddress.getLocalHost();
         Config config = new Config();
-        Scheduler scheduler = new Scheduler(config);
+        GuiApi guiApi = new GuiClient(config, localhost, config.getIntProperty("GUIPort"));
+        Scheduler scheduler = new Scheduler(config, guiApi);
         Map<Integer, FloorApi> floors = new HashMap<>();
         for (int i = 0; i < config.getIntProperty("numFloors"); i++) {
             floors.put(i, new FloorClient(config, localhost, config.getIntProperty("floorPort") + i));
@@ -80,7 +86,6 @@ public class Scheduler extends Thread implements SchedulerApi {
      */
     @Override
     public void handleFloorButton(Destination destination) throws IOException, ClassNotFoundException {
-        logger.info("Scheduler: scheduling event for floor " + destination.getFloorNumber());
         Optional<ElevatorApi> elevatorOptional = elevators.stream().filter(elevator -> {
             try {
                 return elevator.canAddDestination(destination);
@@ -99,6 +104,7 @@ public class Scheduler extends Thread implements SchedulerApi {
             elevatorOptional.get().addDestination(destination);
         } else {
             destinations.add(destination);
+            gui.addSchedulerDestination(destination.getFloorNumber(), destination.isUp());
         }
     }
 
@@ -111,11 +117,16 @@ public class Scheduler extends Thread implements SchedulerApi {
     @Override
     public Floors getWaitingPeople(int floorNumber) {
         logger.info("Stopped elevator on floor " + floorNumber + " asking for more destinations.");
-        Set<Destination> destinations = new HashSet<>(this.destinations.stream()
+        HashSet<Destination> destinations = new HashSet<>(this.destinations.stream()
                 .collect(Collectors.groupingBy(destination -> destination.getFloorNumber() > floorNumber)).values().stream()
                 .max(Comparator.comparingInt(List::size)).orElse(new ArrayList<>()));
         this.destinations.removeAll(destinations);
         logger.info("returning " + destinations.size() + " to the stopped elevator");
+        try {
+            gui.removeSchedulerDestinations(destinations);
+        } catch (IOException | ClassNotFoundException e) {
+            throw new UndeclaredThrowableException(e);
+        }
         return new Floors(destinations.stream().map(Destination::getFloorNumber).collect(Collectors.toSet()));
     }
 

@@ -1,5 +1,6 @@
 import ElevatorSubsystem.Elevator;
 import ElevatorSubsystem.ElevatorSubsystem;
+import GUI.GUI;
 import SchedulerSubsystem.Scheduler;
 import org.junit.jupiter.api.Test;
 import utill.Config;
@@ -20,7 +21,7 @@ public class MultipleElevatorsTest {
     @Test
     public void multiElevators() throws IOException {
         Config config = new Config();
-        Scheduler scheduler = new Scheduler(config);
+        Scheduler scheduler = new Scheduler(config, new GUI(config));
         List<Elevator> elevators = ElevatorSubsystem.generateElevators(config, scheduler, config.getIntProperty("numFloors"));
 
         //Make sure that the List is the correct size

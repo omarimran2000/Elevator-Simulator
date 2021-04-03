@@ -2,6 +2,7 @@ import ElevatorSubsystem.*;
 import FaultTestClasses.ElevatorSubsystemOverride;
 import FaultTestClasses.FloorSubsystemOverride;
 import FloorSubsystem.*;
+import GUI.GUI;
 import SchedulerSubsystem.Scheduler;
 import model.Destination;
 import model.ElevatorState;
@@ -32,7 +33,7 @@ class FaultTest {
         config.addProperty("probabilityDoorStuck", "100");
         //Elevator will get stuck 0% of the time
         config.addProperty("probabilityStuck","0");
-        Scheduler scheduler = new Scheduler(config);
+        Scheduler scheduler = new Scheduler(config, new GUI(config));
 
         Map<Integer, Floor> floors = FloorSubsystemOverride.generateFloors(config, scheduler, config.getProperty("csvFileName"));
         scheduler.setFloors(floors.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue)));
@@ -66,7 +67,7 @@ class FaultTest {
         //Elevator will get stuck 100% of the time
         config.addProperty("probabilityStuck","100");
         config.addProperty("elevatorStuck","0");
-        Scheduler scheduler = new Scheduler(config);
+        Scheduler scheduler = new Scheduler(config, new GUI(config));
 
         Map<Integer, Floor> floors = FloorSubsystemOverride.generateFloors(config, scheduler, config.getProperty("csvFileName"));
         scheduler.setFloors(floors.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue)));
