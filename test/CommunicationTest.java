@@ -1,6 +1,7 @@
 import ElevatorSubsystem.Elevator;
 import ElevatorSubsystem.ElevatorSubsystem;
 import FloorSubsystem.Floor;
+import GUI.GUI;
 import SchedulerSubsystem.Scheduler;
 import org.junit.jupiter.api.Test;
 import utill.Config;
@@ -24,16 +25,17 @@ class CommunicationTest {
      * @throws IOException
      */
     @Test
-    void CommsTest() throws ParseException, IOException {
+    void CommsTest() throws ParseException, IOException, ClassNotFoundException {
 
         Config config = new Config();
-        Scheduler scheduler = new Scheduler(config);
+        GUI gui = new GUI(config);
+        Scheduler scheduler = new Scheduler(config, gui);
 
-        Map<Integer, Floor> floors = generateFloors(config, scheduler, config.getProperty("csvFileName"));
+        Map<Integer, Floor> floors = generateFloors(config, scheduler, gui, config.getProperty("csvFileName"));
         scheduler.setFloors(floors.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue)));
 
         int maxFloor = config.getIntProperty("numFloors");
-        List<Elevator> elevators = ElevatorSubsystem.generateElevators(config, scheduler, maxFloor);
+        List<Elevator> elevators = ElevatorSubsystem.generateElevators(config, scheduler, gui, maxFloor);
         scheduler.setElevators(new ArrayList<>(elevators));
 
         Elevator elevator = elevators.get(0);

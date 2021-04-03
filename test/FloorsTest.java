@@ -1,4 +1,5 @@
 import FloorSubsystem.Floor;
+import GUI.GUI;
 import SchedulerSubsystem.Scheduler;
 import org.junit.jupiter.api.Test;
 import utill.Config;
@@ -16,9 +17,10 @@ class FloorsTest {
     void FloorsCreationTest() throws ParseException, IOException {
 
         Config config = new Config();
-        Scheduler scheduler = new Scheduler(config);
+        GUI gui = new GUI(config);
+        Scheduler scheduler = new Scheduler(config, gui);
 
-        Map<Integer, Floor> floors = generateFloors(config, scheduler, config.getProperty("csvFileName"));
+        Map<Integer, Floor> floors = generateFloors(config, scheduler, gui, config.getProperty("csvFileName"));
 
         assertNotNull(floors);
         assertEquals(23, floors.size());
