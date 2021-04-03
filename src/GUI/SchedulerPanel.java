@@ -1,8 +1,11 @@
 package GUI;
 
+import model.Destination;
+
 import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 public class SchedulerPanel extends JPanel {
@@ -54,7 +57,11 @@ public class SchedulerPanel extends JPanel {
         add(downDestinationsPanel);
     }
 
-    public void setDestination(int floorNumber, boolean isUp, boolean on) {
-        (isUp ? upDestinations : downDestinations).get(floorNumber).setBackground(on ? Color.green : Color.white);
+    public void addDestination(int floorNumber, boolean isUp) {
+        (isUp ? upDestinations : downDestinations).get(floorNumber).setBackground(Color.green);
+    }
+
+    public void removeDestinations(HashSet<Destination> destinations) {
+        destinations.forEach((destination) -> (destination.isUp() ? upDestinations : downDestinations).get(destination.getFloorNumber()).setBackground(Color.white));
     }
 }
