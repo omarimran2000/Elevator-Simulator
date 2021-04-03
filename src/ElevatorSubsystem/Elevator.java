@@ -377,13 +377,6 @@ public class Elevator extends Thread implements ElevatorApi {
          */
         abstract protected Floors getWaitingPeople() throws IOException, ClassNotFoundException;
 
-        /**
-         * Turn around before getting people
-         *
-         * @return the set of floors with people waiting for an elevator moving in the opposite direction
-         */
-        abstract protected Floors getWaitingPeopleTurnAround() throws IOException, ClassNotFoundException;
-
         abstract protected Floors tryToTurnAround() throws IOException, ClassNotFoundException;
 
         /**
@@ -447,7 +440,7 @@ public class Elevator extends Thread implements ElevatorApi {
                 e.printStackTrace();
             }
             Floors floors;
-            if (idleDestination.getFloorNumber() == currentFloorNumber) {
+            if (idleDestination != null && idleDestination.getFloorNumber() == currentFloorNumber) {
                 floors = tryToTurnAround();
             } else {
                 destinations.remove(currentFloorNumber);
@@ -562,8 +555,7 @@ public class Elevator extends Thread implements ElevatorApi {
         /**
          * @return the set of floors with people waiting for an elevator moving downwards
          */
-        @Override
-        protected Floors getWaitingPeopleTurnAround() throws IOException, ClassNotFoundException {
+        private Floors getWaitingPeopleTurnAround() throws IOException, ClassNotFoundException {
             state = new ElevatorMovingDown();
             return scheduler.getWaitingPeopleDown(currentFloorNumber);
         }
@@ -658,8 +650,7 @@ public class Elevator extends Thread implements ElevatorApi {
         /**
          * @return the set of floors with people waiting for an elevator moving upwards
          */
-        @Override
-        protected Floors getWaitingPeopleTurnAround() throws IOException, ClassNotFoundException {
+        private Floors getWaitingPeopleTurnAround() throws IOException, ClassNotFoundException {
             state = new ElevatorMovingUp();
             return scheduler.getWaitingPeopleUp(currentFloorNumber);
         }
