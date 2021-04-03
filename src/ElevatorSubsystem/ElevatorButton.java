@@ -16,7 +16,6 @@ public class ElevatorButton {
      * @param floor The floor associated with the button
      */
     public ElevatorButton(int floor) {
-
         this.floor = floor;
         this.on = false;
     }

@@ -1,8 +1,11 @@
 import ElevatorSubsystem.Motor;
+import GUI.GUI;
 import org.junit.jupiter.api.Test;
+import utill.Config;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import java.io.IOException;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 class ElevatorMotorTest {
 
@@ -10,12 +13,16 @@ class ElevatorMotorTest {
      * Testing the initialization of the motor
      */
     @Test
-    public void motorTest() {
-        Motor motor = new Motor();
+    public void motorTest() throws IOException {
+        Motor motor = new Motor(0, new GUI(new Config()));
 
         //Default setting for directionIsUp is False
         assertTrue(motor.directionIsUp());
-        motor.setDirectionIsUp(false);
+        try {
+            motor.setDirectionIsUp(false);
+        } catch (ClassNotFoundException e) {
+            fail();
+        }
         assertFalse(motor.directionIsUp());
 
         //Default setting for isMoving is false

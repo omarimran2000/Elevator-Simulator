@@ -84,7 +84,7 @@ public class ElevatorPanel extends JPanel {
     }
 
     public void setStateText(ElevatorState state) {
-        stateText.setText("Elevator state: " + state);
+        stateText.setText("Elevator state: " + state.name());
     }
 
     public void setMotorDirection(boolean direction) {
@@ -103,11 +103,7 @@ public class ElevatorPanel extends JPanel {
         doorsStuckText.setText("Doors stuck " + (open ? "open" : "closed"));
     }
 
-    /**
-     * @param floorNumber
-     * @param on
-     */
     public void setDestination(int floorNumber, boolean on) {
-        buttons.get(floorNumber).setBackground(on? Color.green: Color.white);
+        buttons.get(floorNumber).setBackground(on ? Color.green : Color.white);
     }
 }

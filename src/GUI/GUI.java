@@ -1,6 +1,7 @@
 package GUI;
 
 import model.AckMessage;
+import model.Destination;
 import model.ElevatorState;
 import stub.StubServer;
 import utill.Config;
@@ -13,6 +14,7 @@ import java.io.IOException;
 import java.net.DatagramSocket;
 import java.net.SocketException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
@@ -20,8 +22,8 @@ public class GUI extends Thread implements GuiApi {
     private final Config config;
     private final List<ElevatorPanel> elevators;
     private final List<FloorPanel> floors;
+    private final SchedulerPanel schedulerPanel;
     private final DatagramSocket socket;
-    private final JLabel scheduler;
 
     public GUI(Config config) throws SocketException {
         this.config = config;
@@ -64,9 +66,9 @@ public class GUI extends Thread implements GuiApi {
         }
         contentPane.add(floorsContainer, BorderLayout.PAGE_END);
 
-        scheduler = new JLabel();
-        contentPane.add(scheduler, BorderLayout.PAGE_END);
-        scheduler.setVisible(true);
+        schedulerPanel = new SchedulerPanel(config.getIntProperty("numFloors"));
+        contentPane.add(schedulerPanel);
+        schedulerPanel.setSize(1250, 100);
 
         frame.pack();
         frame.setSize(1750, 700);
@@ -80,88 +82,52 @@ public class GUI extends Thread implements GuiApi {
         new GUI(config).start();
     }
 
-    /**
-     * Sets the elevator's current floor number
-     *
-     * @param elevatorNumber
-     * @param floorNumber
-     */
+
+    @Override
     public void setCurrentFloorNumber(int elevatorNumber, int floorNumber) {
         elevators.get(elevatorNumber).setFloor(floorNumber);
     }
 
-    /**
-     * Sets the elevator's current direction of travel
-     *
-     * @param elevatorNumber
-     * @param direction
-     */
+    @Override
     public void setMotorDirection(int elevatorNumber, boolean direction) {
         elevators.get(elevatorNumber).setMotorDirection(direction);
     }
 
-    /**
-     * Opens or closes the elevator doors
-     *
-     * @param elevatorNumber
-     * @param open
-     */
+    @Override
     public void setDoorsOpen(int elevatorNumber, boolean open) {
         elevators.get(elevatorNumber).setDoorsOpen(open);
     }
 
-    /**
-     * Sets the elevator;'s state: idle, moving, or stuck
-     *
-     * @param elevatorNumber
-     * @param state
-     */
+    @Override
     public void setState(int elevatorNumber, ElevatorState state) {
         elevators.get(elevatorNumber).setStateText(state);
     }
 
-    /**
-     * Sets the elevator's doors stuck open or closed
-     *
-     * @param elevatorNumber
-     * @param doorsStuck
-     */
+    @Override
     public void setDoorsStuck(int elevatorNumber, boolean doorsStuck, boolean open) {
         elevators.get(elevatorNumber).setDoorsStuck(doorsStuck, open);
     }
 
-    /**
-     * Turns the button in the elevator corresponding to the floorNumber on or off
-     *
-     * @param elevatorNumber
-     * @param floorNumber
-     * @param on
-     */
+    @Override
     public void setElevatorButton(int elevatorNumber, int floorNumber, boolean on) {
         elevators.get(elevatorNumber).setDestination(floorNumber, on);
     }
 
-    /**
-     * Sets the up or down floor button on or off
-     *
-     * @param floorNumber
-     * @param direction
-     * @param on
-     */
+    @Override
     public void setFloorButton(int floorNumber, boolean direction, boolean on) {
         if (direction) {
             floors.get(floorNumber).setUp(on);
         } else floors.get(floorNumber).setDown(on);
     }
 
-    /**
-     * Sets the scheduler message
-     * @param message
-     * @throws IOException
-     * @throws ClassNotFoundException
-     */
-    public void setScheduler(String message){
-        scheduler.setText("Scheduler: "+message);
+    @Override
+    public void addSchedulerDestination(int floorNumber, boolean isUp) {
+        schedulerPanel.addDestination(floorNumber, isUp);
+    }
+
+    @Override
+    public void removeSchedulerDestinations(HashSet<Destination> destinations) {
+        schedulerPanel.removeDestinations(destinations);
     }
 
     /**
@@ -200,10 +166,13 @@ public class GUI extends Thread implements GuiApi {
                         return new AckMessage();
                     },
                     8, input -> {
-                        setScheduler((String) input.get(0));
+                        addSchedulerDestination((int) input.get(0), (boolean) input.get(1));
+                        return new AckMessage();
+                    },
+                    9, input -> {
+                        removeSchedulerDestinations((HashSet<Destination>) input.get(0));
                         return new AckMessage();
                     }
-
             ));
         } catch (SocketException e) {
             if (!Thread.interrupted()) {

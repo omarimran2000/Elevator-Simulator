@@ -1,6 +1,8 @@
 package ElevatorSubsystem;
 
+import GUI.GuiApi;
 import SchedulerSubsystem.SchedulerApi;
+import stub.GuiClient;
 import stub.SchedulerClient;
 import utill.Config;
 
@@ -25,20 +27,21 @@ public class ElevatorSubsystem {
      * @return the elevators
      * @throws SocketException
      */
-    public static List<Elevator> generateElevators(Config config, SchedulerApi scheduler, int maxFloor) throws IOException {
+    public static List<Elevator> generateElevators(Config config, SchedulerApi scheduler, GuiApi gui, int maxFloor) throws IOException, ClassNotFoundException {
         List<Elevator> elevators = new ArrayList<>();
 
         for (int i = 0; i < config.getIntProperty("numElevators"); i++) {
-            Elevator tempElev = new Elevator(config, scheduler, i, maxFloor);
+            Elevator tempElev = new Elevator(config, scheduler, gui, i, maxFloor);
             tempElev.start();
             elevators.add(tempElev);
         }
         return elevators;
     }
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException, ClassNotFoundException {
         Config config = new Config();
+        GuiApi guiApi = new GuiClient(config, InetAddress.getLocalHost(), config.getIntProperty("GUIPort"));
         SchedulerApi schedulerApi = new SchedulerClient(config, InetAddress.getLocalHost(), config.getIntProperty("schedulerPort"));
-        ElevatorSubsystem.generateElevators(config, schedulerApi, config.getIntProperty("numFloors"));
+        ElevatorSubsystem.generateElevators(config, schedulerApi, guiApi, config.getIntProperty("numFloors"));
     }
 }
