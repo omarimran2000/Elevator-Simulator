@@ -59,7 +59,7 @@ public class GuiClient extends StubClient implements GuiApi {
     }
 
     @Override
-    public void setSchedulerDestination(int floorNumber, boolean on) throws IOException, ClassNotFoundException {
-        sendAndReceive(8, List.of(floorNumber, on), inetAddress, port);
+    public void setSchedulerDestination(int floorNumber, boolean isUp, boolean on) throws IOException, ClassNotFoundException {
+        sendAndReceive(8, List.of(floorNumber, isUp, on), inetAddress, port);
     }
 }

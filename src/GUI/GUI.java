@@ -153,8 +153,8 @@ public class GUI extends Thread implements GuiApi {
         } else floors.get(floorNumber).setDown(on);
     }
 
-    public void setSchedulerDestination(int floorNumber, boolean on) {
-        schedulerPanel.setDestination(floorNumber, on);
+    public void setSchedulerDestination(int floorNumber, boolean isUp,  boolean on) {
+        schedulerPanel.setDestination(floorNumber,  isUp,  on);
     }
 
     /**
@@ -193,7 +193,7 @@ public class GUI extends Thread implements GuiApi {
                         return new AckMessage();
                     },
                     8, input -> {
-                        setSchedulerDestination((int) input.get(0), (boolean) input.get(1));
+                        setSchedulerDestination((int) input.get(0), (boolean) input.get(1), (boolean) input.get(2));
                         return new AckMessage();
                     }
             ));
