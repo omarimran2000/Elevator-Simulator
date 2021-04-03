@@ -154,7 +154,7 @@ public class Elevator extends Thread implements ElevatorApi {
     public synchronized void addDestination(Destination destination) {
         try {
             state.handleAddDestination(destination);
-            gui.setElevatorButton(elevatorNumber, destination.getFloorNumber(), true);
+            gui.setElevatorButton(elevatorNumber, destination.getFloorNumber(), false, true);
         } catch (IOException | ClassNotFoundException e) {
             throw new UndeclaredThrowableException(e);
         }
@@ -481,14 +481,14 @@ public class Elevator extends Thread implements ElevatorApi {
             } else {
                 destinations.remove(currentFloorNumber);
                 buttons.get(currentFloorNumber).setOn(false);
-                gui.setElevatorButton(elevatorNumber, currentFloorNumber, false);
+                gui.setElevatorButton(elevatorNumber, currentFloorNumber, false, false);
                 floors = getWaitingPeople();
             }
 
             floors.forEach(destination -> {
                 buttons.get(destination).setOn(true);
                 try {
-                    gui.setElevatorButton(elevatorNumber, destination, true);
+                    gui.setElevatorButton(elevatorNumber, destination, true, true);
                 } catch (IOException | ClassNotFoundException e) {
                     e.printStackTrace();
                 }

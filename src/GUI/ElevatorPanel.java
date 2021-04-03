@@ -103,7 +103,24 @@ public class ElevatorPanel extends JPanel {
         doorsStuckText.setText("Doors stuck " + (open ? "open" : "closed"));
     }
 
-    public void setDestination(int floorNumber, boolean on) {
-        buttons.get(floorNumber).setBackground(on ? Color.green : Color.white);
+    /**
+     * Show that an elevatorButton has been pressed or that the scheduler has added a destination the elevator
+     * Button presses are shown in green
+     * Scheduled events are shown in blue
+     *
+     * If on is false, isButton does not apply
+     *
+     * @param floorNumber The destination
+     * @param isButton      is true if an elevator button was pressed, false if the event came from the scheduler
+     * @param on          is true if the button should be on, false for off
+     */
+    public void setElevatorButton(int floorNumber, boolean isButton, boolean on) {
+        if (!on) {
+            buttons.get(floorNumber).setBackground(Color.white);
+        } else if (isButton) {
+            buttons.get(floorNumber).setBackground(Color.green);
+        } else {
+            buttons.get(floorNumber).setBackground(Color.cyan);
+        }
     }
 }
