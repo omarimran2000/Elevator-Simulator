@@ -1,11 +1,13 @@
 package stub;
 
 import GUI.GuiApi;
+import model.Destination;
 import model.ElevatorState;
 import utill.Config;
 
 import java.io.IOException;
 import java.net.InetAddress;
+import java.util.HashSet;
 import java.util.List;
 
 public class GuiClient extends StubClient implements GuiApi {
@@ -59,7 +61,12 @@ public class GuiClient extends StubClient implements GuiApi {
     }
 
     @Override
-    public void setSchedulerDestination(int floorNumber, boolean isUp, boolean on) throws IOException, ClassNotFoundException {
-        sendAndReceive(8, List.of(floorNumber, isUp, on), inetAddress, port);
+    public void addSchedulerDestination(int floorNumber, boolean isUp) throws IOException, ClassNotFoundException {
+        sendAndReceive(8, List.of(floorNumber, isUp), inetAddress, port);
+    }
+
+    @Override
+    public void removeSchedulerDestinations(HashSet<Destination> destinations) throws IOException, ClassNotFoundException {
+        sendAndReceive(8, destinations, inetAddress, port);
     }
 }

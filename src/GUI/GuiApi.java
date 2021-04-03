@@ -1,8 +1,10 @@
 package GUI;
 
+import model.Destination;
 import model.ElevatorState;
 
 import java.io.IOException;
+import java.util.HashSet;
 
 public interface GuiApi {
     void setCurrentFloorNumber(int elevatorNumber, int floorNumber) throws IOException, ClassNotFoundException;
@@ -19,5 +21,8 @@ public interface GuiApi {
 
     void setFloorButton(int floorNumber, boolean direction, boolean on) throws IOException, ClassNotFoundException;
 
-    void setSchedulerDestination(int floorNumber, boolean isUp, boolean on) throws IOException, ClassNotFoundException;
+
+    void addSchedulerDestination(int floorNumber, boolean isUp)throws IOException, ClassNotFoundException;
+
+    void removeSchedulerDestinations(HashSet<Destination> destinations) throws IOException, ClassNotFoundException;
 }
