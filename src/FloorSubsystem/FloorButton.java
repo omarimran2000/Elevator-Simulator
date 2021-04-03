@@ -1,5 +1,8 @@
 package FloorSubsystem;
 
+import GUI.GuiApi;
+
+import java.io.IOException;
 import java.util.logging.Logger;
 
 /**
@@ -12,6 +15,7 @@ public class FloorButton {
     private final Logger logger;
     private final int floorNumber;
     private final boolean isUp;
+    private final GuiApi gui;
     private boolean on;
 
 
@@ -20,10 +24,12 @@ public class FloorButton {
      *
      * @param floorNumber
      * @param isUp
+     * @param gui
      */
-    public FloorButton(int floorNumber, boolean isUp) {
+    public FloorButton(int floorNumber, boolean isUp, GuiApi gui) {
         this.floorNumber = floorNumber;
         this.isUp = isUp;
+        this.gui = gui;
         logger = Logger.getLogger(this.getClass().getName());
         on = false;
     }
@@ -42,10 +48,11 @@ public class FloorButton {
      *
      * @param on to turn it on
      */
-    public void setOn(boolean on) {
+    public void setOn(boolean on) throws IOException, ClassNotFoundException {
         if (this.on != on) {
             logger.info("The " + (isUp ? "up" : "down") + " button on " + floorNumber + " is " + (on ? "on" : "off"));
             this.on = on;
+            gui.setFloorButton(floorNumber, isUp, on);
         }
     }
 }
