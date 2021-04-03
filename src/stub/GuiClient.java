@@ -50,10 +50,10 @@ public class GuiClient extends StubClient implements GuiApi {
         sendAndReceive(5, List.of(elevatorNumber, doorsStuck, open), inetAddress, port);
     }
 
-    /*@Override
-    public void setElevatorButton(int elevatorNumber, int floorNumber, boolean on) throws IOException, ClassNotFoundException {
-        sendAndReceive(6, List.of(elevatorNumber, floorNumber, on), inetAddress, port);
-    }*/
+    @Override
+    public void setElevatorButton(int elevatorNumber, int floorNumber, boolean isButton, boolean on) throws IOException, ClassNotFoundException {
+        sendAndReceive(6, List.of(elevatorNumber, floorNumber, isButton, on), inetAddress, port);
+    }
 
     @Override
     public void setFloorButton(int floorButton, boolean direction, boolean on) throws IOException, ClassNotFoundException {
@@ -68,9 +68,5 @@ public class GuiClient extends StubClient implements GuiApi {
     @Override
     public void removeSchedulerDestinations(HashSet<Destination> destinations) throws IOException, ClassNotFoundException {
         sendAndReceive(9, destinations, inetAddress, port);
-    }
-
-    public void setElevatorButton(int elevatorNumber, int floorNumber, boolean isButton, boolean on) throws IOException, ClassNotFoundException {
-        sendAndReceive(10, List.of(elevatorNumber, floorNumber), inetAddress, port);
     }
 }

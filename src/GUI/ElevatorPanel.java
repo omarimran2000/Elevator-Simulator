@@ -103,10 +103,6 @@ public class ElevatorPanel extends JPanel {
         doorsStuckText.setText("Doors stuck " + (open ? "open" : "closed"));
     }
 
-    /*public void setDestination(int floorNumber, boolean on) {
-        buttons.get(floorNumber).setBackground(on ? Color.green : Color.white);
-    }*/
-
     /**
      * Show that an elevatorButton has been pressed or that the scheduler has added a destination the elevator
      * Button presses are shown in green
@@ -119,14 +115,12 @@ public class ElevatorPanel extends JPanel {
      * @param on          is true if the button should be on, false for off
      */
     public void setElevatorButton(int floorNumber, boolean isButton, boolean on) {
-        if (on) {
+        if (!on) {
             buttons.get(floorNumber).setBackground(Color.white);
-        }
-        else if (isButton) {
+        } else if (isButton) {
             buttons.get(floorNumber).setBackground(Color.green);
-        }
-        else {
-            buttons.get(floorNumber).setBackground(Color.blue);
+        } else {
+            buttons.get(floorNumber).setBackground(Color.cyan);
         }
     }
 }

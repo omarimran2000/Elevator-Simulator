@@ -17,8 +17,6 @@ public interface GuiApi {
 
     void setDoorsStuck(int elevatorNumber, boolean doorsStuck, boolean open) throws IOException, ClassNotFoundException;
 
-    //void setElevatorButton(int elevatorNumber, int floorNumber, boolean on) throws IOException, ClassNotFoundException;
-
     void setElevatorButton(int elevatorNumber, int floorNumber, boolean isButton, boolean on) throws IOException, ClassNotFoundException;
 
     void setFloorButton(int floorNumber, boolean direction, boolean on) throws IOException, ClassNotFoundException;
