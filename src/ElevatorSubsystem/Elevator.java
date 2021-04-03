@@ -16,6 +16,7 @@ import java.util.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Function;
 import java.util.logging.Logger;
 
 import static java.lang.Math.abs;
@@ -384,6 +385,36 @@ public class Elevator extends Thread implements ElevatorApi {
 
         abstract protected Floors tryToTurnAround() throws IOException, ClassNotFoundException;
 
+
+        abstract protected Floors getWaitingPeopleTurnAround() throws IOException, ClassNotFoundException;
+
+        protected Floors tryToTurnAround(boolean rightDirection, Destination alternateDestination, Function<Floors, Destination> genAlternateDestination) throws IOException, ClassNotFoundException {
+            if (currentFloorNumber == alternateDestination.getFloorNumber()) {
+                if (rightDirection) {
+                    destinations.remove(currentFloorNumber);
+                    buttons.get(currentFloorNumber).setOn(false);
+                    gui.setElevatorButton(elevatorNumber, currentFloorNumber, false);
+                    Floors floors = getWaitingPeople();
+                    if (floors.getFloors().isEmpty()) {
+                        idleDestination = null;
+                        floors = getWaitingPeopleTurnAround();
+                    } else {
+                        idleDestination = genAlternateDestination.apply(floors);
+                    }
+                    return floors;
+                } else {
+                    destinations.remove(currentFloorNumber);
+                    buttons.get(currentFloorNumber).setOn(false);
+                    gui.setElevatorButton(elevatorNumber, currentFloorNumber, false);
+                    idleDestination = null;
+                    return getWaitingPeopleTurnAround();
+                }
+            } else {
+                idleDestination = alternateDestination;
+                return new Floors(new HashSet<>());
+            }
+        }
+
         /**
          * Gets the number of floors between the current and destination floors
          *
@@ -560,37 +591,15 @@ public class Elevator extends Thread implements ElevatorApi {
         /**
          * @return the set of floors with people waiting for an elevator moving downwards
          */
-        private Floors getWaitingPeopleTurnAround() throws IOException, ClassNotFoundException {
+        @Override
+        protected Floors getWaitingPeopleTurnAround() throws IOException, ClassNotFoundException {
             state = new ElevatorMovingDown();
             return scheduler.getWaitingPeopleDown(currentFloorNumber);
         }
 
         @Override
         protected Floors tryToTurnAround() throws IOException, ClassNotFoundException {
-            if (idleDestination.isUp()) {
-                destinations.remove(currentFloorNumber);
-                buttons.get(currentFloorNumber).setOn(false);
-                gui.setElevatorButton(elevatorNumber, currentFloorNumber, false);
-                Floors floors = getWaitingPeople();
-                if (floors.getFloors().isEmpty()) {
-                    floors = getWaitingPeopleTurnAround();
-                } else {
-                    idleDestination = new Destination(Collections.max(floors.getFloors()), true);
-                }
-                return floors;
-            } else {
-                int maxDestination = Collections.max(destinations);
-                if (currentFloorNumber == maxDestination) {
-                    destinations.remove(currentFloorNumber);
-                    buttons.get(currentFloorNumber).setOn(false);
-                    gui.setElevatorButton(elevatorNumber, currentFloorNumber, false);
-                    idleDestination = null;
-                    return getWaitingPeopleTurnAround();
-                } else {
-                    idleDestination = new Destination(maxDestination, true);
-                    return new Floors(new HashSet<>());
-                }
-            }
+            return tryToTurnAround(idleDestination.isUp(), new Destination(Collections.max(destinations), true), floors -> new Destination(Collections.max(floors.getFloors()), true));
         }
     }
 
@@ -655,37 +664,15 @@ public class Elevator extends Thread implements ElevatorApi {
         /**
          * @return the set of floors with people waiting for an elevator moving upwards
          */
-        private Floors getWaitingPeopleTurnAround() throws IOException, ClassNotFoundException {
+        @Override
+        protected Floors getWaitingPeopleTurnAround() throws IOException, ClassNotFoundException {
             state = new ElevatorMovingUp();
             return scheduler.getWaitingPeopleUp(currentFloorNumber);
         }
 
         @Override
         protected Floors tryToTurnAround() throws IOException, ClassNotFoundException {
-            if (!idleDestination.isUp()) {
-                destinations.remove(currentFloorNumber);
-                buttons.get(currentFloorNumber).setOn(false);
-                gui.setElevatorButton(elevatorNumber, currentFloorNumber, false);
-                Floors floors = getWaitingPeople();
-                if (floors.getFloors().isEmpty()) {
-                    floors = getWaitingPeopleTurnAround();
-                } else {
-                    idleDestination = new Destination(Collections.min(floors.getFloors()), true);
-                }
-                return floors;
-            } else {
-                int minDestination = Collections.min(destinations);
-                if (currentFloorNumber == minDestination) {
-                    destinations.remove(currentFloorNumber);
-                    buttons.get(currentFloorNumber).setOn(false);
-                    gui.setElevatorButton(elevatorNumber, currentFloorNumber, false);
-                    idleDestination = null;
-                    return getWaitingPeopleTurnAround();
-                } else {
-                    idleDestination = new Destination(minDestination, false);
-                    return new Floors(new HashSet<>());
-                }
-            }
+            return tryToTurnAround(!idleDestination.isUp(), new Destination(Collections.min(destinations), false), floors -> new Destination(Collections.min(floors.getFloors()), false));
         }
     }
 
