@@ -55,4 +55,8 @@ public class FloorClient extends StubClient implements FloorApi {
         return sendAndReceive(2, inetAddress, port);
     }
 
+    @Override
+    public void interrupt() throws IOException, ClassNotFoundException {
+        sendAndReceive(20, inetAddress, port);
+    }
 }

@@ -23,7 +23,6 @@ import java.util.logging.Logger;
 public abstract class Floor extends Thread implements FloorApi {
     private final Logger logger;
     private final SchedulerApi scheduler;
-    private final GuiApi gui;
     private final PriorityQueue<Event> schedule;
     private final Set<Integer> waitingPeopleUp;
     private final Set<Integer> waitingPeopleDown;
@@ -33,7 +32,6 @@ public abstract class Floor extends Thread implements FloorApi {
 
     private final int floorNumber;
     private final DatagramSocket socket;
-    private final Config config;
 
     /**
      * Constructor
@@ -44,11 +42,9 @@ public abstract class Floor extends Thread implements FloorApi {
      * @param schedule    A list of events
      */
     public Floor(Config config, int floorNumber, SchedulerApi scheduler, GuiApi gui, List<Event> schedule) throws SocketException {
-        this.gui = gui;
         logger = Logger.getLogger(this.getClass().getName());
         this.floorNumber = floorNumber;
         this.scheduler = scheduler;
-        this.config = config;
         this.schedule = new PriorityQueue<>(schedule);
         waitingPeopleUp = new HashSet<>();
         waitingPeopleDown = new HashSet<>();

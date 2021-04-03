@@ -69,6 +69,11 @@ public class ElevatorClient extends StubClient implements ElevatorApi {
         return sendAndReceive(3, destination, inetAddress, port);
     }
 
+    @Override
+    public void interrupt() throws IOException, ClassNotFoundException {
+        sendAndReceive(20, inetAddress, port);
+    }
+
 
     public boolean interruptThread() throws IOException, ClassNotFoundException {
         return sendAndReceive(4, (Serializable) null, inetAddress, port);
