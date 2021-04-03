@@ -79,4 +79,4 @@ public class SchedulerClient extends StubClient implements SchedulerApi {
     public Floors getWaitingPeople(int floorNumber) throws IOException, ClassNotFoundException {
         return sendAndReceive(4, floorNumber, inetAddress, port);
     }
-    }
+}
