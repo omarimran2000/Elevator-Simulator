@@ -101,7 +101,7 @@ public abstract class Floor extends Thread implements FloorApi {
                 try {
                     Thread.sleep(schedule.peek().getTimeToEvent() - System.currentTimeMillis() + startTime);
                 } catch (InterruptedException e) {
-                    e.printStackTrace();
+                    return;
                 }
             }
         }

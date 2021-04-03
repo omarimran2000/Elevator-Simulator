@@ -128,6 +128,7 @@ public class Elevator extends Thread implements ElevatorApi {
      */
     @Override
     public void interrupt() {
+        arrivalSensor.interrupt();
         super.interrupt();
         // close socket to interrupt receive
         socket.close();
@@ -441,7 +442,7 @@ public class Elevator extends Thread implements ElevatorApi {
             try {
                 Thread.sleep(config.getIntProperty("waitTime"));
             } catch (InterruptedException e) {
-                e.printStackTrace();
+                return;
             }
             Floors floors;
             if (idleDestination != null && idleDestination.getFloorNumber() == currentFloorNumber) {
