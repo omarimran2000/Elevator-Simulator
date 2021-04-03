@@ -1,5 +1,6 @@
 import ElevatorSubsystem.Elevator;
 import ElevatorSubsystem.ElevatorSubsystem;
+import GUI.GUI;
 import SchedulerSubsystem.Scheduler;
 import org.junit.jupiter.api.Test;
 import utill.Config;
@@ -18,10 +19,11 @@ public class MultipleElevatorsTest {
      * @throws IOException
      */
     @Test
-    public void multiElevators() throws IOException {
+    public void multiElevators() throws IOException, ClassNotFoundException {
         Config config = new Config();
-        Scheduler scheduler = new Scheduler(config);
-        List<Elevator> elevators = ElevatorSubsystem.generateElevators(config, scheduler, config.getIntProperty("numFloors"));
+        GUI gui = new GUI(config);
+        Scheduler scheduler = new Scheduler(config, gui);
+        List<Elevator> elevators = ElevatorSubsystem.generateElevators(config, scheduler, gui, config.getIntProperty("numFloors"));
 
         //Make sure that the List is the correct size
         assertEquals(4, elevators.size());

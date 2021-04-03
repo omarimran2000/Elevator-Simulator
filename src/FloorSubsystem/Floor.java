@@ -1,5 +1,6 @@
 package FloorSubsystem;
 
+import GUI.GuiApi;
 import SchedulerSubsystem.SchedulerApi;
 import model.Destination;
 import model.Event;
@@ -21,6 +22,7 @@ import java.util.logging.Logger;
 public abstract class Floor extends Thread implements FloorApi {
     private final Logger logger;
     private final SchedulerApi scheduler;
+    private final GuiApi gui;
     private final PriorityQueue<Event> schedule;
     private final Set<Integer> waitingPeopleUp;
     private final Set<Integer> waitingPeopleDown;
@@ -36,9 +38,11 @@ public abstract class Floor extends Thread implements FloorApi {
      *
      * @param floorNumber
      * @param scheduler
+     * @param gui
      * @param schedule    A list of events
      */
-    public Floor(Config config, int floorNumber, SchedulerApi scheduler, List<Event> schedule) throws SocketException {
+    public Floor(Config config, int floorNumber, SchedulerApi scheduler, GuiApi gui, List<Event> schedule) throws SocketException {
+        this.gui = gui;
         logger = Logger.getLogger(this.getClass().getName());
         this.floorNumber = floorNumber;
         this.scheduler = scheduler;
@@ -72,10 +76,18 @@ public abstract class Floor extends Thread implements FloorApi {
             if (System.currentTimeMillis() - startTime >= schedule.peek().getTimeToEvent()) {
                 Event event = schedule.remove();
                 if (event.isFloorButtonIsUp()) {
-                    turnUpButtonOn();
+                    try {
+                        turnUpButtonOn();
+                    } catch (IOException | ClassNotFoundException e) {
+                        e.printStackTrace();
+                    }
                     waitingPeopleUp.add(event.getCarButton());
                 } else {
-                    turnDownButtonOn();
+                    try {
+                        turnDownButtonOn();
+                    } catch (IOException | ClassNotFoundException e) {
+                        e.printStackTrace();
+                    }
                     waitingPeopleDown.add(event.getCarButton());
                 }
                 try {
@@ -104,8 +116,12 @@ public abstract class Floor extends Thread implements FloorApi {
      * @return the set of floors with people waiting to go up
      */
     public Floors getWaitingPeopleUp() {
-        logger.info("Loading people onto the elevator going up");
-        turnUpButtonOff();
+        logger.info("Loading people from floor " + floorNumber + " onto the elevator going up");
+        try {
+            turnUpButtonOff();
+        } catch (IOException | ClassNotFoundException e) {
+            e.printStackTrace();
+        }
         Floors waitingPeople = new Floors(waitingPeopleUp);
         waitingPeopleUp.clear();
         return waitingPeople;
@@ -115,8 +131,12 @@ public abstract class Floor extends Thread implements FloorApi {
      * @return the set of floors with people waiting to go down
      */
     public Floors getWaitingPeopleDown() {
-        logger.info("Loading people onto the elevator going down");
-        turnDownButtonOff();
+        logger.info("Loading people from floor " + floorNumber + " onto the elevator going down");
+        try {
+            turnDownButtonOff();
+        } catch (IOException | ClassNotFoundException e) {
+            e.printStackTrace();
+        }
         Floors waitingPeople = new Floors(waitingPeopleDown);
         waitingPeopleDown.clear();
         return waitingPeople;
@@ -141,22 +161,22 @@ public abstract class Floor extends Thread implements FloorApi {
     /**
      * Abstract method for turning the up button off
      */
-    public abstract void turnUpButtonOff();
+    public abstract void turnUpButtonOff() throws IOException, ClassNotFoundException;
 
     /**
      * Abstract method for turning the up button on
      */
-    public abstract void turnUpButtonOn();
+    public abstract void turnUpButtonOn() throws IOException, ClassNotFoundException;
 
     /**
      * Abstract method for turning the down button off
      */
-    public abstract void turnDownButtonOff();
+    public abstract void turnDownButtonOff() throws IOException, ClassNotFoundException;
 
     /**
      * Abstract method for turning the down button on
      */
-    public abstract void turnDownButtonOn();
+    public abstract void turnDownButtonOn() throws IOException, ClassNotFoundException;
 
     /**
      * Abstract method for getting the down button
@@ -180,9 +200,9 @@ class TopFloor extends Floor {
      * @param scheduler   The scheduler
      * @param schedule    The list of scheduled events
      */
-    public TopFloor(Config config, int floorNumber, SchedulerApi scheduler, List<Event> schedule) throws SocketException {
-        super(config, floorNumber, scheduler, schedule);
-        downButton = new FloorButton(floorNumber, false);
+    public TopFloor(Config config, int floorNumber, SchedulerApi scheduler, GuiApi gui, List<Event> schedule) throws SocketException {
+        super(config, floorNumber, scheduler, gui, schedule);
+        downButton = new FloorButton(floorNumber, false, gui);
     }
 
     @Override
@@ -198,14 +218,14 @@ class TopFloor extends Floor {
     /**
      * Method for turning the down button off
      */
-    public void turnDownButtonOff() {
+    public void turnDownButtonOff() throws IOException, ClassNotFoundException {
         downButton.setOn(false);
     }
 
     /**
      * Method for turning the down button on
      */
-    public void turnDownButtonOn() {
+    public void turnDownButtonOn() throws IOException, ClassNotFoundException {
         downButton.setOn(true);
     }
 
@@ -236,22 +256,22 @@ class BottomFloor extends Floor {
      * @param scheduler   The scheduler
      * @param schedule    The list of scheduled events
      */
-    public BottomFloor(Config config, int floorNumber, SchedulerApi scheduler, List<Event> schedule) throws SocketException {
-        super(config, floorNumber, scheduler, schedule);
-        upButton = new FloorButton(floorNumber, true);
+    public BottomFloor(Config config, int floorNumber, SchedulerApi scheduler, GuiApi gui, List<Event> schedule) throws SocketException {
+        super(config, floorNumber, scheduler, gui, schedule);
+        upButton = new FloorButton(floorNumber, true, gui);
     }
 
     /**
      * Method for turning the up button off
      */
-    public void turnUpButtonOff() {
+    public void turnUpButtonOff() throws IOException, ClassNotFoundException {
         upButton.setOn(false);
     }
 
     /**
      * Method for turning the up button on
      */
-    public void turnUpButtonOn() {
+    public void turnUpButtonOn() throws IOException, ClassNotFoundException {
         upButton.setOn(true);
     }
 
@@ -293,37 +313,37 @@ class MiddleFloor extends Floor {
      * @param scheduler   The scheduler
      * @param schedule    The list of scheduled events
      */
-    public MiddleFloor(Config config, int floorNumber, SchedulerApi scheduler, List<Event> schedule) throws SocketException {
-        super(config, floorNumber, scheduler, schedule);
-        upButton = new FloorButton(floorNumber, true);
-        downButton = new FloorButton(floorNumber, false);
+    public MiddleFloor(Config config, int floorNumber, SchedulerApi scheduler, GuiApi gui, List<Event> schedule) throws SocketException {
+        super(config, floorNumber, scheduler, gui, schedule);
+        upButton = new FloorButton(floorNumber, true, gui);
+        downButton = new FloorButton(floorNumber, false, gui);
     }
 
     /**
      * Method for turning the down button on
      */
-    public void turnDownButtonOff() {
+    public void turnDownButtonOff() throws IOException, ClassNotFoundException {
         downButton.setOn(false);
     }
 
     /**
      * Method for turning the down button off
      */
-    public void turnDownButtonOn() {
+    public void turnDownButtonOn() throws IOException, ClassNotFoundException {
         downButton.setOn(true);
     }
 
     /**
      * Method for turning the up button off
      */
-    public void turnUpButtonOff() {
+    public void turnUpButtonOff() throws IOException, ClassNotFoundException {
         upButton.setOn(false);
     }
 
     /**
      * Method for turning the up button on
      */
-    public void turnUpButtonOn() {
+    public void turnUpButtonOn() throws IOException, ClassNotFoundException {
         upButton.setOn(true);
     }
 

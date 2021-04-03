@@ -1,7 +1,9 @@
 package FloorSubsystem;
 
+import GUI.GuiApi;
 import SchedulerSubsystem.SchedulerApi;
 import model.Event;
+import stub.GuiClient;
 import stub.SchedulerClient;
 import utill.Config;
 
@@ -28,7 +30,7 @@ public class FloorSubsystem {
      * @param schedule  the list of events
      * @return The map of the floors
      */
-    public static Map<Integer, Floor> generateFloors(Config config, SchedulerApi scheduler, List<Event> schedule) throws SocketException {
+    public static Map<Integer, Floor> generateFloors(Config config, SchedulerApi scheduler, GuiApi gui, List<Event> schedule) throws SocketException {
         Map<Integer, Floor> floors = new HashMap<>();
 
         Map<Integer, List<Event>> schedule_by_floor = schedule.stream().collect(groupingBy(Event::getFloorNumber));
@@ -51,11 +53,11 @@ public class FloorSubsystem {
         }
         max_floor_number = config.getIntProperty("numFloors");
 
-        floors.put(0, new BottomFloor(config, 0, scheduler, schedule_by_floor.getOrDefault(0, new ArrayList<>())));
-        floors.put(max_floor_number, new TopFloor(config, max_floor_number, scheduler, schedule_by_floor.getOrDefault(max_floor_number, new ArrayList<>())));
+        floors.put(0, new BottomFloor(config, 0, scheduler, gui, schedule_by_floor.getOrDefault(0, new ArrayList<>())));
+        floors.put(max_floor_number, new TopFloor(config, max_floor_number, scheduler, gui, schedule_by_floor.getOrDefault(max_floor_number, new ArrayList<>())));
 
         for (int floor_number = 1; floor_number < max_floor_number; floor_number++) {
-            floors.put(floor_number, new MiddleFloor(config, floor_number, scheduler, schedule_by_floor.getOrDefault(floor_number, new ArrayList<>())));
+            floors.put(floor_number, new MiddleFloor(config, floor_number, scheduler, gui, schedule_by_floor.getOrDefault(floor_number, new ArrayList<>())));
         }
         return floors;
     }
@@ -69,8 +71,8 @@ public class FloorSubsystem {
      * @throws FileNotFoundException
      * @throws ParseException
      */
-    public static Map<Integer, Floor> generateFloors(Config config, SchedulerApi scheduler, String schedule_filename) throws FileNotFoundException, ParseException, SocketException {
-        return generateFloors(config, scheduler, FloorSubsystem.readCSV(config, schedule_filename));
+    public static Map<Integer, Floor> generateFloors(Config config, SchedulerApi scheduler, GuiApi gui, String schedule_filename) throws FileNotFoundException, ParseException, SocketException {
+        return generateFloors(config, scheduler, gui, FloorSubsystem.readCSV(config, schedule_filename));
     }
 
     /**
@@ -99,7 +101,8 @@ public class FloorSubsystem {
     public static void main(String[] args) throws IOException, ParseException {
         Config config = new Config();
         SchedulerApi schedulerApi = new SchedulerClient(config, InetAddress.getLocalHost(), config.getIntProperty("schedulerPort"));
-        Map<Integer, Floor> floors = generateFloors(config, schedulerApi, config.getProperty("csvFileName"));
+        GuiApi guiApi = new GuiClient(config, InetAddress.getLocalHost(), config.getIntProperty("GUIPort"));
+        Map<Integer, Floor> floors = generateFloors(config, schedulerApi, guiApi, config.getProperty("csvFileName"));
         floors.forEach((floorNumber, floor) -> floor.start());
     }
 }
