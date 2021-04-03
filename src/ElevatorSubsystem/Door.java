@@ -37,7 +37,7 @@ public class Door {
         if (Math.random() * 100 > config.getFloatProperty("probabilityDoorStuck")) {
             isOpen = true;
             logger.info("Opening elevator doors");
-            gui.setDoorsOpen(elevatorNumber,true);
+            gui.setDoorsOpen(elevatorNumber, true);
         }
     }
 
@@ -49,7 +49,7 @@ public class Door {
         if (Math.random() * 100 > config.getFloatProperty("probabilityDoorStuck")) {
             isOpen = false;
             logger.info("Closing elevators doors");
-            gui.setDoorsOpen(elevatorNumber,false);
+            gui.setDoorsOpen(elevatorNumber, false);
         }
     }
 

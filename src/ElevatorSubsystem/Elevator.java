@@ -152,7 +152,7 @@ public class Elevator extends Thread implements ElevatorApi {
     public synchronized void addDestination(Destination destination) {
         try {
             state.handleAddDestination(destination);
-            gui.setElevatorButton(elevatorNumber,destination.getFloorNumber(),true);
+            gui.setElevatorButton(elevatorNumber, destination.getFloorNumber(), true);
         } catch (IOException | ClassNotFoundException e) {
             throw new UndeclaredThrowableException(e);
         }
@@ -387,6 +387,18 @@ public class Elevator extends Thread implements ElevatorApi {
          */
         abstract protected Floors getWaitingPeopleTurnAround() throws IOException, ClassNotFoundException;
 
+
+        /**
+         * Gets the number of floors between the current and destination floors
+         *
+         * @param destination Potential destination for the elevator
+         * @return the distance between the two floors
+         */
+        @Override
+        public int handleDistanceTheFloor(Destination destination) {
+            return abs(destination.getFloorNumber() - currentFloorNumber) + destinations.size();
+        }
+
         /**
          * Adds the specified floor number to the list of destinations
          *
@@ -498,17 +510,6 @@ public class Elevator extends Thread implements ElevatorApi {
             gui.setState(elevatorNumber, getElevatorState());
         }
 
-        /**
-         * Gets the number of floors between the current and destination floors
-         *
-         * @param destination Potential destination for the elevator
-         * @return the distance between the two floors
-         */
-        @Override
-        public int handleDistanceTheFloor(Destination destination) {
-            return abs(destination.getFloorNumber() - currentFloorNumber) +
-                    (destination.isUp() ? maxFloors - currentFloorNumber : 0);
-        }
 
         /**
          * @return true if the elevator should stop at the next floor
@@ -576,17 +577,6 @@ public class Elevator extends Thread implements ElevatorApi {
         public ElevatorMovingDown() throws IOException, ClassNotFoundException {
             motor.setDirectionIsUp(false);
             gui.setState(elevatorNumber, getElevatorState());
-        }
-
-        /**
-         * Gets the number of floors between the current and destination floors
-         *
-         * @param destination Potential destination for the elevator
-         * @return the distance between the two floors
-         */
-        @Override
-        public int handleDistanceTheFloor(Destination destination) {
-            return abs(destination.getFloorNumber() - currentFloorNumber) + currentFloorNumber;
         }
 
         /**

@@ -20,7 +20,7 @@ public class SchedulerPanel extends JPanel {
         downDestinations = new ArrayList<>();
 
         JPanel topPanel = new JPanel();
-        topPanel.add( new JLabel("Scheduler"));
+        topPanel.add(new JLabel("Scheduler"));
         add(topPanel);
 
         JPanel upDestinationsPanel = new JPanel();

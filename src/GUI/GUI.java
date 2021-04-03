@@ -119,9 +119,10 @@ public class GUI extends Thread implements GuiApi {
             floors.get(floorNumber).setUp(on);
         } else floors.get(floorNumber).setDown(on);
     }
+
     @Override
     public void addSchedulerDestination(int floorNumber, boolean isUp) {
-        schedulerPanel.addDestination(floorNumber,  isUp);
+        schedulerPanel.addDestination(floorNumber, isUp);
     }
 
     @Override

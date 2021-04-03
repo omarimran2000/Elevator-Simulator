@@ -102,7 +102,8 @@ public class ElevatorPanel extends JPanel {
         doorsStuckText.setVisible(stuck);
         doorsStuckText.setText("Doors stuck " + (open ? "open" : "closed"));
     }
+
     public void setDestination(int floorNumber, boolean on) {
-        buttons.get(floorNumber).setBackground(on? Color.green: Color.white);
+        buttons.get(floorNumber).setBackground(on ? Color.green : Color.white);
     }
 }
