@@ -393,7 +393,7 @@ public class Elevator extends Thread implements ElevatorApi {
                 if (rightDirection) {
                     destinations.remove(currentFloorNumber);
                     buttons.get(currentFloorNumber).setOn(false);
-                    gui.setElevatorButton(elevatorNumber, currentFloorNumber,true,false);
+                    gui.setElevatorButton(elevatorNumber, currentFloorNumber, true, false);
                     Set<Integer> floors = getWaitingPeople();
                     if (floors.isEmpty()) {
                         idleDestination = null;
@@ -405,7 +405,7 @@ public class Elevator extends Thread implements ElevatorApi {
                 } else {
                     destinations.remove(currentFloorNumber);
                     buttons.get(currentFloorNumber).setOn(false);
-                    gui.setElevatorButton(elevatorNumber, currentFloorNumber, true,false);
+                    gui.setElevatorButton(elevatorNumber, currentFloorNumber, true, false);
                     idleDestination = null;
                     return getWaitingPeopleTurnAround();
                 }

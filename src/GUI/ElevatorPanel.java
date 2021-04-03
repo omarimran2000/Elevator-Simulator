@@ -107,11 +107,11 @@ public class ElevatorPanel extends JPanel {
      * Show that an elevatorButton has been pressed or that the scheduler has added a destination the elevator
      * Button presses are shown in green
      * Scheduled events are shown in blue
-     *
+     * <p>
      * If on is false, isButton does not apply
      *
      * @param floorNumber The destination
-     * @param isButton      is true if an elevator button was pressed, false if the event came from the scheduler
+     * @param isButton    is true if an elevator button was pressed, false if the event came from the scheduler
      * @param on          is true if the button should be on, false for off
      */
     public void setElevatorButton(int floorNumber, boolean isButton, boolean on) {
