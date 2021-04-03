@@ -138,7 +138,7 @@ public class GUI extends Thread implements GuiApi {
 
     @Override
     public void setElevatorButton(int elevatorNumber, int floorNumber, boolean isButton, boolean on) {
-        elevators.get(elevatorNumber).setElevatorButton(floorNumber, isButton, on);
+        elevatorsPanel.get(elevatorNumber).setElevatorButton(floorNumber, isButton, on);
     }
 
     @Override
