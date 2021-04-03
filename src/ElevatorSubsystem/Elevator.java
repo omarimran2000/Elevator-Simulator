@@ -12,10 +12,7 @@ import utill.Config;
 import java.io.IOException;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.net.DatagramSocket;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -46,7 +43,7 @@ public class Elevator extends Thread implements ElevatorApi {
     private final DatagramSocket socket;
     protected int currentFloorNumber;
     private State state;
-    private int idleDestination;
+    private Destination idleDestination;
 
     /**
      * Constructor for Elevator
@@ -320,7 +317,7 @@ public class Elevator extends Thread implements ElevatorApi {
             arrivalSensor.start();
             destinations.add(destination.getFloorNumber());
             state = destination.getFloorNumber() > currentFloorNumber ? new ElevatorMovingUp() : new ElevatorMovingDown();
-            idleDestination = destination.getFloorNumber();
+            idleDestination = destination;
         }
 
         /**
@@ -387,6 +384,7 @@ public class Elevator extends Thread implements ElevatorApi {
          */
         abstract protected Floors getWaitingPeopleTurnAround() throws IOException, ClassNotFoundException;
 
+        abstract protected Floors tryToTurnAround() throws IOException, ClassNotFoundException;
 
         /**
          * Gets the number of floors between the current and destination floors
@@ -396,7 +394,7 @@ public class Elevator extends Thread implements ElevatorApi {
          */
         @Override
         public int handleDistanceTheFloor(Destination destination) {
-            return abs(destination.getFloorNumber() - currentFloorNumber) + destinations.size();
+            return abs(destination.getFloorNumber() - currentFloorNumber) + destinations.size() * 10;
         }
 
         /**
@@ -429,8 +427,6 @@ public class Elevator extends Thread implements ElevatorApi {
          */
         @Override
         public void handleAtFloor() throws IOException, ClassNotFoundException {
-            buttons.get(currentFloorNumber).setOn(false);
-            gui.setElevatorButton(elevatorNumber, currentFloorNumber, false);
             handleSetLamps();
             logger.info("Elevator " + elevatorNumber + " stopped at floor " + currentFloorNumber);
             motor.setMoving(false);
@@ -450,13 +446,16 @@ public class Elevator extends Thread implements ElevatorApi {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-
-            destinations.remove(currentFloorNumber);
-            Floors floors = getWaitingPeople();
-            if (floors.getFloors().isEmpty() && idleDestination == currentFloorNumber) {
-                floors = getWaitingPeopleTurnAround();
-                idleDestination = maxFloors + 1;
+            Floors floors;
+            if (idleDestination.getFloorNumber() == currentFloorNumber) {
+                floors = tryToTurnAround();
+            } else {
+                destinations.remove(currentFloorNumber);
+                buttons.get(currentFloorNumber).setOn(false);
+                gui.setElevatorButton(elevatorNumber, currentFloorNumber, false);
+                floors = getWaitingPeople();
             }
+
             floors.getFloors().forEach(destination -> {
                 buttons.get(destination).setOn(true);
                 try {
@@ -528,7 +527,7 @@ public class Elevator extends Thread implements ElevatorApi {
         @Override
         public boolean handleCanAddDestination(Destination destination) {
             return destination.isUp() && destination.getFloorNumber() > currentFloorNumber &&
-                    (idleDestination == maxFloors + 1 || destination.getFloorNumber() < idleDestination);
+                    (idleDestination == null || idleDestination.isUp() || destination.getFloorNumber() < idleDestination.getFloorNumber());
         }
 
         /**
@@ -568,6 +567,34 @@ public class Elevator extends Thread implements ElevatorApi {
             state = new ElevatorMovingDown();
             return scheduler.getWaitingPeopleDown(currentFloorNumber);
         }
+
+        @Override
+        protected Floors tryToTurnAround() throws IOException, ClassNotFoundException {
+            if (idleDestination.isUp()) {
+                destinations.remove(currentFloorNumber);
+                buttons.get(currentFloorNumber).setOn(false);
+                gui.setElevatorButton(elevatorNumber, currentFloorNumber, false);
+                Floors floors = getWaitingPeople();
+                if (floors.getFloors().isEmpty()) {
+                    floors = getWaitingPeopleTurnAround();
+                } else {
+                    idleDestination = new Destination(Collections.max(floors.getFloors()), true);
+                }
+                return floors;
+            } else {
+                int maxDestination = Collections.max(destinations);
+                if (currentFloorNumber == maxDestination) {
+                    destinations.remove(currentFloorNumber);
+                    buttons.get(currentFloorNumber).setOn(false);
+                    gui.setElevatorButton(elevatorNumber, currentFloorNumber, false);
+                    idleDestination = null;
+                    return getWaitingPeopleTurnAround();
+                } else {
+                    idleDestination = new Destination(maxDestination, true);
+                    return new Floors(new HashSet<>());
+                }
+            }
+        }
     }
 
     /**
@@ -588,7 +615,7 @@ public class Elevator extends Thread implements ElevatorApi {
         @Override
         public boolean handleCanAddDestination(Destination destination) {
             return !destination.isUp() && destination.getFloorNumber() < currentFloorNumber &&
-                    (idleDestination == maxFloors + 1 || destination.getFloorNumber() > idleDestination);
+                    (idleDestination == null || !idleDestination.isUp() || destination.getFloorNumber() > idleDestination.getFloorNumber());
         }
 
         /**
@@ -635,6 +662,34 @@ public class Elevator extends Thread implements ElevatorApi {
         protected Floors getWaitingPeopleTurnAround() throws IOException, ClassNotFoundException {
             state = new ElevatorMovingUp();
             return scheduler.getWaitingPeopleUp(currentFloorNumber);
+        }
+
+        @Override
+        protected Floors tryToTurnAround() throws IOException, ClassNotFoundException {
+            if (!idleDestination.isUp()) {
+                destinations.remove(currentFloorNumber);
+                buttons.get(currentFloorNumber).setOn(false);
+                gui.setElevatorButton(elevatorNumber, currentFloorNumber, false);
+                Floors floors = getWaitingPeople();
+                if (floors.getFloors().isEmpty()) {
+                    floors = getWaitingPeopleTurnAround();
+                } else {
+                    idleDestination = new Destination(Collections.min(floors.getFloors()), true);
+                }
+                return floors;
+            } else {
+                int minDestination = Collections.min(destinations);
+                if (currentFloorNumber == minDestination) {
+                    destinations.remove(currentFloorNumber);
+                    buttons.get(currentFloorNumber).setOn(false);
+                    gui.setElevatorButton(elevatorNumber, currentFloorNumber, false);
+                    idleDestination = null;
+                    return getWaitingPeopleTurnAround();
+                } else {
+                    idleDestination = new Destination(minDestination, false);
+                    return new Floors(new HashSet<>());
+                }
+            }
         }
     }
 

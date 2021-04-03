@@ -18,7 +18,7 @@ class FloorsTest {
 
         Config config = new Config();
         GUI gui = new GUI(config);
-        Scheduler scheduler = new Scheduler(config,gui);
+        Scheduler scheduler = new Scheduler(config, gui);
 
         Map<Integer, Floor> floors = generateFloors(config, scheduler, gui, config.getProperty("csvFileName"));
 
