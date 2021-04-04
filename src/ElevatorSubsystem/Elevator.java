@@ -111,11 +111,7 @@ public class Elevator extends Thread implements ElevatorApi {
         try {
             StubServer.receiveAsync(socket, config.getIntProperty("numHandlerThreads"), config.getIntProperty("maxMessageSize"), Map.of(
                     1, input -> distanceTheFloor((Destination) input.get(0)),
-                    2, input -> {
-                        addDestination((Destination) input.get(0));
-                        return new AckMessage();
-                    },
-                    3, input -> canAddDestination((Destination) input.get(0)),
+                    2, input -> addDestination((Destination) input.get(0)),
                     20, input -> {
                         interrupt();
                         return new AckMessage();
@@ -154,16 +150,11 @@ public class Elevator extends Thread implements ElevatorApi {
      * Adds the specified floor number to the list of destinations
      *
      * @param destination The new destination for the Elevator
+     * @return
      */
     @Override
-    public synchronized void addDestination(Destination destination) {
-        state.addDestination(destination);
-        gui.setElevatorButton(elevatorNumber, destination.getFloorNumber(), false, true);
-    }
-
-    @Override
-    public synchronized boolean canAddDestination(Destination destination) {
-        return state.canAddDestination(destination);
+    public synchronized boolean addDestination(Destination destination) {
+        return state.addDestination(destination);
     }
 
     /**
@@ -259,7 +250,7 @@ public class Elevator extends Thread implements ElevatorApi {
          *
          * @param destination The new destination for the Elevator
          */
-        void addDestination(Destination destination);
+        boolean addDestination(Destination destination);
 
         /**
          * @return true if the elevator should stop at the next floor
@@ -270,14 +261,6 @@ public class Elevator extends Thread implements ElevatorApi {
          * Actions for when the elevator stops at a floor
          */
         void atFloor() throws IOException, ClassNotFoundException;
-
-        /**
-         * Check if elevator can add destination
-         *
-         * @param destination
-         * @return if can be added
-         */
-        boolean canAddDestination(Destination destination);
 
         /**
          * Getter method for state
@@ -318,13 +301,15 @@ public class Elevator extends Thread implements ElevatorApi {
          * @param destination The new destination for the Elevator
          */
         @Override
-        public synchronized void addDestination(Destination destination) {
+        public boolean addDestination(Destination destination) {
             arrivalSensor.start();
             destinations.add(destination);
             state = new MovingState();
             position.setUp(destination.getFloorNumber() > position.getFloorNumber());
             idleDestination = destination.getFloorNumber();
             idleWrongDirection = destination.isUp() != position.isUp();
+            gui.setElevatorButton(elevatorNumber, destination.getFloorNumber(), false, true);
+            return true;
         }
 
         /**
@@ -341,17 +326,6 @@ public class Elevator extends Thread implements ElevatorApi {
         @Override
         public void atFloor() {
             throw new RuntimeException();
-        }
-
-        /**
-         * Check if elevator can add destination
-         *
-         * @param destination
-         * @return if can be added
-         */
-        @Override
-        public boolean canAddDestination(Destination destination) {
-            return true;
         }
 
         /**
@@ -393,15 +367,21 @@ public class Elevator extends Thread implements ElevatorApi {
          * @param destination The new destination for the Elevator
          */
         @Override
-        public void addDestination(Destination destination) {
-            if (arrivalSensor.isNotRunning()) {
-                arrivalSensor.start();
+        public boolean addDestination(Destination destination) {
+            if (destination.isUp() == position.isUp() && destination.getFloorNumber() > position.getFloorNumber() == position.isUp()) {
+                gui.setElevatorButton(elevatorNumber, destination.getFloorNumber(), false, true);
+                if (arrivalSensor.isNotRunning()) {
+                    arrivalSensor.start();
+                }
+                destinations.add(destination);
+                if ((position.isUp() && destination.getFloorNumber() > idleDestination) || (!position.isUp() && destination.getFloorNumber() < idleDestination)) {
+                    idleDestination = destination.getFloorNumber();
+                }
+                idleWrongDirection = destination.isUp() != position.isUp() || idleWrongDirection;
+                return true;
+            } else {
+                return false;
             }
-            destinations.add(destination);
-            if ((position.isUp() && destination.getFloorNumber() > idleDestination) || (!position.isUp() && destination.getFloorNumber() < idleDestination)) {
-                idleDestination = destination.getFloorNumber();
-            }
-            idleWrongDirection = destination.isUp() != position.isUp() || idleWrongDirection;
         }
 
         @Override
@@ -518,11 +498,6 @@ public class Elevator extends Thread implements ElevatorApi {
         }
 
         @Override
-        public boolean canAddDestination(Destination destination) {
-            return false;
-        }
-
-        @Override
         public ElevatorState getElevatorState() {
             return position.isUp() ? ElevatorState.MovingUp : ElevatorState.MovingDown;
         }
@@ -546,8 +521,8 @@ public class Elevator extends Thread implements ElevatorApi {
         }
 
         @Override
-        public void addDestination(Destination destination) {
-            throw new RuntimeException();
+        public boolean addDestination(Destination destination) {
+            return false;
         }
 
         @Override
@@ -558,11 +533,6 @@ public class Elevator extends Thread implements ElevatorApi {
         @Override
         public void atFloor() {
             throw new RuntimeException();
-        }
-
-        @Override
-        public boolean canAddDestination(Destination destination) {
-            return false;
         }
 
         @Override
