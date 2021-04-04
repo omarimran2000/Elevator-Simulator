@@ -507,7 +507,7 @@ public class Elevator extends Thread implements ElevatorApi {
                         }
                     }
                     position.setUp(destinations.stream().anyMatch(destination -> destination.getFloorNumber() > position.getFloorNumber()));
-                    idleWrongDirection = destinations.stream().anyMatch(destination -> destination.isUp() == position.isUp());
+                    idleWrongDirection = destinations.stream().anyMatch(destination -> destination.isUp() != position.isUp());
                     motor.setDirectionIsUp(position.isUp());
                     gui.setState(elevatorNumber, getElevatorState());
 
