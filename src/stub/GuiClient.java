@@ -30,9 +30,10 @@ public class GuiClient extends StubClient implements GuiApi {
     }
 
     /**
-     * Setting the current floor of the elevator panel
-     * @param elevatorNumber the elevator number
-     * @param floorNumber the new floor number
+     * Set the current floor number of the specified elevator
+     *
+     * @param elevatorNumber The specified elevator's number
+     * @param floorNumber The current floor number
      * @throws IOException
      * @throws ClassNotFoundException
      */
@@ -42,11 +43,10 @@ public class GuiClient extends StubClient implements GuiApi {
     }
 
     /**
-     * Setting the motor direction for the elevator panel
-     * @param elevatorNumber the elevator number
-     * @param direction true if up
-     * @throws IOException
-     * @throws ClassNotFoundException
+     * Set the specified elevator's direction
+     *
+     * @param elevatorNumber The specified elevator's number
+     * @param direction is true for up, false for down
      */
     @Override
     public void setMotorDirection(int elevatorNumber, boolean direction) throws IOException, ClassNotFoundException {
@@ -54,9 +54,10 @@ public class GuiClient extends StubClient implements GuiApi {
     }
 
     /**
-     * Setting the doors to open in the elevator panel
-     * @param elevatorNumber the elevator number
-     * @param open true if open
+     * Set the specified elevator's doors open/closed
+     *
+     * @param elevatorNumber The specified elevator's number
+     * @param open is true for open, false for closed
      * @throws IOException
      * @throws ClassNotFoundException
      */
@@ -66,9 +67,10 @@ public class GuiClient extends StubClient implements GuiApi {
     }
 
     /**
-     * Setting the state of the elevator in the elevator panel
-     * @param elevatorNumber the elevator number
-     * @param state the new state
+     * Set the specified elevator's state - (NotMoving, MovingUp, MovingDown, Stuck)
+     *
+     * @param elevatorNumber The specified elevator's number
+     * @param state The elevator's state
      * @throws IOException
      * @throws ClassNotFoundException
      */
@@ -78,10 +80,11 @@ public class GuiClient extends StubClient implements GuiApi {
     }
 
     /**
-     * Setting the doors to stuck in the elevator panel
-     * @param elevatorNumber the elevator number
-     * @param doorsStuck true if stuck
-     * @param open true if stuck open
+     * Set the specified elevator's doors stuck
+     *
+     * @param elevatorNumber The specified elevator's number
+     * @param doorsStuck is true if the doors are stuck, false if not
+     * @param open is true if the doors are stuck open, false for closed
      * @throws IOException
      * @throws ClassNotFoundException
      */
@@ -89,13 +92,16 @@ public class GuiClient extends StubClient implements GuiApi {
     public void setDoorsStuck(int elevatorNumber, boolean doorsStuck, boolean open) throws IOException, ClassNotFoundException {
         sendAndReceive(5, List.of(elevatorNumber, doorsStuck, open), inetAddress, port);
     }
-
+  
     /**
-     * Setting the elevator button in the panel
-     * @param elevatorNumber number of elevator
-     * @param floorNumber the floor number
-     * @param isButton true if elevator button, else it is destination
-     * @param on true if on
+     * Show that a destination has been added to the specified elevator's queue
+     * If the destination came from the scheduler, the floor lights up in blue
+     * If the destination came from an elevatorButton pressed, the floor lights up in green
+     *
+     * @param elevatorNumber The specified elevator's number
+     * @param floorNumber The floor number
+     * @param isButton is true if an elevatorButton was pressed, false if the scheduler added the destination
+     * @param on is true if the destination is being added to the queue, false if it is being removed
      * @throws IOException
      * @throws ClassNotFoundException
      */
@@ -105,22 +111,24 @@ public class GuiClient extends StubClient implements GuiApi {
     }
 
     /**
-     * Setting the floor button in the floor panel
-     * @param floorButton the number of the floor
-     * @param direction true if up
-     * @param on true if on
+     * Show that the floorButton on the specified floor is on/off
+     * @param floorNumber The specified floor's number
+     * @param direction is true if the up button is on/off, false for down
+     * @param on is true if the button is on, false for off
      * @throws IOException
      * @throws ClassNotFoundException
      */
     @Override
-    public void setFloorButton(int floorButton, boolean direction, boolean on) throws IOException, ClassNotFoundException {
-        sendAndReceive(7, List.of(floorButton, direction, on), inetAddress, port);
+    public void setFloorButton(int floorNumber, boolean direction, boolean on) throws IOException, ClassNotFoundException {
+        sendAndReceive(7, List.of(floorNumber, direction, on), inetAddress, port);
     }
 
     /**
-     * Adding the destination in the scheduler panel
-     * @param floorNumber the floor number
-     * @param isUp true if up
+     * If an event is not able to be allocated to an elevator right away,
+     * it is added to a list kept in the scheduler. Light up the specified
+     * label in the schedulerPanel when a destination is added to this list
+     * @param floorNumber The floor number
+     * @param isUp is true of the event is up, false for down
      * @throws IOException
      * @throws ClassNotFoundException
      */
@@ -130,8 +138,9 @@ public class GuiClient extends StubClient implements GuiApi {
     }
 
     /**
-     * Removing the destinations from the scheduler panel
-     * @param destinations the destinations to be removed
+     * When some destinations are allocated to an elevator from the scheduler's
+     * list, remove the light from the schedulerPanel
+     * @param destinations The destination(s) being removed
      * @throws IOException
      * @throws ClassNotFoundException
      */
