@@ -122,8 +122,14 @@ public class Scheduler extends Thread implements SchedulerApi {
                 return new HashSet<>();
             }
             output = new HashSet<>(destinations.stream()
+                    .filter(destination -> destination.getFloorNumber() > floorNumber == destination.isUp())
                     .collect(Collectors.groupingBy(destination -> destination.getFloorNumber() > floorNumber)).values().stream()
                     .max(Comparator.comparingInt(List::size)).orElse(new ArrayList<>()));
+            if(output.isEmpty()){
+                output = new HashSet<>(destinations.stream()
+                        .collect(Collectors.groupingBy(destination -> destination.getFloorNumber() > floorNumber)).values().stream()
+                        .max(Comparator.comparingInt(List::size)).orElse(new ArrayList<>()));
+            }
             destinations.removeAll(output);
         }
         try {
