@@ -112,7 +112,7 @@ public class Scheduler extends Thread implements SchedulerApi {
      * @return Floors
      */
     @Override
-    public HashSet<Integer> getWaitingPeople(int floorNumber) {
+    public HashSet<Destination> getWaitingPeople(int floorNumber) {
         logger.info("Stopped elevator on floor " + floorNumber + " asking for more destinations.");
         HashSet<Destination> destinations = new HashSet<>(this.destinations.stream()
                 .collect(Collectors.groupingBy(destination -> destination.getFloorNumber() > floorNumber)).values().stream()
@@ -125,9 +125,8 @@ public class Scheduler extends Thread implements SchedulerApi {
             } catch (IOException | ClassNotFoundException e) {
                 throw new UndeclaredThrowableException(e);
             }
-            return (HashSet<Integer>) destinations.stream().map(Destination::getFloorNumber).collect(Collectors.toSet());
         }
-        return new HashSet<>();
+        return destinations;
     }
 
 

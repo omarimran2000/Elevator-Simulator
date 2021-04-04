@@ -77,7 +77,7 @@ public class SchedulerClient extends StubClient implements SchedulerApi {
      * @throws ClassNotFoundException
      */
     @Override
-    public HashSet<Integer> getWaitingPeople(int floorNumber) throws IOException, ClassNotFoundException {
+    public HashSet<Destination> getWaitingPeople(int floorNumber) throws IOException, ClassNotFoundException {
         return sendAndReceive(4, floorNumber, inetAddress, port);
     }
 

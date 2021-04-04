@@ -8,8 +8,8 @@ import java.util.Objects;
  * the floorNumber on which the floorButton was pressed and the direction with respect to the elevator
  */
 public class Destination implements Serializable {
-    private final int floorNumber;
-    private final boolean isUp;
+    private int floorNumber;
+    private boolean isUp;
 
     public Destination(int floorNumber, boolean isUp) {
         this.floorNumber = floorNumber;
@@ -32,6 +32,14 @@ public class Destination implements Serializable {
      */
     public int getFloorNumber() {
         return floorNumber;
+    }
+
+    public void setFloorNumber(int floorNumber) {
+        this.floorNumber = floorNumber;
+    }
+
+    public void setUp(boolean up) {
+        isUp = up;
     }
 
     @Override

@@ -43,7 +43,7 @@ public interface SchedulerApi {
      * @throws IOException
      * @throws ClassNotFoundException
      */
-    HashSet<Integer> getWaitingPeople(int floorNumber) throws IOException, ClassNotFoundException;
+    HashSet<Destination> getWaitingPeople(int floorNumber) throws IOException, ClassNotFoundException;
 
     void interrupt() throws IOException, ClassNotFoundException;
 }
