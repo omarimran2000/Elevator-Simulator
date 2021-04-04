@@ -8,7 +8,7 @@ import java.lang.reflect.UndeclaredThrowableException;
 import java.util.HashSet;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-public class BufferedGUI implements GuiApi {
+public class BufferedGUI implements GuiApi, Runnable {
     private final GuiApi gui;
     private final ConcurrentLinkedQueue<Runnable> buffer;
 
@@ -117,13 +117,12 @@ public class BufferedGUI implements GuiApi {
         });
     }
 
-    public void apply() throws Throwable {
-        try {
-            while (buffer.peek() != null){
+    @Override
+    public void run() {
+        while (!Thread.interrupted()) {
+            while (buffer.peek() != null) {
                 buffer.poll().run();
             }
-        } catch (UndeclaredThrowableException e) {
-            throw e.getUndeclaredThrowable();
         }
     }
 }
