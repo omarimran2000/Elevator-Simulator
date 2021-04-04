@@ -4,13 +4,20 @@ import javax.swing.*;
 import java.awt.*;
 
 /**
- * FloorContainer contains the status of the floor buttons for each floor
+ * FloorPanel contains the status of the floor buttons for each floor
  * The up/down text fields should become visible when the corresponding floor button is activated
+ * There is one floorPanel for each floor in the system corresponding to the up/down floorButtons
+ *
+ * @version April 4, 2021
  */
 public class FloorPanel extends JPanel {
     private final JLabel upLabel;
     private final JLabel downLabel;
 
+    /**
+     * Constructor for floorPanel
+     * @param floorNumber The floor number
+     */
     public FloorPanel(int floorNumber) {
         setVisible(true);
 
