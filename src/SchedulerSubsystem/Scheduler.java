@@ -82,29 +82,23 @@ public class Scheduler extends Thread implements SchedulerApi {
      */
     @Override
     public void handleFloorButton(Destination destination) throws IOException, ClassNotFoundException {
-        Optional<ElevatorApi> elevatorOptional = elevators.stream()
-                .filter(elevator -> {
-                    try {
-                        return elevator.canAddDestination(destination);
-                    } catch (IOException | ClassNotFoundException e) {
-                        throw new UndeclaredThrowableException(e);
-                    }
-                })
-                .min(Comparator.comparing(elevator -> {
+        List<ElevatorApi> elevatorByDistance = elevators.stream()
+                .sorted(Comparator.comparing(elevator -> {
                     try {
                         return elevator.distanceTheFloor(destination);
                     } catch (IOException | ClassNotFoundException e) {
                         throw new UndeclaredThrowableException(e);
                     }
-                }));
-        if (elevatorOptional.isPresent()) {
-            elevatorOptional.get().addDestination(destination);
-        } else {
-            synchronized (destinations) {
-                destinations.add(destination);
+                })).collect(Collectors.toList());
+        for (ElevatorApi elevatorApi : elevatorByDistance) {
+            if (elevatorApi.addDestination(destination)) {
+                return;
             }
-            gui.addSchedulerDestination(destination.getFloorNumber(), destination.isUp());
         }
+        synchronized (destinations) {
+            destinations.add(destination);
+        }
+        gui.addSchedulerDestination(destination.getFloorNumber(), destination.isUp());
     }
 
     /**
@@ -125,7 +119,7 @@ public class Scheduler extends Thread implements SchedulerApi {
                     .filter(destination -> destination.getFloorNumber() > floorNumber == destination.isUp())
                     .collect(Collectors.groupingBy(destination -> destination.getFloorNumber() > floorNumber)).values().stream()
                     .max(Comparator.comparingInt(List::size)).orElse(new ArrayList<>()));
-            if(output.isEmpty()){
+            if (output.isEmpty()) {
                 output = new HashSet<>(destinations.stream()
                         .collect(Collectors.groupingBy(destination -> destination.getFloorNumber() > floorNumber)).values().stream()
                         .max(Comparator.comparingInt(List::size)).orElse(new ArrayList<>()));
