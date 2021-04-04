@@ -25,6 +25,10 @@ public class Destination implements Serializable {
         return isUp;
     }
 
+    public void setUp(boolean up) {
+        isUp = up;
+    }
+
     /**
      * Returns the floorNumber attribute
      *
@@ -36,10 +40,6 @@ public class Destination implements Serializable {
 
     public void setFloorNumber(int floorNumber) {
         this.floorNumber = floorNumber;
-    }
-
-    public void setUp(boolean up) {
-        isUp = up;
     }
 
     @Override

@@ -39,7 +39,7 @@ public class Elevator extends Thread implements ElevatorApi {
     private final ScheduledExecutorService executor;
     private final Logger logger;
     private final DatagramSocket socket;
-    private Destination position;
+    private final Destination position;
     private State state;
     private int idleDestination;
     private boolean idleWrongDirection;
@@ -143,7 +143,7 @@ public class Elevator extends Thread implements ElevatorApi {
      */
     @Override
     public synchronized int distanceTheFloor(Destination destination) {
-        return state.handleDistanceTheFloor(destination);
+        return state.distanceTheFloor(destination);
     }
 
     /**
@@ -154,7 +154,7 @@ public class Elevator extends Thread implements ElevatorApi {
     @Override
     public synchronized void addDestination(Destination destination) {
         try {
-            state.handleAddDestination(destination);
+            state.addDestination(destination);
             gui.setElevatorButton(elevatorNumber, destination.getFloorNumber(), false, true);
         } catch (IOException | ClassNotFoundException e) {
             throw new UndeclaredThrowableException(e);
@@ -163,14 +163,14 @@ public class Elevator extends Thread implements ElevatorApi {
 
     @Override
     public synchronized boolean canAddDestination(Destination destination) {
-        return state.handleCanAddDestination(destination);
+        return state.canAddDestination(destination);
     }
 
     /**
      * @return true if the elevator should stop at the next floor
      */
     public synchronized boolean stopForNextFloor() {
-        boolean b = state.handleStopForNextFloor();
+        boolean b = state.stopForNextFloor();
         try {
             gui.setCurrentFloorNumber(elevatorNumber, position.getFloorNumber());
         } catch (IOException | ClassNotFoundException e) {
@@ -183,7 +183,7 @@ public class Elevator extends Thread implements ElevatorApi {
      * Pass the floor without stopping
      */
     public synchronized void passFloor() {
-        state.handleSetLamps();
+        state.setLamps();
         logger.info("Elevator " + elevatorNumber + " passing floor " + position.getFloorNumber());
 
         if (elevatorNumber == config.getIntProperty("elevatorStuck")) state.scheduleCheckIfStuck();
@@ -194,7 +194,7 @@ public class Elevator extends Thread implements ElevatorApi {
      */
     public synchronized void atFloor() {
         try {
-            state.handleAtFloor();
+            state.atFloor();
         } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
         }
@@ -239,7 +239,7 @@ public class Elevator extends Thread implements ElevatorApi {
         /**
          * Turns off the previous lamp and turns on the next one
          */
-        void handleSetLamps();
+        void setLamps();
 
         /**
          * Gets the number of floors between the current and destination floors
@@ -247,24 +247,24 @@ public class Elevator extends Thread implements ElevatorApi {
          * @param destination Potential destination for the elevator
          * @return the distance between the two floors
          */
-        int handleDistanceTheFloor(Destination destination);
+        int distanceTheFloor(Destination destination);
 
         /**
          * Adds the specified floor number to the list of destinations
          *
          * @param destination The new destination for the Elevator
          */
-        void handleAddDestination(Destination destination) throws IOException, ClassNotFoundException;
+        void addDestination(Destination destination) throws IOException, ClassNotFoundException;
 
         /**
          * @return true if the elevator should stop at the next floor
          */
-        boolean handleStopForNextFloor();
+        boolean stopForNextFloor();
 
         /**
          * Actions for when the elevator stops at a floor
          */
-        void handleAtFloor() throws IOException, ClassNotFoundException;
+        void atFloor() throws IOException, ClassNotFoundException;
 
         /**
          * Check if elevator can add destination
@@ -272,7 +272,7 @@ public class Elevator extends Thread implements ElevatorApi {
          * @param destination
          * @return if can be added
          */
-        boolean handleCanAddDestination(Destination destination);
+        boolean canAddDestination(Destination destination);
 
         /**
          * Checks to see if elevator is stuck
@@ -297,7 +297,7 @@ public class Elevator extends Thread implements ElevatorApi {
         }
 
         @Override
-        public void handleSetLamps() {
+        public void setLamps() {
             throw new RuntimeException();
         }
 
@@ -308,7 +308,7 @@ public class Elevator extends Thread implements ElevatorApi {
          * @return the distance between the two floors
          */
         @Override
-        public int handleDistanceTheFloor(Destination destination) {
+        public int distanceTheFloor(Destination destination) {
             return Math.abs(destination.getFloorNumber() - position.getFloorNumber());
         }
 
@@ -318,7 +318,7 @@ public class Elevator extends Thread implements ElevatorApi {
          * @param destination The new destination for the Elevator
          */
         @Override
-        public synchronized void handleAddDestination(Destination destination) throws IOException, ClassNotFoundException {
+        public synchronized void addDestination(Destination destination) throws IOException, ClassNotFoundException {
             arrivalSensor.start();
             destinations.add(destination);
             state = new MovingState();
@@ -331,7 +331,7 @@ public class Elevator extends Thread implements ElevatorApi {
          * @return true if the elevator should stop at the next floor
          */
         @Override
-        public boolean handleStopForNextFloor() {
+        public boolean stopForNextFloor() {
             throw new RuntimeException();
         }
 
@@ -339,7 +339,7 @@ public class Elevator extends Thread implements ElevatorApi {
          * Actions for when the elevator stops at a floor
          */
         @Override
-        public void handleAtFloor() {
+        public void atFloor() {
             throw new RuntimeException();
         }
 
@@ -350,7 +350,7 @@ public class Elevator extends Thread implements ElevatorApi {
          * @return if can be added
          */
         @Override
-        public boolean handleCanAddDestination(Destination destination) {
+        public boolean canAddDestination(Destination destination) {
             return true;
         }
 
@@ -390,7 +390,7 @@ public class Elevator extends Thread implements ElevatorApi {
          * @return the distance between the two floors
          */
         @Override
-        public int handleDistanceTheFloor(Destination destination) {
+        public int distanceTheFloor(Destination destination) {
             return Math.abs(destination.getFloorNumber() - position.getFloorNumber()) + destinations.size() * 10 + people.size() * 5;
         }
 
@@ -400,7 +400,7 @@ public class Elevator extends Thread implements ElevatorApi {
          * @param destination The new destination for the Elevator
          */
         @Override
-        public void handleAddDestination(Destination destination) {
+        public void addDestination(Destination destination) {
             if (arrivalSensor.isNotRunning()) {
                 arrivalSensor.start();
             }
@@ -412,7 +412,7 @@ public class Elevator extends Thread implements ElevatorApi {
         }
 
         @Override
-        public boolean handleStopForNextFloor() {
+        public boolean stopForNextFloor() {
             position.setFloorNumber(position.getFloorNumber() + (position.isUp() ? 1 : -1));
             return people.contains(position.getFloorNumber()) || destinations.contains(position) || position.getFloorNumber() == idleDestination;
         }
@@ -421,7 +421,7 @@ public class Elevator extends Thread implements ElevatorApi {
          * Turns off the previous lamp and turns on the next one
          */
         @Override
-        public void handleSetLamps() {
+        public void setLamps() {
             ElevatorLamp previousLamp = lamps.get(position.getFloorNumber() + (position.isUp() ? -1 : 1));
             if (previousLamp != null && previousLamp.isLit()) {
                 previousLamp.setLamp(false);
@@ -433,8 +433,8 @@ public class Elevator extends Thread implements ElevatorApi {
          * Actions for when the elevator stops at a floor
          */
         @Override
-        public void handleAtFloor() throws IOException, ClassNotFoundException {
-            handleSetLamps();
+        public void atFloor() throws IOException, ClassNotFoundException {
+            setLamps();
             logger.info("Elevator " + elevatorNumber + " stopped at floor " + position.getFloorNumber());
             motor.setMoving(false);
 
@@ -501,7 +501,7 @@ public class Elevator extends Thread implements ElevatorApi {
 
                     //Handle the edge case when the elevator is turning around on the floor where it needs to pick up someone.
                     if (destinations.contains(position)) {
-                        atFloor();
+                        this.atFloor();
                     }
                     motor.setMoving(true);
                 }
@@ -511,7 +511,7 @@ public class Elevator extends Thread implements ElevatorApi {
         }
 
         @Override
-        public boolean handleCanAddDestination(Destination destination) {
+        public boolean canAddDestination(Destination destination) {
             return false;
         }
 
@@ -534,32 +534,32 @@ public class Elevator extends Thread implements ElevatorApi {
         }
 
         @Override
-        public void handleSetLamps() {
+        public void setLamps() {
             throw new RuntimeException();
         }
 
         @Override
-        public int handleDistanceTheFloor(Destination destination) {
+        public int distanceTheFloor(Destination destination) {
             throw new RuntimeException();
         }
 
         @Override
-        public void handleAddDestination(Destination destination) {
+        public void addDestination(Destination destination) {
             throw new RuntimeException();
         }
 
         @Override
-        public boolean handleStopForNextFloor() {
+        public boolean stopForNextFloor() {
             return false;
         }
 
         @Override
-        public void handleAtFloor() {
+        public void atFloor() {
             throw new RuntimeException();
         }
 
         @Override
-        public boolean handleCanAddDestination(Destination destination) {
+        public boolean canAddDestination(Destination destination) {
             return false;
         }
 
