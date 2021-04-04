@@ -9,7 +9,7 @@ import java.util.logging.Logger;
  * The Floor Button class represents the buttons on
  * each floor used to request an elevator
  *
- * @version Feb 27, 2021
+ * @version April 4, 2021
  */
 public class FloorButton {
     private final Logger logger;
@@ -22,9 +22,9 @@ public class FloorButton {
     /**
      * Constructor for a floor button
      *
-     * @param floorNumber
-     * @param isUp
-     * @param gui
+     * @param floorNumber the floor number
+     * @param isUp the direction of button
+     * @param gui the gui
      */
     public FloorButton(int floorNumber, boolean isUp, GuiApi gui) {
         this.floorNumber = floorNumber;

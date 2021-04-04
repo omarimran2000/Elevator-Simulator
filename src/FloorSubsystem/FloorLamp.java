@@ -18,6 +18,8 @@ public class FloorLamp {
     }
 
     /**
+     * Checks if the lamp is lit
+     *
      * @return true if the lamp is lit
      */
     public boolean isLit() {

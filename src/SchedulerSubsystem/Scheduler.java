@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
 /**
  * The Scheduler class schedules the events
  *
- * @version Feb 27, 2021
+ * @version April 4, 2021
  */
 public class Scheduler extends Thread implements SchedulerApi {
     private final Logger logger;
@@ -36,6 +36,12 @@ public class Scheduler extends Thread implements SchedulerApi {
     private Map<Integer, FloorApi> floors;
 
 
+    /**
+     * Creates a scheduler
+     * @param config The config file
+     * @param gui The gui
+     * @throws SocketException
+     */
     public Scheduler(Config config, GuiApi gui) throws SocketException {
         this.gui = gui;
         logger = Logger.getLogger(this.getClass().getName());
@@ -102,10 +108,10 @@ public class Scheduler extends Thread implements SchedulerApi {
     }
 
     /**
-     * Returns the set of people waiting to go up at a specific floor
+     * Returns the set of destinations with people waiting to go up at a specific floor
      *
-     * @param floorNumber
-     * @return Floors
+     * @param floorNumber The floor number
+     * @return The set of destinations
      */
     @Override
     public HashSet<Destination> getUnscheduledPeople(int floorNumber) {
@@ -187,7 +193,7 @@ public class Scheduler extends Thread implements SchedulerApi {
     }
 
     /**
-     * Interupt method
+     * Interrupt method
      */
     @Override
     public void interrupt() {
@@ -200,7 +206,7 @@ public class Scheduler extends Thread implements SchedulerApi {
      * Get waiting people up
      *
      * @param destination The corresponding floor number for the requests
-     * @return Floors The Floors object of people waiting to go up
+     * @return set of destination numbers
      * @throws IOException
      * @throws ClassNotFoundException
      */
