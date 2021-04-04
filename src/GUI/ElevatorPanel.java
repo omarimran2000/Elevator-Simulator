@@ -39,7 +39,7 @@ public class ElevatorPanel extends JPanel {
         add(statePanel, BorderLayout.SOUTH);
 
         doorsOpenText = new JLabel();
-        doorsOpenText.setVisible(true);
+        doorsOpenText.setVisible(false);
         setDoorsOpen(true);
         topPanel.add(doorsOpenText);
 
