@@ -154,14 +154,7 @@ public class Elevator extends Thread implements ElevatorApi {
      */
     @Override
     public synchronized boolean addDestination(Destination destination) {
-        if (state.getElevatorState() == ElevatorState.NotMoving ||
-                (destination.isUp() == position.isUp()) && destination.getFloorNumber() > position.getFloorNumber() == position.isUp()) {
-            state.addDestination(destination);
-            gui.setElevatorButton(elevatorNumber, destination.getFloorNumber(), false, true);
-            return true;
-        } else {
-            return false;
-        }
+        return state.addDestination(destination);
     }
 
     /**
@@ -257,7 +250,7 @@ public class Elevator extends Thread implements ElevatorApi {
          *
          * @param destination The new destination for the Elevator
          */
-        void addDestination(Destination destination);
+        boolean addDestination(Destination destination);
 
         /**
          * @return true if the elevator should stop at the next floor
@@ -308,13 +301,14 @@ public class Elevator extends Thread implements ElevatorApi {
          * @param destination The new destination for the Elevator
          */
         @Override
-        public synchronized void addDestination(Destination destination) {
+        public boolean addDestination(Destination destination) {
             arrivalSensor.start();
             destinations.add(destination);
             state = new MovingState();
             position.setUp(destination.getFloorNumber() > position.getFloorNumber());
             idleDestination = destination.getFloorNumber();
             idleWrongDirection = destination.isUp() != position.isUp();
+            return true;
         }
 
         /**
@@ -332,6 +326,7 @@ public class Elevator extends Thread implements ElevatorApi {
         public void atFloor() {
             throw new RuntimeException();
         }
+
         /**
          * Get Elevator state
          *
@@ -371,15 +366,21 @@ public class Elevator extends Thread implements ElevatorApi {
          * @param destination The new destination for the Elevator
          */
         @Override
-        public void addDestination(Destination destination) {
-            if (arrivalSensor.isNotRunning()) {
-                arrivalSensor.start();
+        public boolean addDestination(Destination destination) {
+            if (destination.isUp() == position.isUp() && destination.getFloorNumber() > position.getFloorNumber() == position.isUp()) {
+                gui.setElevatorButton(elevatorNumber, destination.getFloorNumber(), false, true);
+                if (arrivalSensor.isNotRunning()) {
+                    arrivalSensor.start();
+                }
+                destinations.add(destination);
+                if ((position.isUp() && destination.getFloorNumber() > idleDestination) || (!position.isUp() && destination.getFloorNumber() < idleDestination)) {
+                    idleDestination = destination.getFloorNumber();
+                }
+                idleWrongDirection = destination.isUp() != position.isUp() || idleWrongDirection;
+                return true;
+            } else {
+                return false;
             }
-            destinations.add(destination);
-            if ((position.isUp() && destination.getFloorNumber() > idleDestination) || (!position.isUp() && destination.getFloorNumber() < idleDestination)) {
-                idleDestination = destination.getFloorNumber();
-            }
-            idleWrongDirection = destination.isUp() != position.isUp() || idleWrongDirection;
         }
 
         @Override
@@ -504,8 +505,8 @@ public class Elevator extends Thread implements ElevatorApi {
         }
 
         @Override
-        public void addDestination(Destination destination) {
-            throw new RuntimeException();
+        public boolean addDestination(Destination destination) {
+            return false;
         }
 
         @Override
