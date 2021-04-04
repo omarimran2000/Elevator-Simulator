@@ -36,7 +36,7 @@ class FaultTest {
         config.addProperty("probabilityDoorStuck", "100");
         //Elevator will get stuck 0% of the time
         config.addProperty("probabilityStuck", "0");
-        GUI gui = new GUI(config);
+        GUI gui = new GUI(config,null,null,null);
         Scheduler scheduler = new Scheduler(config, gui);
 
         Map<Integer, Floor> floors = FloorSubsystemOverride.generateFloors(config, scheduler, gui, config.getProperty("csvFileName"));
@@ -72,7 +72,7 @@ class FaultTest {
         //Elevator will get stuck 100% of the time
         config.addProperty("probabilityStuck", "100");
         config.addProperty("elevatorStuck", "0");
-        GUI gui = new GUI(config);
+        GUI gui = new GUI(config,null,null,null);
         Scheduler scheduler = new Scheduler(config, gui);
 
         Map<Integer, Floor> floors = FloorSubsystemOverride.generateFloors(config, scheduler, gui, config.getProperty("csvFileName"));

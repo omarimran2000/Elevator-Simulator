@@ -14,7 +14,7 @@ class ElevatorMotorTest {
      */
     @Test
     public void motorTest() throws IOException {
-        Motor motor = new Motor(0, new GUI(new Config()));
+        Motor motor = new Motor(0, new GUI(new Config(),null,null,null));
 
         //Default setting for directionIsUp is False
         assertTrue(motor.directionIsUp());

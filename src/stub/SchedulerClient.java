@@ -2,11 +2,11 @@ package stub;
 
 import SchedulerSubsystem.SchedulerApi;
 import model.Destination;
-import model.Floors;
 import utill.Config;
 
 import java.io.IOException;
 import java.net.InetAddress;
+import java.util.HashSet;
 
 /**
  * The client used to send UDP messages to the Scheduler
@@ -33,27 +33,14 @@ public class SchedulerClient extends StubClient implements SchedulerApi {
     /**
      * Used by elevator to get the floors of the waiting people up
      *
-     * @param floorNumber floor number
+     * @param destination floor number
      * @return
      * @throws IOException
      * @throws ClassNotFoundException
      */
     @Override
-    public Floors getWaitingPeopleUp(int floorNumber) throws IOException, ClassNotFoundException {
-        return sendAndReceive(1, floorNumber, inetAddress, port);
-    }
-
-    /**
-     * Used by elevator to get the floors of the waiting people down
-     *
-     * @param floorNumber floor number
-     * @return
-     * @throws IOException
-     * @throws ClassNotFoundException
-     */
-    @Override
-    public Floors getWaitingPeopleDown(int floorNumber) throws IOException, ClassNotFoundException {
-        return sendAndReceive(2, floorNumber, inetAddress, port);
+    public HashSet<Integer> getWaitingPeople(Destination destination) throws IOException, ClassNotFoundException {
+        return sendAndReceive(1, destination, inetAddress, port);
     }
 
     /**
@@ -65,18 +52,24 @@ public class SchedulerClient extends StubClient implements SchedulerApi {
      */
     @Override
     public void handleFloorButton(Destination destination) throws IOException, ClassNotFoundException {
-        sendAndReceive(3, destination, inetAddress, port);
+        sendAndReceive(2, destination, inetAddress, port);
     }
 
     /**
      * Get waiting people
      *
      * @param floorNumber the destination
+     * @return
      * @throws IOException
      * @throws ClassNotFoundException
      */
     @Override
-    public Floors getWaitingPeople(int floorNumber) throws IOException, ClassNotFoundException {
-        return sendAndReceive(4, floorNumber, inetAddress, port);
+    public HashSet<Destination> getUnscheduledPeople(int floorNumber) throws IOException, ClassNotFoundException {
+        return sendAndReceive(3, floorNumber, inetAddress, port);
+    }
+
+    @Override
+    public void interrupt() throws IOException, ClassNotFoundException {
+        sendAndReceive(20, inetAddress, port);
     }
 }

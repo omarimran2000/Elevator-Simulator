@@ -21,7 +21,7 @@ public class MultipleElevatorsTest {
     @Test
     public void multiElevators() throws IOException, ClassNotFoundException {
         Config config = new Config();
-        GUI gui = new GUI(config);
+        GUI gui = new GUI(config,null,null,null);
         Scheduler scheduler = new Scheduler(config, gui);
         List<Elevator> elevators = ElevatorSubsystem.generateElevators(config, scheduler, gui, config.getIntProperty("numFloors"));
 

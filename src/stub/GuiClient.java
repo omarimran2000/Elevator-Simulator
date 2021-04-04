@@ -51,8 +51,8 @@ public class GuiClient extends StubClient implements GuiApi {
     }
 
     @Override
-    public void setElevatorButton(int elevatorNumber, int floorNumber, boolean on) throws IOException, ClassNotFoundException {
-        sendAndReceive(6, List.of(elevatorNumber, floorNumber, on), inetAddress, port);
+    public void setElevatorButton(int elevatorNumber, int floorNumber, boolean isButton, boolean on) throws IOException, ClassNotFoundException {
+        sendAndReceive(6, List.of(elevatorNumber, floorNumber, isButton, on), inetAddress, port);
     }
 
     @Override
@@ -67,6 +67,6 @@ public class GuiClient extends StubClient implements GuiApi {
 
     @Override
     public void removeSchedulerDestinations(HashSet<Destination> destinations) throws IOException, ClassNotFoundException {
-        sendAndReceive(8, destinations, inetAddress, port);
+        sendAndReceive(9, destinations, inetAddress, port);
     }
 }

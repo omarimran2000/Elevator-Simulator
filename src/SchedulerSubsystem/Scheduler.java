@@ -6,7 +6,6 @@ import FloorSubsystem.FloorApi;
 import GUI.GuiApi;
 import model.AckMessage;
 import model.Destination;
-import model.Floors;
 import stub.ElevatorClient;
 import stub.FloorClient;
 import stub.GuiClient;
@@ -19,7 +18,6 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
 import java.util.*;
-import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
@@ -32,7 +30,7 @@ public class Scheduler extends Thread implements SchedulerApi {
     private final Logger logger;
     private final DatagramSocket socket;
     private final Config config;
-    private final ConcurrentSkipListSet<Destination> destinations;
+    private final Set<Destination> destinations;
     private final GuiApi gui;
     private List<ElevatorApi> elevators;
     private Map<Integer, FloorApi> floors;
@@ -43,7 +41,7 @@ public class Scheduler extends Thread implements SchedulerApi {
         logger = Logger.getLogger(this.getClass().getName());
         this.config = config;
         socket = new DatagramSocket(config.getIntProperty("schedulerPort"));
-        destinations = new ConcurrentSkipListSet<>();
+        destinations = new HashSet<>();
     }
 
     public static void main(String[] args) throws IOException {
@@ -84,26 +82,23 @@ public class Scheduler extends Thread implements SchedulerApi {
      */
     @Override
     public void handleFloorButton(Destination destination) throws IOException, ClassNotFoundException {
-        Optional<ElevatorApi> elevatorOptional = elevators.stream().filter(elevator -> {
-            try {
-                return elevator.canAddDestination(destination);
-            } catch (IOException | ClassNotFoundException e) {
-                throw new UndeclaredThrowableException(e);
-            }
-        })
-                .min(Comparator.comparing(elevator -> {
+        List<ElevatorApi> elevatorByDistance = elevators.stream()
+                .sorted(Comparator.comparing(elevator -> {
                     try {
                         return elevator.distanceTheFloor(destination);
                     } catch (IOException | ClassNotFoundException e) {
                         throw new UndeclaredThrowableException(e);
                     }
-                }));
-        if (elevatorOptional.isPresent()) {
-            elevatorOptional.get().addDestination(destination);
-        } else {
-            destinations.add(destination);
-            gui.addSchedulerDestination(destination.getFloorNumber(), destination.isUp());
+                })).collect(Collectors.toList());
+        for (ElevatorApi elevatorApi : elevatorByDistance) {
+            if (elevatorApi.addDestination(destination)) {
+                return;
+            }
         }
+        synchronized (destinations) {
+            destinations.add(destination);
+        }
+        gui.addSchedulerDestination(destination.getFloorNumber(), destination.isUp());
     }
 
     /**
@@ -113,22 +108,30 @@ public class Scheduler extends Thread implements SchedulerApi {
      * @return Floors
      */
     @Override
-    public Floors getWaitingPeople(int floorNumber) {
+    public HashSet<Destination> getUnscheduledPeople(int floorNumber) {
         logger.info("Stopped elevator on floor " + floorNumber + " asking for more destinations.");
-        HashSet<Destination> destinations = new HashSet<>(this.destinations.stream()
-                .collect(Collectors.groupingBy(destination -> destination.getFloorNumber() > floorNumber)).values().stream()
-                .max(Comparator.comparingInt(List::size)).orElse(new ArrayList<>()));
-        logger.info("returning " + destinations.size() + " to the stopped elevator");
-        if (destinations.size() > 0) {
-            this.destinations.removeAll(destinations);
-            try {
-                gui.removeSchedulerDestinations(destinations);
-            } catch (IOException | ClassNotFoundException e) {
-                throw new UndeclaredThrowableException(e);
+        HashSet<Destination> output;
+        synchronized (destinations) {
+            if (destinations.isEmpty()) {
+                return new HashSet<>();
             }
-            return new Floors(destinations.stream().map(Destination::getFloorNumber).collect(Collectors.toSet()));
+            output = new HashSet<>(destinations.stream()
+                    .filter(destination -> destination.getFloorNumber() > floorNumber == destination.isUp())
+                    .collect(Collectors.groupingBy(destination -> destination.getFloorNumber() > floorNumber)).values().stream()
+                    .max(Comparator.comparingInt(List::size)).orElse(new ArrayList<>()));
+            if (output.isEmpty()) {
+                output = new HashSet<>(destinations.stream()
+                        .collect(Collectors.groupingBy(destination -> destination.getFloorNumber() > floorNumber)).values().stream()
+                        .max(Comparator.comparingInt(List::size)).orElse(new ArrayList<>()));
+            }
+            destinations.removeAll(output);
         }
-        return new Floors(new HashSet<>());
+        try {
+            gui.removeSchedulerDestinations(output);
+        } catch (IOException | ClassNotFoundException e) {
+            throw new UndeclaredThrowableException(e);
+        }
+        return output;
     }
 
 
@@ -141,26 +144,23 @@ public class Scheduler extends Thread implements SchedulerApi {
             StubServer.receiveAsync(socket, config.getIntProperty("numHandlerThreads"), config.getIntProperty("maxMessageSize"), Map.of(
                     1, input -> {
                         try {
-                            return getWaitingPeopleUp((int) input.get(0));
+                            return getWaitingPeople((Destination) input.get(0));
                         } catch (IOException | ClassNotFoundException e) {
                             throw new UndeclaredThrowableException(e);
                         }
                     },
                     2, input -> {
                         try {
-                            return getWaitingPeopleDown((int) input.get(0));
-                        } catch (IOException | ClassNotFoundException e) {
-                            throw new UndeclaredThrowableException(e);
-                        }
-                    },
-                    3, input -> {
-                        try {
                             handleFloorButton((Destination) input.get(0));
                             return new AckMessage();
                         } catch (IOException | ClassNotFoundException e) {
                             throw new UndeclaredThrowableException(e);
                         }
-                    }, 4, input -> getWaitingPeople((Integer) input.get(0))));
+                    }, 3, input -> getUnscheduledPeople((Integer) input.get(0)),
+                    20, input -> {
+                        interrupt();
+                        return new AckMessage();
+                    }));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -199,28 +199,14 @@ public class Scheduler extends Thread implements SchedulerApi {
     /**
      * Get waiting people up
      *
-     * @param floorNumber The corresponding floor number for the requests
+     * @param destination The corresponding floor number for the requests
      * @return Floors The Floors object of people waiting to go up
      * @throws IOException
      * @throws ClassNotFoundException
      */
     @Override
-    public Floors getWaitingPeopleUp(int floorNumber) throws IOException, ClassNotFoundException {
-        logger.info("getting people wait to go up on floor " + floorNumber);
-        return floors.get(floorNumber).getWaitingPeopleUp();
-    }
-
-    /**
-     * Get waiting people down
-     *
-     * @param floorNumber the corresponding floor number
-     * @return
-     * @throws IOException
-     * @throws ClassNotFoundException
-     */
-    @Override
-    public Floors getWaitingPeopleDown(int floorNumber) throws IOException, ClassNotFoundException {
-        logger.info("getting people wait to go down on floor " + floorNumber);
-        return floors.get(floorNumber).getWaitingPeopleDown();
+    public HashSet<Integer> getWaitingPeople(Destination destination) throws IOException, ClassNotFoundException {
+        logger.info("getting people wait to go up on floor " + destination.getFloorNumber());
+        return floors.get(destination.getFloorNumber()).getWaitingPeople(destination.isUp());
     }
 }

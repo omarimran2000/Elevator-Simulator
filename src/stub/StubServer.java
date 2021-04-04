@@ -29,10 +29,10 @@ public class StubServer {
      * For a function with one argument, the callback will be called with a list of length one.
      * For void functions, the callback should return AckMessage.
      *
-     * @param datagramSocket The socket used for receiving.
      * @param maxMessageSize The maximum number of bytes for a message.
      * @param callbacks      The function number mapped to the sever callback function.
-     * @throws IOException IOException is thrown if the server fails to receive or bind to the port.
+     * @throws IOException IOException is thrown if the server fails to receive or bind to the port.@param datagramSocket The socket used for receiving.
+     *                     *
      * @see model.AckMessage
      */
     public static void receiveAsync(DatagramSocket datagramSocket, int numHandlerThreads, int maxMessageSize, Map<Integer, Function<List<Serializable>, Serializable>> callbacks) throws IOException {
