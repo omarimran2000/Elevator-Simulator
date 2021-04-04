@@ -270,11 +270,6 @@ public class Elevator extends Thread implements ElevatorApi {
         void atFloor() throws IOException, ClassNotFoundException;
 
         /**
-         * Checks to see if elevator is stuck
-         */
-        void scheduleCheckIfStuck();
-
-        /**
          * Getter method for state
          *
          * @return the state of the elevator
@@ -337,14 +332,6 @@ public class Elevator extends Thread implements ElevatorApi {
         public void atFloor() {
             throw new RuntimeException();
         }
-
-        /**
-         * Checks to see if elevator is stuck
-         */
-        @Override
-        public void scheduleCheckIfStuck() {
-        }
-
         /**
          * Get Elevator state
          *
@@ -494,11 +481,6 @@ public class Elevator extends Thread implements ElevatorApi {
         }
 
         @Override
-        public void scheduleCheckIfStuck() {
-            executor.schedule(() -> checkIfStuck(position.getFloorNumber()), config.getIntProperty("checkIfStuckDelay"), TimeUnit.SECONDS);
-        }
-
-        @Override
         public ElevatorState getElevatorState() {
             return position.isUp() ? ElevatorState.MovingUp : ElevatorState.MovingDown;
         }
@@ -533,11 +515,6 @@ public class Elevator extends Thread implements ElevatorApi {
 
         @Override
         public void atFloor() {
-            throw new RuntimeException();
-        }
-
-        @Override
-        public void scheduleCheckIfStuck() {
             throw new RuntimeException();
         }
 
