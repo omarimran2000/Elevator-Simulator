@@ -128,6 +128,7 @@ public class Elevator extends Thread implements ElevatorApi {
      */
     @Override
     public void interrupt() {
+        executor.shutdown();
         arrivalSensor.interrupt();
         super.interrupt();
         // close socket to interrupt receive
