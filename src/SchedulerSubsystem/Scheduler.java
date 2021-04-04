@@ -114,7 +114,7 @@ public class Scheduler extends Thread implements SchedulerApi {
      * @return Floors
      */
     @Override
-    public HashSet<Destination> getWaitingPeople(int floorNumber) {
+    public HashSet<Destination> getUnscheduledPeople(int floorNumber) {
         logger.info("Stopped elevator on floor " + floorNumber + " asking for more destinations.");
         HashSet<Destination> output;
         synchronized (destinations) {
@@ -144,26 +144,19 @@ public class Scheduler extends Thread implements SchedulerApi {
             StubServer.receiveAsync(socket, config.getIntProperty("numHandlerThreads"), config.getIntProperty("maxMessageSize"), Map.of(
                     1, input -> {
                         try {
-                            return getWaitingPeopleUp((int) input.get(0));
+                            return getWaitingPeople((Destination) input.get(0));
                         } catch (IOException | ClassNotFoundException e) {
                             throw new UndeclaredThrowableException(e);
                         }
                     },
                     2, input -> {
                         try {
-                            return getWaitingPeopleDown((int) input.get(0));
-                        } catch (IOException | ClassNotFoundException e) {
-                            throw new UndeclaredThrowableException(e);
-                        }
-                    },
-                    3, input -> {
-                        try {
                             handleFloorButton((Destination) input.get(0));
                             return new AckMessage();
                         } catch (IOException | ClassNotFoundException e) {
                             throw new UndeclaredThrowableException(e);
                         }
-                    }, 4, input -> getWaitingPeople((Integer) input.get(0)),
+                    }, 3, input -> getUnscheduledPeople((Integer) input.get(0)),
                     20, input -> {
                         interrupt();
                         return new AckMessage();
@@ -206,28 +199,14 @@ public class Scheduler extends Thread implements SchedulerApi {
     /**
      * Get waiting people up
      *
-     * @param floorNumber The corresponding floor number for the requests
+     * @param destination The corresponding floor number for the requests
      * @return Floors The Floors object of people waiting to go up
      * @throws IOException
      * @throws ClassNotFoundException
      */
     @Override
-    public HashSet<Integer> getWaitingPeopleUp(int floorNumber) throws IOException, ClassNotFoundException {
-        logger.info("getting people wait to go up on floor " + floorNumber);
-        return floors.get(floorNumber).getWaitingPeopleUp();
-    }
-
-    /**
-     * Get waiting people down
-     *
-     * @param floorNumber the corresponding floor number
-     * @return
-     * @throws IOException
-     * @throws ClassNotFoundException
-     */
-    @Override
-    public HashSet<Integer> getWaitingPeopleDown(int floorNumber) throws IOException, ClassNotFoundException {
-        logger.info("getting people wait to go down on floor " + floorNumber);
-        return floors.get(floorNumber).getWaitingPeopleDown();
+    public HashSet<Integer> getWaitingPeople(Destination destination) throws IOException, ClassNotFoundException {
+        logger.info("getting people wait to go up on floor " + destination);
+        return floors.get(destination.getFloorNumber()).getWaitingPeople(destination.isUp());
     }
 }

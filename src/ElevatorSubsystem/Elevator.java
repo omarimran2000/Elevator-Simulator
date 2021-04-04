@@ -461,7 +461,7 @@ public class Elevator extends Thread implements ElevatorApi {
             people.remove(position.getFloorNumber());
             destinations.remove(position);
 
-            Set<Integer> floors = position.isUp() ? scheduler.getWaitingPeopleUp(position.getFloorNumber()) : scheduler.getWaitingPeopleDown(position.getFloorNumber());
+            Set<Integer> floors = scheduler.getWaitingPeople(position);
             floors.forEach(destination -> {
                 buttons.get(destination).setOn(true);
                 try {
@@ -486,7 +486,7 @@ public class Elevator extends Thread implements ElevatorApi {
             }
 
             if (destinations.isEmpty() && people.isEmpty()) {
-                destinations.addAll(scheduler.getWaitingPeople(position.getFloorNumber()));
+                destinations.addAll(scheduler.getUnscheduledPeople(position.getFloorNumber()));
                 if (destinations.isEmpty()) {
                     arrivalSensor.interrupt();
                     state = new ElevatorNotMoving();

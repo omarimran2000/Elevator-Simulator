@@ -33,27 +33,14 @@ public class SchedulerClient extends StubClient implements SchedulerApi {
     /**
      * Used by elevator to get the floors of the waiting people up
      *
-     * @param floorNumber floor number
+     * @param destination floor number
      * @return
      * @throws IOException
      * @throws ClassNotFoundException
      */
     @Override
-    public HashSet<Integer> getWaitingPeopleUp(int floorNumber) throws IOException, ClassNotFoundException {
-        return sendAndReceive(1, floorNumber, inetAddress, port);
-    }
-
-    /**
-     * Used by elevator to get the floors of the waiting people down
-     *
-     * @param floorNumber floor number
-     * @return
-     * @throws IOException
-     * @throws ClassNotFoundException
-     */
-    @Override
-    public HashSet<Integer> getWaitingPeopleDown(int floorNumber) throws IOException, ClassNotFoundException {
-        return sendAndReceive(2, floorNumber, inetAddress, port);
+    public HashSet<Integer> getWaitingPeople(Destination destination) throws IOException, ClassNotFoundException {
+        return sendAndReceive(1, destination, inetAddress, port);
     }
 
     /**
@@ -65,7 +52,7 @@ public class SchedulerClient extends StubClient implements SchedulerApi {
      */
     @Override
     public void handleFloorButton(Destination destination) throws IOException, ClassNotFoundException {
-        sendAndReceive(3, destination, inetAddress, port);
+        sendAndReceive(2, destination, inetAddress, port);
     }
 
     /**
@@ -77,8 +64,8 @@ public class SchedulerClient extends StubClient implements SchedulerApi {
      * @throws ClassNotFoundException
      */
     @Override
-    public HashSet<Destination> getWaitingPeople(int floorNumber) throws IOException, ClassNotFoundException {
-        return sendAndReceive(4, floorNumber, inetAddress, port);
+    public HashSet<Destination> getUnscheduledPeople(int floorNumber) throws IOException, ClassNotFoundException {
+        return sendAndReceive(3, floorNumber, inetAddress, port);
     }
 
     @Override

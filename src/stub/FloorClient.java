@@ -39,20 +39,8 @@ public class FloorClient extends StubClient implements FloorApi {
      * @throws ClassNotFoundException
      */
     @Override
-    public HashSet<Integer> getWaitingPeopleUp() throws IOException, ClassNotFoundException {
-        return sendAndReceive(1, inetAddress, port);
-    }
-
-    /**
-     * Gets the floors for waiting people down
-     *
-     * @return floors
-     * @throws IOException
-     * @throws ClassNotFoundException
-     */
-    @Override
-    public HashSet<Integer> getWaitingPeopleDown() throws IOException, ClassNotFoundException {
-        return sendAndReceive(2, inetAddress, port);
+    public HashSet<Integer> getWaitingPeople(boolean isUp) throws IOException, ClassNotFoundException {
+        return sendAndReceive(1, isUp, inetAddress, port);
     }
 
     @Override
