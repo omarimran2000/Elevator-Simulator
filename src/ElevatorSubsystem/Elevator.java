@@ -445,10 +445,6 @@ public class Elevator extends Thread implements ElevatorApi {
                 position.setUp(!position.isUp());
                 motor.setDirectionIsUp(position.isUp());
                 gui.setState(elevatorNumber, getElevatorState());
-                if (!destinations.isEmpty()) {
-                    idleDestination = position.isUp() ? destinations.stream().map(Destination::getFloorNumber).max(Comparator.comparingInt(x -> x)).get() :
-                            destinations.stream().map(Destination::getFloorNumber).min(Comparator.comparingInt(x -> x)).get();
-                }
             }
             gui.setElevatorButton(elevatorNumber, position.getFloorNumber(), false, false);
 
