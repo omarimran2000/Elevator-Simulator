@@ -10,6 +10,9 @@ import java.util.List;
 /**
  * Contains an elevator's info consisting of elevator number,
  * current floor number, State, destinations queue, doors stuck status
+ * Each elevatorPanel represents one elevator in the system
+ *
+ * @version April 4, 2021
  */
 public class ElevatorPanel extends JPanel {
     private final JLabel doorsOpenText;
@@ -19,6 +22,11 @@ public class ElevatorPanel extends JPanel {
     private final JLabel doorsStuckText;
     private final List<JTextField> buttons;
 
+    /**
+     * Constructor for elevator panel
+     * @param numFloors The number of floors in the system
+     * @param elevatorNumber The elevator number
+     */
     public ElevatorPanel(int numFloors, int elevatorNumber) {
         setVisible(true);
         setLayout(new BorderLayout());
@@ -79,24 +87,42 @@ public class ElevatorPanel extends JPanel {
         }
     }
 
+    /**
+     * Set the current floor of the elevator
+     * @param floorNumber The current floor number
+     */
     public void setFloor(int floorNumber) {
         floorNumberText.setText("Current floor: " + floorNumber);
     }
 
+    /**
+     * Set the current state of the elevator (NotMoving, MovingUp, MovingDown, Stuck)
+     * @param state The current state
+     */
     public void setStateText(ElevatorState state) {
         stateText.setText("Elevator state: " + state.name());
     }
 
+    /**
+     * Set the current directions of the elevator
+     * @param direction is true for up, false for down
+     */
     public void setMotorDirection(boolean direction) {
         motorDirectionText.setText("Direction: " + (direction ? "UP" : "DOWN"));
     }
 
+    /**
+     * Set the elevator's doors open or closed
+     * @param open is true for open, false for closed
+     */
     public void setDoorsOpen(boolean open) {
         doorsOpenText.setText("Doors: " + (open ? "OPEN" : "CLOSED"));
     }
 
     /**
-     * If "stuck" is false then this label is invisible so "open" does not matter
+     * Set the doors stuck state of elevator - if the doors are not stuck, "open" does not apply
+     * @param stuck is true if the doors are stuck, false if they are not
+     * @param open is true is the doors are stuck open, false for closed
      */
     public void setDoorsStuck(boolean stuck, boolean open) {
         doorsStuckText.setVisible(stuck);
@@ -107,7 +133,6 @@ public class ElevatorPanel extends JPanel {
      * Show that an elevatorButton has been pressed or that the scheduler has added a destination the elevator
      * Button presses are shown in green
      * Scheduled events are shown in blue
-     * <p>
      * If on is false, isButton does not apply
      *
      * @param floorNumber The destination
