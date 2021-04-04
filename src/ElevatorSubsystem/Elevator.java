@@ -455,7 +455,14 @@ public class Elevator extends Thread implements ElevatorApi {
             }
 
             if (idleDestination == position.getFloorNumber() && idleWrongDirection) {
+                idleWrongDirection = false;
                 position.setUp(!position.isUp());
+                motor.setDirectionIsUp(position.isUp());
+                gui.setState(elevatorNumber, getElevatorState());
+                if (!destinations.isEmpty()) {
+                    idleDestination = position.isUp() ? destinations.stream().map(Destination::getFloorNumber).max(Comparator.comparingInt(x -> x)).get() :
+                            destinations.stream().map(Destination::getFloorNumber).min(Comparator.comparingInt(x -> x)).get();
+                }
             }
             gui.setElevatorButton(elevatorNumber, position.getFloorNumber(), false, false);
 
@@ -496,7 +503,7 @@ public class Elevator extends Thread implements ElevatorApi {
                         gui.setElevatorButton(elevatorNumber, destination.getFloorNumber(), false, true);
                     }
                     position.setUp(destinations.stream().anyMatch(destination -> destination.getFloorNumber() > position.getFloorNumber()));
-                    motor.setMoving(position.isUp());
+                    motor.setDirectionIsUp(position.isUp());
                     gui.setState(elevatorNumber, getElevatorState());
 
                     //Handle the edge case when the elevator is turning around on the floor where it needs to pick up someone.
