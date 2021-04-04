@@ -182,7 +182,7 @@ public class Elevator extends Thread implements ElevatorApi {
         state.setLamps();
         logger.info("Elevator " + elevatorNumber + " passing floor " + position.getFloorNumber());
 
-        if (elevatorNumber == config.getIntProperty("elevatorStuck")) state.scheduleCheckIfStuck();
+        if (elevatorNumber == config.getIntProperty("elevatorStuck")) scheduleCheckIfStuck();
     }
 
     /**
@@ -194,18 +194,22 @@ public class Elevator extends Thread implements ElevatorApi {
         } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
         }
-        if (elevatorNumber == config.getIntProperty("elevatorStuck")) state.scheduleCheckIfStuck();
+        if (elevatorNumber == config.getIntProperty("elevatorStuck")) scheduleCheckIfStuck();
+    }
+
+    private void scheduleCheckIfStuck() {
+        executor.schedule(this::checkIfStuck, config.getIntProperty("checkIfStuckDelay"), TimeUnit.SECONDS);
     }
 
     /**
      * Used to check if the elevator is stuck
-     *
-     * @param floor the next floor the elevator should be on
      */
-    private synchronized void checkIfStuck(int floor) {
-        if (position.isUp() ? position.getFloorNumber() > floor : position.getFloorNumber() < floor) {
-            logger.warning("Elevator" + elevatorNumber + " is stuck");
-            state = new ElevatorStuck();
+    private void checkIfStuck() {
+        if (arrivalSensor.isStuck()) {
+            synchronized (this) {
+                logger.warning("Elevator" + elevatorNumber + " is stuck");
+                state = new ElevatorStuck();
+            }
             for (Destination destination : destinations) {
                 try {
                     scheduler.handleFloorButton(destination);
@@ -274,11 +278,6 @@ public class Elevator extends Thread implements ElevatorApi {
          * @return if can be added
          */
         boolean canAddDestination(Destination destination);
-
-        /**
-         * Checks to see if elevator is stuck
-         */
-        void scheduleCheckIfStuck();
 
         /**
          * Getter method for state
@@ -353,13 +352,6 @@ public class Elevator extends Thread implements ElevatorApi {
         @Override
         public boolean canAddDestination(Destination destination) {
             return true;
-        }
-
-        /**
-         * Checks to see if elevator is stuck
-         */
-        @Override
-        public void scheduleCheckIfStuck() {
         }
 
         /**
@@ -520,11 +512,6 @@ public class Elevator extends Thread implements ElevatorApi {
         }
 
         @Override
-        public void scheduleCheckIfStuck() {
-            executor.schedule(() -> checkIfStuck(position.getFloorNumber()), config.getIntProperty("checkIfStuckDelay"), TimeUnit.SECONDS);
-        }
-
-        @Override
         public ElevatorState getElevatorState() {
             return position.isUp() ? ElevatorState.MovingUp : ElevatorState.MovingDown;
         }
@@ -565,11 +552,6 @@ public class Elevator extends Thread implements ElevatorApi {
         @Override
         public boolean canAddDestination(Destination destination) {
             return false;
-        }
-
-        @Override
-        public void scheduleCheckIfStuck() {
-            throw new RuntimeException();
         }
 
         @Override
