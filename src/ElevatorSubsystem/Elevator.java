@@ -308,6 +308,7 @@ public class Elevator extends Thread implements ElevatorApi {
             position.setUp(destination.getFloorNumber() > position.getFloorNumber());
             idleDestination = destination.getFloorNumber();
             idleWrongDirection = destination.isUp() != position.isUp();
+            gui.setElevatorButton(elevatorNumber, destination.getFloorNumber(), false, true);
             return true;
         }
 
