@@ -499,6 +499,7 @@ public class Elevator extends Thread implements ElevatorApi {
                     arrivalSensor.interrupt();
                     state = new ElevatorNotMoving();
                 } else {
+                    position.setUp(destinations.stream().anyMatch(destination -> destination.getFloorNumber() > position.getFloorNumber()));
                     idleDestination = position.getFloorNumber();
                     for (Destination destination : destinations) {
                         gui.setElevatorButton(elevatorNumber, destination.getFloorNumber(), false, true);
@@ -506,7 +507,6 @@ public class Elevator extends Thread implements ElevatorApi {
                             idleDestination = destination.getFloorNumber();
                         }
                     }
-                    position.setUp(destinations.stream().anyMatch(destination -> destination.getFloorNumber() > position.getFloorNumber()));
                     idleWrongDirection = destinations.stream().anyMatch(destination -> destination.isUp() != position.isUp());
                     motor.setDirectionIsUp(position.isUp());
                     gui.setState(elevatorNumber, getElevatorState());
