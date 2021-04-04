@@ -441,6 +441,12 @@ public class Elevator extends Thread implements ElevatorApi {
             }
             gui.setDoorsStuck(elevatorNumber, false, false);
 
+            try {
+                Thread.sleep(config.getIntProperty("waitTime"));
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
             if (idleDestination == position.getFloorNumber() && idleWrongDirection) {
                 idleWrongDirection = false;
                 position.setUp(!position.isUp());
