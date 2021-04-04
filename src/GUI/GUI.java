@@ -1,8 +1,14 @@
 package GUI;
 
+import ElevatorSubsystem.ElevatorApi;
+import FloorSubsystem.FloorApi;
+import SchedulerSubsystem.SchedulerApi;
 import model.AckMessage;
 import model.Destination;
 import model.ElevatorState;
+import stub.ElevatorClient;
+import stub.FloorClient;
+import stub.SchedulerClient;
 import stub.StubServer;
 import utill.Config;
 
@@ -12,6 +18,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.IOException;
 import java.net.DatagramSocket;
+import java.net.InetAddress;
 import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -20,20 +27,31 @@ import java.util.Map;
 
 public class GUI extends Thread implements GuiApi {
     private final Config config;
-    private final List<ElevatorPanel> elevators;
-    private final List<FloorPanel> floors;
+    private final List<ElevatorPanel> elevatorsPanel;
+    private final List<FloorPanel> floorsPanel;
     private final SchedulerPanel schedulerPanel;
     private final DatagramSocket socket;
 
-    public GUI(Config config) throws SocketException {
+    public GUI(Config config, SchedulerApi scheduler, List<FloorApi> floors, List<ElevatorApi> elevators) throws SocketException {
         this.config = config;
-        elevators = new ArrayList<>();
-        floors = new ArrayList<>();
+        elevatorsPanel = new ArrayList<>();
+        floorsPanel = new ArrayList<>();
         JFrame frame = new JFrame();
         frame.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
         frame.addWindowListener(new WindowAdapter() {
             @Override
-            public void windowClosing(WindowEvent e) {
+            public void windowClosing(WindowEvent windowEvent) {
+                try {
+                    for (ElevatorApi elevator : elevators) {
+                        elevator.interrupt();
+                    }
+                    for (FloorApi floor : floors) {
+                        floor.interrupt();
+                    }
+                    scheduler.interrupt();
+                } catch (IOException | ClassNotFoundException e) {
+                    e.printStackTrace();
+                }
                 interrupt();
                 socket.close();
                 System.exit(0);
@@ -50,7 +68,7 @@ public class GUI extends Thread implements GuiApi {
         elevatorsContainer.setVisible(true);
         for (int i = 0; i < config.getIntProperty("numElevators"); i++) {
             ElevatorPanel e = new ElevatorPanel(config.getIntProperty("numFloors"), i);
-            elevators.add(e);
+            elevatorsPanel.add(e);
             elevatorsContainer.add(e);
         }
         contentPane.add(elevatorsContainer, BorderLayout.CENTER);
@@ -61,7 +79,7 @@ public class GUI extends Thread implements GuiApi {
         floorsContainer.setVisible(true);
         for (int i = 0; i < config.getIntProperty("numFloors"); i++) {
             FloorPanel f = new FloorPanel(i);
-            floors.add(f);
+            floorsPanel.add(f);
             floorsContainer.add(f);
         }
         contentPane.add(floorsContainer, BorderLayout.PAGE_END);
@@ -78,46 +96,56 @@ public class GUI extends Thread implements GuiApi {
     }
 
     public static void main(String[] args) throws IOException {
+        InetAddress localhost = InetAddress.getLocalHost();
         Config config = new Config();
-        new GUI(config).start();
+        SchedulerApi schedulerApi = new SchedulerClient(config, localhost, config.getIntProperty("schedulerPort"));
+        List<FloorApi> floorApis = new ArrayList<>();
+        for (int i = 0; i < config.getIntProperty("numFloors"); i++) {
+            floorApis.add(new FloorClient(config, localhost, config.getIntProperty("floorPort") + i));
+        }
+        List<ElevatorApi> elevatorApis = new ArrayList<>();
+        for (int i = 0; i < config.getIntProperty("numElevators"); i++) {
+            elevatorApis.add(new ElevatorClient(config, localhost, config.getIntProperty("elevatorPort") + i));
+        }
+        new GUI(config, schedulerApi, floorApis, elevatorApis).start();
     }
 
 
     @Override
     public void setCurrentFloorNumber(int elevatorNumber, int floorNumber) {
-        elevators.get(elevatorNumber).setFloor(floorNumber);
+        elevatorsPanel.get(elevatorNumber).setFloor(floorNumber);
     }
 
     @Override
     public void setMotorDirection(int elevatorNumber, boolean direction) {
-        elevators.get(elevatorNumber).setMotorDirection(direction);
+        elevatorsPanel.get(elevatorNumber).setMotorDirection(direction);
     }
 
     @Override
     public void setDoorsOpen(int elevatorNumber, boolean open) {
-        elevators.get(elevatorNumber).setDoorsOpen(open);
+        elevatorsPanel.get(elevatorNumber).setDoorsOpen(open);
     }
 
     @Override
     public void setState(int elevatorNumber, ElevatorState state) {
-        elevators.get(elevatorNumber).setStateText(state);
+        elevatorsPanel.get(elevatorNumber).setStateText(state);
     }
 
     @Override
     public void setDoorsStuck(int elevatorNumber, boolean doorsStuck, boolean open) {
-        elevators.get(elevatorNumber).setDoorsStuck(doorsStuck, open);
+        elevatorsPanel.get(elevatorNumber).setDoorsStuck(doorsStuck, open);
     }
 
     @Override
-    public void setElevatorButton(int elevatorNumber, int floorNumber, boolean on) {
-        elevators.get(elevatorNumber).setDestination(floorNumber, on);
+    public void setElevatorButton(int elevatorNumber, int floorNumber, boolean isButton, boolean on) {
+        elevatorsPanel.get(elevatorNumber).setElevatorButton(floorNumber, isButton, on);
     }
 
     @Override
     public void setFloorButton(int floorNumber, boolean direction, boolean on) {
         if (direction) {
-            floors.get(floorNumber).setUp(on);
-        } else floors.get(floorNumber).setDown(on);
+            floorsPanel.get(floorNumber).setUp(on);
+        } else floorsPanel.get(floorNumber).setDown(on);
     }
 
     @Override
@@ -158,7 +186,7 @@ public class GUI extends Thread implements GuiApi {
                         return new AckMessage();
                     },
                     6, input -> {
-                        setElevatorButton((int) input.get(0), (int) input.get(1), (boolean) input.get(2));
+                        setElevatorButton((int) input.get(0), (int) input.get(1), (boolean) input.get(2), (boolean) input.get(3));
                         return new AckMessage();
                     },
                     7, input -> {

@@ -28,7 +28,7 @@ class CommunicationTest {
     void CommsTest() throws ParseException, IOException, ClassNotFoundException {
 
         Config config = new Config();
-        GUI gui = new GUI(config);
+        GUI gui = new GUI(config, null, null, null);
         Scheduler scheduler = new Scheduler(config, gui);
 
         Map<Integer, Floor> floors = generateFloors(config, scheduler, gui, config.getProperty("csvFileName"));

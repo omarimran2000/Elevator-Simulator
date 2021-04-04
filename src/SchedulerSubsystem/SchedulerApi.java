@@ -1,30 +1,20 @@
 package SchedulerSubsystem;
 
 import model.Destination;
-import model.Floors;
 
 import java.io.IOException;
+import java.util.HashSet;
 
 public interface SchedulerApi {
     /**
      * Used by elevator to get the floors of the waiting people up
      *
-     * @param floorNumber floor number
+     * @param destination floor number
      * @return
      * @throws IOException
      * @throws ClassNotFoundException
      */
-    Floors getWaitingPeopleUp(int floorNumber) throws IOException, ClassNotFoundException;
-
-    /**
-     * Used by elevator to get the floors of the waiting people down
-     *
-     * @param floorNumber floor number
-     * @return
-     * @throws IOException
-     * @throws ClassNotFoundException
-     */
-    Floors getWaitingPeopleDown(int floorNumber) throws IOException, ClassNotFoundException;
+    HashSet<Integer> getWaitingPeople(Destination destination) throws IOException, ClassNotFoundException;
 
     /**
      * Used by the floor to handle floor button
@@ -39,8 +29,11 @@ public interface SchedulerApi {
      * Get waiting people
      *
      * @param floorNumber the destination
+     * @return
      * @throws IOException
      * @throws ClassNotFoundException
      */
-    Floors getWaitingPeople(int floorNumber) throws IOException, ClassNotFoundException;
+    HashSet<Destination> getUnscheduledPeople(int floorNumber) throws IOException, ClassNotFoundException;
+
+    void interrupt() throws IOException, ClassNotFoundException;
 }
