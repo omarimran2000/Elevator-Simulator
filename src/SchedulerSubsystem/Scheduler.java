@@ -206,7 +206,7 @@ public class Scheduler extends Thread implements SchedulerApi {
      */
     @Override
     public HashSet<Integer> getWaitingPeople(Destination destination) throws IOException, ClassNotFoundException {
-        logger.info("getting people wait to go up on floor " + destination);
+        logger.info("getting people wait to go up on floor " + destination.getFloorNumber());
         return floors.get(destination.getFloorNumber()).getWaitingPeople(destination.isUp());
     }
 }
