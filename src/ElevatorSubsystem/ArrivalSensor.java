@@ -49,6 +49,7 @@ public class ArrivalSensor extends Thread {
                     Thread.sleep((long) (config.getFloatProperty("distanceBetweenFloors") / config.getFloatProperty("velocity") * 500));
                     elevator.atFloor();
                 } else {
+                    Thread.sleep((long) (config.getFloatProperty("distanceBetweenFloors") / config.getFloatProperty("velocity") * 500));
                     elevator.passFloor();
                 }
             } catch (InterruptedException e) {
