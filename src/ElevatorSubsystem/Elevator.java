@@ -435,12 +435,16 @@ public class Elevator extends Thread implements ElevatorApi {
                 door.open();
                 if (!door.isOpen()) {
                     logger.warning("Elevator " + elevatorNumber + " doors stuck closed at floor " + position.getFloorNumber());
+                    gui.setDoorsStuck(elevatorNumber, false, false);
+                    try {
+                        Thread.sleep(config.getIntProperty("waitTime"));     //TODO delete for measurements
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
                 } else {
-                    gui.setDoorsStuck(elevatorNumber, true, false);
+                    gui.setDoorsStuck(elevatorNumber, false, false);
                 }
             }
-            gui.setDoorsStuck(elevatorNumber, false, false);
-
             try {
                 Thread.sleep(config.getIntProperty("waitTime"));
             } catch (InterruptedException e) {
@@ -474,6 +478,11 @@ public class Elevator extends Thread implements ElevatorApi {
                 if (door.isOpen()) {
                     logger.warning("Elevator " + elevatorNumber + " doors stuck open at floor " + position.getFloorNumber());
                     gui.setDoorsStuck(elevatorNumber, true, true);
+                    try {
+                        Thread.sleep(config.getIntProperty("waitTime"));     //TODO delete for measurements
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
                 } else {
                     gui.setDoorsStuck(elevatorNumber, false, true);
                 }
