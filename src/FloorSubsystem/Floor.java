@@ -17,7 +17,7 @@ import java.util.logging.Logger;
 /**
  * The Floor class represents a single floor in the building
  *
- * @version Feb 27, 2021
+ * @version April 4, 2021
  */
 public abstract class Floor extends Thread implements FloorApi {
     private final Logger logger;
@@ -31,9 +31,9 @@ public abstract class Floor extends Thread implements FloorApi {
 
     /**
      * Constructor
-     *
-     * @param floorNumber
-     * @param scheduler
+     * @param config The config file
+     * @param floorNumber the floor's number
+     * @param scheduler the scheduler
      * @param schedule    A list of events
      */
     public Floor(Config config, int floorNumber, SchedulerApi scheduler, List<Event> schedule) throws SocketException {
@@ -89,6 +89,9 @@ public abstract class Floor extends Thread implements FloorApi {
         }
     }
 
+    /**
+     * Interrupt method
+     */
     @Override
     public void interrupt() {
         receiveThread.interrupt();
@@ -98,6 +101,8 @@ public abstract class Floor extends Thread implements FloorApi {
     }
 
     /**
+     * Gets the waiting people
+     *
      * @return the set of floors with people waiting to go up
      */
     @Override
@@ -113,18 +118,28 @@ public abstract class Floor extends Thread implements FloorApi {
         return output;
     }
 
+    /**
+     * Gets the floor number
+     * @return the floor number
+     */
     public int getFloorNumber() {
         return floorNumber;
     }
 
 
     /**
+     * Checks if there are events
+     *
      * @return true if there are events
      */
     public boolean hasEvents() {
         return !schedule.isEmpty();
     }
 
+    /**
+     * Returns the schedule
+     * @return The schedule
+     */
     public PriorityQueue<Event> getSchedule() {
         return schedule;
     }
@@ -145,15 +160,19 @@ public abstract class Floor extends Thread implements FloorApi {
     public abstract FloorButton getTop();
 }
 
-
+/**
+ * Representing the top floor
+ */
 class TopFloor extends Floor {
     private final FloorButton downButton;
 
     /**
      * Constructor for TopFloor
      *
+     * @param config the config file
      * @param floorNumber The floor number
      * @param scheduler   The scheduler
+     * @param gui the gui
      * @param schedule    The list of scheduled events
      */
     public TopFloor(Config config, int floorNumber, SchedulerApi scheduler, GuiApi gui, List<Event> schedule) throws SocketException {
@@ -161,6 +180,13 @@ class TopFloor extends Floor {
         downButton = new FloorButton(floorNumber, false, gui);
     }
 
+    /**
+     * Toggles the floor button
+     * @param isUp the floor button's direction
+     * @param on whether button is now on or off
+     * @throws IOException
+     * @throws ClassNotFoundException
+     */
     @Override
     public void toggleButton(boolean isUp, boolean on) throws IOException, ClassNotFoundException {
         if (!isUp) {
@@ -172,6 +198,7 @@ class TopFloor extends Floor {
 
     /**
      * Method for getting the down button
+     * @return the button
      */
     @Override
     public FloorButton getBottom() {
@@ -180,6 +207,7 @@ class TopFloor extends Floor {
 
     /**
      * Method for getting the top button
+     * @return the button
      */
     @Override
     public FloorButton getTop() {
@@ -187,6 +215,9 @@ class TopFloor extends Floor {
     }
 }
 
+/**
+ * Represents the bottom floor
+ */
 class BottomFloor extends Floor {
     private final FloorButton upButton;
 
@@ -202,6 +233,13 @@ class BottomFloor extends Floor {
         upButton = new FloorButton(floorNumber, true, gui);
     }
 
+    /**
+     * Toggles the floor button
+     * @param isUp the floor button's direction
+     * @param on whether the button should be on or off
+     * @throws IOException
+     * @throws ClassNotFoundException
+     */
     @Override
     public void toggleButton(boolean isUp, boolean on) throws IOException, ClassNotFoundException {
         if (isUp) {
@@ -213,6 +251,7 @@ class BottomFloor extends Floor {
 
     /**
      * Method for getting the bottom button
+     * @return the button
      */
     @Override
     public FloorButton getBottom() {
@@ -221,6 +260,8 @@ class BottomFloor extends Floor {
 
     /**
      * Method for getting the up button
+     *
+     * @return the button
      */
     @Override
     public FloorButton getTop() {
@@ -228,6 +269,9 @@ class BottomFloor extends Floor {
     }
 }
 
+/**
+ * Representing the middle floor
+ */
 class MiddleFloor extends Floor {
     private final FloorButton upButton;
     private final FloorButton downButton;
@@ -235,8 +279,10 @@ class MiddleFloor extends Floor {
     /**
      * Constructor for MiddleFloor
      *
+     * @param config The config file
      * @param floorNumber The floor number
      * @param scheduler   The scheduler
+     * @param gui The gui
      * @param schedule    The list of scheduled events
      */
     public MiddleFloor(Config config, int floorNumber, SchedulerApi scheduler, GuiApi gui, List<Event> schedule) throws SocketException {
@@ -245,7 +291,13 @@ class MiddleFloor extends Floor {
         downButton = new FloorButton(floorNumber, false, gui);
     }
 
-
+    /**
+     * Method for toggling the floor button
+     * @param isUp the button's direction
+     * @param on whether the button is on or off
+     * @throws IOException
+     * @throws ClassNotFoundException
+     */
     @Override
     public void toggleButton(boolean isUp, boolean on) throws IOException, ClassNotFoundException {
         if (isUp) {

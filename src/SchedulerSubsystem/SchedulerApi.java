@@ -5,12 +5,17 @@ import model.Destination;
 import java.io.IOException;
 import java.util.HashSet;
 
+/**
+ * API for scheduler
+ *
+ * @version April 4, 2021
+ */
 public interface SchedulerApi {
     /**
      * Used by elevator to get the floors of the waiting people up
      *
      * @param destination floor number
-     * @return
+     * @return set of floor numbers
      * @throws IOException
      * @throws ClassNotFoundException
      */
@@ -29,11 +34,16 @@ public interface SchedulerApi {
      * Get waiting people
      *
      * @param floorNumber the destination
-     * @return
+     * @return the set of destinations
      * @throws IOException
      * @throws ClassNotFoundException
      */
     HashSet<Destination> getUnscheduledPeople(int floorNumber) throws IOException, ClassNotFoundException;
 
+    /**
+     * Interrupt method
+     * @throws IOException
+     * @throws ClassNotFoundException
+     */
     void interrupt() throws IOException, ClassNotFoundException;
 }
