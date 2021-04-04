@@ -82,7 +82,7 @@ public class Scheduler extends Thread implements SchedulerApi {
      */
     @Override
     public void handleFloorButton(Destination destination) throws IOException, ClassNotFoundException {
-        Optional<ElevatorApi> elevatorOptional = elevators.stream()
+        Optional<ElevatorApi> elevatorOptional = elevators.parallelStream()
                 .filter(elevator -> {
                     try {
                         return elevator.canAddDestination(destination);
