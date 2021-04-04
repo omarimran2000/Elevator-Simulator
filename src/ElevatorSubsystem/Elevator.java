@@ -404,12 +404,16 @@ public class Elevator extends Thread implements ElevatorApi {
                 arrivalSensor.start();
             }
             destinations.add(destination);
+            if (position.isUp() ? destination.getFloorNumber() > idleDestination : destination.getFloorNumber() < idleDestination) {
+                idleDestination = destination.getFloorNumber();
+            }
+            idleWrongDirection = destination.isUp() != position.isUp() || idleWrongDirection;
         }
 
         @Override
         public boolean handleStopForNextFloor() {
             position.setFloorNumber(position.getFloorNumber() + (position.isUp() ? 1 : -1));
-            return destinations.contains(position) || people.contains(position.getFloorNumber());
+            return people.contains(position.getFloorNumber()) || destinations.contains(position) || position.getFloorNumber() == idleDestination;
         }
 
         /**
@@ -449,20 +453,10 @@ public class Elevator extends Thread implements ElevatorApi {
                 return;
             }
 
-            if (idleDestination == position.getFloorNumber()) {
-                if (idleWrongDirection && ((people.isEmpty() && destinations.size() == 1) || (people.size() == 1 && destinations.isEmpty()))) {
-                    position.setUp(!position.isUp());
-                    gui.setElevatorButton(elevatorNumber, position.getFloorNumber(), false, false);
-                } else if (!destinations.isEmpty()) {
-                    idleDestination = position.isUp() ? destinations.stream().map(Destination::getFloorNumber).max(Comparator.comparingInt(x -> x)).get() :
-                            destinations.stream().map(Destination::getFloorNumber).min(Comparator.comparingInt(x -> x)).get();
-                    if (!idleWrongDirection){
-                        gui.setElevatorButton(elevatorNumber, position.getFloorNumber(), false, false);
-                    }
-                }
-            } else {
-                gui.setElevatorButton(elevatorNumber, position.getFloorNumber(), false, false);
+            if (idleDestination == position.getFloorNumber() && idleWrongDirection) {
+                position.setUp(!position.isUp());
             }
+            gui.setElevatorButton(elevatorNumber, position.getFloorNumber(), false, false);
 
             people.remove(position.getFloorNumber());
             destinations.remove(position);
@@ -497,7 +491,10 @@ public class Elevator extends Thread implements ElevatorApi {
                     arrivalSensor.interrupt();
                     state = new ElevatorNotMoving();
                 } else {
-                    position.setUp(destinations.stream().anyMatch(destination -> destination.getFloorNumber() < position.getFloorNumber()));
+                    for (Destination destination : destinations) {
+                        gui.setElevatorButton(elevatorNumber, destination.getFloorNumber(), false, true);
+                    }
+                    position.setUp(destinations.stream().anyMatch(destination -> destination.getFloorNumber() > position.getFloorNumber()));
                     motor.setMoving(position.isUp());
                     gui.setState(elevatorNumber, getElevatorState());
 
