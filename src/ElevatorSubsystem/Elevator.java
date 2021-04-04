@@ -111,11 +111,7 @@ public class Elevator extends Thread implements ElevatorApi {
         try {
             StubServer.receiveAsync(socket, config.getIntProperty("numHandlerThreads"), config.getIntProperty("maxMessageSize"), Map.of(
                     1, input -> distanceTheFloor((Destination) input.get(0)),
-                    2, input -> {
-                        addDestination((Destination) input.get(0));
-                        return new AckMessage();
-                    },
-                    3, input -> canAddDestination((Destination) input.get(0)),
+                    2, input -> addDestination((Destination) input.get(0)),
                     20, input -> {
                         interrupt();
                         return new AckMessage();
@@ -154,16 +150,18 @@ public class Elevator extends Thread implements ElevatorApi {
      * Adds the specified floor number to the list of destinations
      *
      * @param destination The new destination for the Elevator
+     * @return
      */
     @Override
-    public synchronized void addDestination(Destination destination) {
-        state.addDestination(destination);
-        gui.setElevatorButton(elevatorNumber, destination.getFloorNumber(), false, true);
-    }
-
-    @Override
-    public synchronized boolean canAddDestination(Destination destination) {
-        return state.canAddDestination(destination);
+    public synchronized boolean addDestination(Destination destination) {
+        if (state.getElevatorState() == ElevatorState.NotMoving ||
+                (destination.isUp() == position.isUp()) && destination.getFloorNumber() > position.getFloorNumber() == position.isUp()) {
+            state.addDestination(destination);
+            gui.setElevatorButton(elevatorNumber, destination.getFloorNumber(), false, true);
+            return true;
+        } else {
+            return false;
+        }
     }
 
     /**
@@ -259,14 +257,6 @@ public class Elevator extends Thread implements ElevatorApi {
         void atFloor() throws IOException, ClassNotFoundException;
 
         /**
-         * Check if elevator can add destination
-         *
-         * @param destination
-         * @return if can be added
-         */
-        boolean canAddDestination(Destination destination);
-
-        /**
          * Checks to see if elevator is stuck
          */
         void scheduleCheckIfStuck();
@@ -333,17 +323,6 @@ public class Elevator extends Thread implements ElevatorApi {
         @Override
         public void atFloor() {
             throw new RuntimeException();
-        }
-
-        /**
-         * Check if elevator can add destination
-         *
-         * @param destination
-         * @return if can be added
-         */
-        @Override
-        public boolean canAddDestination(Destination destination) {
-            return true;
         }
 
         /**
@@ -502,11 +481,6 @@ public class Elevator extends Thread implements ElevatorApi {
         }
 
         @Override
-        public boolean canAddDestination(Destination destination) {
-            return false;
-        }
-
-        @Override
         public void scheduleCheckIfStuck() {
             executor.schedule(() -> checkIfStuck(position.getFloorNumber()), config.getIntProperty("checkIfStuckDelay"), TimeUnit.SECONDS);
         }
@@ -547,11 +521,6 @@ public class Elevator extends Thread implements ElevatorApi {
         @Override
         public void atFloor() {
             throw new RuntimeException();
-        }
-
-        @Override
-        public boolean canAddDestination(Destination destination) {
-            return false;
         }
 
         @Override
