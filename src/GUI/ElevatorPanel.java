@@ -40,7 +40,7 @@ public class ElevatorPanel extends JPanel {
 
         doorsOpenText = new JLabel();
         doorsOpenText.setVisible(true);
-        setDoorsOpen(true);
+        setDoorsOpen(false);
         topPanel.add(doorsOpenText);
 
         motorDirectionText = new JLabel();
