@@ -206,6 +206,15 @@ public class Elevator extends Thread implements ElevatorApi {
         if (position.isUp() ? position.getFloorNumber() > floor : position.getFloorNumber() < floor) {
             logger.warning("Elevator" + elevatorNumber + " is stuck");
             state = new ElevatorStuck();
+            for (Destination destination : destinations) {
+                try {
+                    scheduler.handleFloorButton(destination);
+                } catch (IOException | ClassNotFoundException e) {
+                    e.printStackTrace();
+                }
+                gui.setElevatorButton(elevatorNumber, destination.getFloorNumber(), true, false);
+            }
+            destinations.clear();
         }
     }
 
