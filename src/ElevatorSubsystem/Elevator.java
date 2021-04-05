@@ -415,7 +415,7 @@ public class Elevator extends Thread implements ElevatorApi {
                 door.open();
                 if (!door.isOpen()) {
                     logger.warning("Elevator " + elevatorNumber + " doors stuck closed at floor " + position.getFloorNumber());
-                    gui.setDoorsStuck(elevatorNumber, false, false);
+                    gui.setDoorsStuck(elevatorNumber, true, false);
                     try {
                         Thread.sleep(config.getIntProperty("waitTime"));     //TODO delete for measurements
                     } catch (InterruptedException e) {
