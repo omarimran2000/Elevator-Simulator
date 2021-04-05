@@ -21,18 +21,9 @@ public interface ElevatorApi {
      * @param destination
      * @throws IOException
      * @throws ClassNotFoundException
+     * @return
      */
-    void addDestination(Destination destination) throws IOException, ClassNotFoundException;
-
-    /**
-     * Checks if the elevator can add the desired destination to its queue list
-     *
-     * @param destination
-     * @return a boolean value that represents whether or not the destination can be added to its queue list
-     * @throws IOException
-     * @throws ClassNotFoundException
-     */
-    boolean canAddDestination(Destination destination) throws IOException, ClassNotFoundException;
+    boolean addDestination(Destination destination) throws IOException, ClassNotFoundException;
 
     /**
      * Interrupt method for the Elevator threads

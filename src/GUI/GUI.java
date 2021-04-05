@@ -25,6 +25,12 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * The GUI representation for the system comprised of one panel for each
+ * of the ElevatorSubsystem, the FloorSubsystem, and the SchedulerSubsystem
+ *
+ * @version April 4, 2021
+ */
 public class GUI extends Thread implements GuiApi {
     private final Config config;
     private final List<ElevatorPanel> elevatorsPanel;
@@ -32,6 +38,14 @@ public class GUI extends Thread implements GuiApi {
     private final SchedulerPanel schedulerPanel;
     private final DatagramSocket socket;
 
+    /**
+     * Constructor for GUI
+     * @param config The
+     * @param scheduler The scheduler
+     * @param floors The list of floors in the system
+     * @param elevators The list of elevators in the system
+     * @throws SocketException
+     */
     public GUI(Config config, SchedulerApi scheduler, List<FloorApi> floors, List<ElevatorApi> elevators) throws SocketException {
         this.config = config;
         elevatorsPanel = new ArrayList<>();
@@ -110,37 +124,83 @@ public class GUI extends Thread implements GuiApi {
         new GUI(config, schedulerApi, floorApis, elevatorApis).start();
     }
 
-
+    /**
+     * Set the current floor number of the specified elevator
+     *
+     * @param elevatorNumber The specified elevator's number
+     * @param floorNumber The current floor number
+     */
     @Override
     public void setCurrentFloorNumber(int elevatorNumber, int floorNumber) {
         elevatorsPanel.get(elevatorNumber).setFloor(floorNumber);
     }
 
+    /**
+     * Set the specified elevator's direction
+     *
+     * @param elevatorNumber The specified elevator's number
+     * @param direction is true for up, false for down
+     */
     @Override
     public void setMotorDirection(int elevatorNumber, boolean direction) {
         elevatorsPanel.get(elevatorNumber).setMotorDirection(direction);
     }
 
+    /**
+     * Set the specified elevator's doors open/closed
+     *
+     * @param elevatorNumber The specified elevator's number
+     * @param open is true for open, false for closed
+     */
     @Override
     public void setDoorsOpen(int elevatorNumber, boolean open) {
         elevatorsPanel.get(elevatorNumber).setDoorsOpen(open);
     }
 
+    /**
+     * Set the specified elevator's state - (NotMoving, MovingUp, MovingDown, Stuck)
+     *
+     * @param elevatorNumber The specified elevator's number
+     * @param state The elevator's state
+     */
     @Override
     public void setState(int elevatorNumber, ElevatorState state) {
         elevatorsPanel.get(elevatorNumber).setStateText(state);
     }
 
+    /**
+     * Set the specified elevator's doors stuck
+     *
+     * @param elevatorNumber The specified elevator's number
+     * @param doorsStuck is true if the doors are stuck, false if not
+     * @param open is true if the doors are stuck open, false for closed
+     */
     @Override
     public void setDoorsStuck(int elevatorNumber, boolean doorsStuck, boolean open) {
         elevatorsPanel.get(elevatorNumber).setDoorsStuck(doorsStuck, open);
     }
 
+    /**
+     * Show that a destination has been added to the specified elevator's queue
+     * If the destination came from the scheduler, the floor lights up in blue
+     * If the destination came from an elevatorButton pressed, the floor lights up in green
+     *
+     * @param elevatorNumber The specified elevator's number
+     * @param floorNumber The floor number
+     * @param isButton is true if an elevatorButton was pressed, false if the scheduler added the destination
+     * @param on is true if the destination is being added to the queue, false if it is being removed
+     */
     @Override
     public void setElevatorButton(int elevatorNumber, int floorNumber, boolean isButton, boolean on) {
         elevatorsPanel.get(elevatorNumber).setElevatorButton(floorNumber, isButton, on);
     }
 
+    /**
+     * Show that the floorButton on the specified floor is on/off
+     * @param floorNumber The specified floor's number
+     * @param direction is true if the up button is on/off, false for down
+     * @param on is true if the button is on, false for off
+     */
     @Override
     public void setFloorButton(int floorNumber, boolean direction, boolean on) {
         if (direction) {
@@ -148,11 +208,23 @@ public class GUI extends Thread implements GuiApi {
         } else floorsPanel.get(floorNumber).setDown(on);
     }
 
+    /**
+     * If an event is not able to be allocated to an elevator right away,
+     * it is added to a list kept in the scheduler. Light up the specified
+     * label in the schedulerPanel when a destination is added to this list
+     * @param floorNumber The floor number
+     * @param isUp is true of the event is up, false for down
+     */
     @Override
     public void addSchedulerDestination(int floorNumber, boolean isUp) {
         schedulerPanel.addDestination(floorNumber, isUp);
     }
 
+    /**
+     * When some destinations are allocated to an elevator from the scheduler's
+     * list, remove the light from the schedulerPanel
+     * @param destinations The destination(s) being removed
+     */
     @Override
     public void removeSchedulerDestinations(HashSet<Destination> destinations) {
         schedulerPanel.removeDestinations(destinations);

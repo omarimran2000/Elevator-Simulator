@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
 /**
  * The Scheduler class schedules the events
  *
- * @version Feb 27, 2021
+ * @version April 4, 2021
  */
 public class Scheduler extends Thread implements SchedulerApi {
     private final Logger logger;
@@ -36,6 +36,12 @@ public class Scheduler extends Thread implements SchedulerApi {
     private Map<Integer, FloorApi> floors;
 
 
+    /**
+     * Creates a scheduler
+     * @param config The config file
+     * @param gui The gui
+     * @throws SocketException
+     */
     public Scheduler(Config config, GuiApi gui) throws SocketException {
         this.gui = gui;
         logger = Logger.getLogger(this.getClass().getName());
@@ -82,36 +88,30 @@ public class Scheduler extends Thread implements SchedulerApi {
      */
     @Override
     public void handleFloorButton(Destination destination) throws IOException, ClassNotFoundException {
-        Optional<ElevatorApi> elevatorOptional = elevators.parallelStream()
-                .filter(elevator -> {
-                    try {
-                        return elevator.canAddDestination(destination);
-                    } catch (IOException | ClassNotFoundException e) {
-                        throw new UndeclaredThrowableException(e);
-                    }
-                })
-                .min(Comparator.comparing(elevator -> {
+        List<ElevatorApi> elevatorByDistance = elevators.stream()
+                .sorted(Comparator.comparing(elevator -> {
                     try {
                         return elevator.distanceTheFloor(destination);
                     } catch (IOException | ClassNotFoundException e) {
                         throw new UndeclaredThrowableException(e);
                     }
-                }));
-        if (elevatorOptional.isPresent()) {
-            elevatorOptional.get().addDestination(destination);
-        } else {
-            synchronized (destinations) {
-                destinations.add(destination);
+                })).collect(Collectors.toList());
+        for (ElevatorApi elevatorApi : elevatorByDistance) {
+            if (elevatorApi.addDestination(destination)) {
+                return;
             }
-            gui.addSchedulerDestination(destination.getFloorNumber(), destination.isUp());
         }
+        synchronized (destinations) {
+            destinations.add(destination);
+        }
+        gui.addSchedulerDestination(destination.getFloorNumber(), destination.isUp());
     }
 
     /**
-     * Returns the set of people waiting to go up at a specific floor
+     * Returns the set of destinations with people waiting to go up at a specific floor
      *
-     * @param floorNumber
-     * @return Floors
+     * @param floorNumber The floor number
+     * @return The set of destinations
      */
     @Override
     public HashSet<Destination> getUnscheduledPeople(int floorNumber) {
@@ -125,7 +125,7 @@ public class Scheduler extends Thread implements SchedulerApi {
                     .filter(destination -> destination.getFloorNumber() > floorNumber == destination.isUp())
                     .collect(Collectors.groupingBy(destination -> destination.getFloorNumber() > floorNumber)).values().stream()
                     .max(Comparator.comparingInt(List::size)).orElse(new ArrayList<>()));
-            if(output.isEmpty()){
+            if (output.isEmpty()) {
                 output = new HashSet<>(destinations.stream()
                         .collect(Collectors.groupingBy(destination -> destination.getFloorNumber() > floorNumber)).values().stream()
                         .max(Comparator.comparingInt(List::size)).orElse(new ArrayList<>()));
@@ -193,7 +193,7 @@ public class Scheduler extends Thread implements SchedulerApi {
     }
 
     /**
-     * Interupt method
+     * Interrupt method
      */
     @Override
     public void interrupt() {
@@ -206,7 +206,7 @@ public class Scheduler extends Thread implements SchedulerApi {
      * Get waiting people up
      *
      * @param destination The corresponding floor number for the requests
-     * @return Floors The Floors object of people waiting to go up
+     * @return set of destination numbers
      * @throws IOException
      * @throws ClassNotFoundException
      */
