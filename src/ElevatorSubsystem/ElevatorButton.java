@@ -38,6 +38,10 @@ public class ElevatorButton {
         return on;
     }
 
+    /**
+     * Setter for the mbutton
+     * @param on
+     */
     public void setOn(boolean on) {
         this.on = on;
     }

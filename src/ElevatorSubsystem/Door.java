@@ -53,6 +53,10 @@ public class Door {
         }
     }
 
+    /**
+     * Checks if the door is open
+     * @return isOpen is the status of the door
+     */
     public boolean isOpen() {
         return isOpen;
     }

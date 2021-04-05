@@ -48,9 +48,9 @@ public class Elevator extends Thread implements ElevatorApi {
     /**
      * Constructor for Elevator
      *
-     * @param config
+     * @param config The config file
      * @param scheduler The system scheduler
-     * @param gui
+     * @param gui GUI API
      */
     public Elevator(Config config, SchedulerApi scheduler, GuiApi gui, int elevatorNumber, int maxFloors) throws IOException, ClassNotFoundException {
         this.config = config;
@@ -501,22 +501,38 @@ public class Elevator extends Thread implements ElevatorApi {
             }
         }
 
+        /**
+         * Checks if the elevator can accept new destinations
+         * @param destination
+         * @return
+         */
         @Override
         public boolean canAddDestination(Destination destination) {
             return false;
         }
 
+        /**
+         * Checks if the elevator is stuck
+         */
         @Override
         public void scheduleCheckIfStuck() {
             executor.schedule(() -> checkIfStuck(position.getFloorNumber()), config.getIntProperty("checkIfStuckDelay"), TimeUnit.SECONDS);
         }
 
+        /**
+         * Gets the elevator state
+         * @return The current state of the elevator
+         */
         @Override
         public ElevatorState getElevatorState() {
             return position.isUp() ? ElevatorState.MovingUp : ElevatorState.MovingDown;
         }
     }
 
+    /**
+     * State class for when an Elevator is Stuck
+     * All methods either return false, throw a RuntimeException or return the stuck state
+     */
     private class ElevatorStuck implements State {
         public ElevatorStuck() {
             arrivalSensor.interrupt();
@@ -524,41 +540,72 @@ public class Elevator extends Thread implements ElevatorApi {
             gui.setState(elevatorNumber, getElevatorState());
         }
 
+        /**
+         * Setter method for lamps, throws Runtime since the elevator is stuck
+         */
         @Override
         public void setLamps() {
             throw new RuntimeException();
         }
 
+        /**
+         * Calculates the distance to the floor from the where the elevator currently is
+         * @param destination Potential destination for the elevator
+         * @return
+         */
         @Override
         public int distanceTheFloor(Destination destination) {
             throw new RuntimeException();
         }
 
+        /**
+         *  Adds a new destination to the queue
+         * @param destination The new destination for the Elevator
+         */
         @Override
         public void addDestination(Destination destination) {
             throw new RuntimeException();
         }
 
+        /**
+         * Check if the elevator is going to stop at the next floor
+         * @return
+         */
         @Override
         public boolean stopForNextFloor() {
             return false;
         }
 
+        /**
+         * Changes the state to notMoving if it is not Stuck
+         */
         @Override
         public void atFloor() {
             throw new RuntimeException();
         }
 
+        /**
+         * Checks if the elevator can accept new destinations
+         * @param destination
+         * @return
+         */
         @Override
         public boolean canAddDestination(Destination destination) {
             return false;
         }
 
+        /**
+         * Checks if the elevator is stuck
+         */
         @Override
         public void scheduleCheckIfStuck() {
             throw new RuntimeException();
         }
 
+        /**
+         * Gets the elevator state
+         * @return The current state of the elevator
+         */
         @Override
         public ElevatorState getElevatorState() {
             return ElevatorState.Stuck;
