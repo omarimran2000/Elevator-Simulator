@@ -498,24 +498,6 @@ public class Elevator extends Thread implements ElevatorApi {
         }
 
         /**
-         * Checks if the elevator can accept new destinations
-         * @param destination
-         * @return
-         */
-        @Override
-        public boolean canAddDestination(Destination destination) {
-            return false;
-        }
-
-        /**
-         * Checks if the elevator is stuck
-         */
-        @Override
-        public void scheduleCheckIfStuck() {
-            executor.schedule(() -> checkIfStuck(position.getFloorNumber()), config.getIntProperty("checkIfStuckDelay"), TimeUnit.SECONDS);
-        }
-
-        /**
          * Gets the elevator state
          * @return The current state of the elevator
          */
@@ -577,24 +559,6 @@ public class Elevator extends Thread implements ElevatorApi {
          */
         @Override
         public void atFloor() {
-            throw new RuntimeException();
-        }
-
-        /**
-         * Checks if the elevator can accept new destinations
-         * @param destination
-         * @return
-         */
-        @Override
-        public boolean canAddDestination(Destination destination) {
-            return false;
-        }
-
-        /**
-         * Checks if the elevator is stuck
-         */
-        @Override
-        public void scheduleCheckIfStuck() {
             throw new RuntimeException();
         }
 
