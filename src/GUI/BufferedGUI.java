@@ -17,7 +17,7 @@ public class BufferedGUI implements GuiApi, Runnable {
     private final ConcurrentLinkedQueue<Runnable> buffer;
 
     /**
-     * Constructor for BufferedGui
+     * Constructor for BufferedGUI
      * @param gui The GUI
      */
     public BufferedGUI(GuiApi gui) {
@@ -183,9 +183,6 @@ public class BufferedGUI implements GuiApi, Runnable {
         });
     }
 
-    /**
-     * The run method
-     */
     @Override
     public void run() {
         while (!Thread.interrupted()) {
