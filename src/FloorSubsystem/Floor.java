@@ -31,9 +31,10 @@ public abstract class Floor extends Thread implements FloorApi {
 
     /**
      * Constructor
-     * @param config The config file
+     *
+     * @param config      The config file
      * @param floorNumber the floor's number
-     * @param scheduler the scheduler
+     * @param scheduler   the scheduler
      * @param schedule    A list of events
      */
     public Floor(Config config, int floorNumber, SchedulerApi scheduler, List<Event> schedule) throws SocketException {
@@ -89,12 +90,15 @@ public abstract class Floor extends Thread implements FloorApi {
         }
     }
 
+    abstract protected void printTimes();
+
     /**
      * Interrupt method
      */
     @Override
     public void interrupt() {
         receiveThread.interrupt();
+        printTimes();
         super.interrupt();
         // close socket to interrupt receive
         socket.close();
@@ -120,6 +124,7 @@ public abstract class Floor extends Thread implements FloorApi {
 
     /**
      * Gets the floor number
+     *
      * @return the floor number
      */
     public int getFloorNumber() {
@@ -138,6 +143,7 @@ public abstract class Floor extends Thread implements FloorApi {
 
     /**
      * Returns the schedule
+     *
      * @return The schedule
      */
     public PriorityQueue<Event> getSchedule() {
@@ -169,10 +175,10 @@ class TopFloor extends Floor {
     /**
      * Constructor for TopFloor
      *
-     * @param config the config file
+     * @param config      the config file
      * @param floorNumber The floor number
      * @param scheduler   The scheduler
-     * @param gui the gui
+     * @param gui         the gui
      * @param schedule    The list of scheduled events
      */
     public TopFloor(Config config, int floorNumber, SchedulerApi scheduler, GuiApi gui, List<Event> schedule) throws SocketException {
@@ -180,10 +186,17 @@ class TopFloor extends Floor {
         downButton = new FloorButton(floorNumber, false, gui);
     }
 
+    @Override
+    protected void printTimes() {
+        System.out.println("Floor: " + getFloorNumber() + ", down on time: " + downButton.getOnTime());
+        System.out.println("Floor: " + getFloorNumber() + ", down off time: " + downButton.getOffTime());
+    }
+
     /**
      * Toggles the floor button
+     *
      * @param isUp the floor button's direction
-     * @param on whether button is now on or off
+     * @param on   whether button is now on or off
      * @throws IOException
      * @throws ClassNotFoundException
      */
@@ -198,6 +211,7 @@ class TopFloor extends Floor {
 
     /**
      * Method for getting the down button
+     *
      * @return the button
      */
     @Override
@@ -207,6 +221,7 @@ class TopFloor extends Floor {
 
     /**
      * Method for getting the top button
+     *
      * @return the button
      */
     @Override
@@ -233,10 +248,17 @@ class BottomFloor extends Floor {
         upButton = new FloorButton(floorNumber, true, gui);
     }
 
+    @Override
+    protected void printTimes() {
+        System.out.println("Floor: " + getFloorNumber() + ", up on time: " + upButton.getOnTime());
+        System.out.println("Floor: " + getFloorNumber() + ", up off time: " + upButton.getOffTime());
+    }
+
     /**
      * Toggles the floor button
+     *
      * @param isUp the floor button's direction
-     * @param on whether the button should be on or off
+     * @param on   whether the button should be on or off
      * @throws IOException
      * @throws ClassNotFoundException
      */
@@ -251,6 +273,7 @@ class BottomFloor extends Floor {
 
     /**
      * Method for getting the bottom button
+     *
      * @return the button
      */
     @Override
@@ -279,10 +302,10 @@ class MiddleFloor extends Floor {
     /**
      * Constructor for MiddleFloor
      *
-     * @param config The config file
+     * @param config      The config file
      * @param floorNumber The floor number
      * @param scheduler   The scheduler
-     * @param gui The gui
+     * @param gui         The gui
      * @param schedule    The list of scheduled events
      */
     public MiddleFloor(Config config, int floorNumber, SchedulerApi scheduler, GuiApi gui, List<Event> schedule) throws SocketException {
@@ -291,10 +314,19 @@ class MiddleFloor extends Floor {
         downButton = new FloorButton(floorNumber, false, gui);
     }
 
+    @Override
+    protected void printTimes() {
+        System.out.println("Floor: " + getFloorNumber() + ", down on time: " + downButton.getOnTime());
+        System.out.println("Floor: " + getFloorNumber() + ", down off time: " + downButton.getOffTime());
+        System.out.println("Floor: " + getFloorNumber() + ", up on time: " + upButton.getOnTime());
+        System.out.println("Floor: " + getFloorNumber() + ", up off time: " + upButton.getOffTime());
+    }
+
     /**
      * Method for toggling the floor button
+     *
      * @param isUp the button's direction
-     * @param on whether the button is on or off
+     * @param on   whether the button is on or off
      * @throws IOException
      * @throws ClassNotFoundException
      */

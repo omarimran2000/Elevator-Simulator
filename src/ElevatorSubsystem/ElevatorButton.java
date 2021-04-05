@@ -1,5 +1,8 @@
 package ElevatorSubsystem;
 
+import java.util.LinkedList;
+import java.util.Queue;
+
 /**
  * The Elevator Button class represents the buttons inside
  * the elevator used to request a destination floor
@@ -9,6 +12,8 @@ package ElevatorSubsystem;
 public class ElevatorButton {
     private final int floor;
     private boolean on;
+    private final Queue<Long> onTime;
+    private final Queue<Long> offTime;
 
     /**
      * Constructor for ElevatorButton
@@ -18,6 +23,8 @@ public class ElevatorButton {
     public ElevatorButton(int floor) {
         this.floor = floor;
         this.on = false;
+        onTime = new LinkedList<>();
+        offTime = new LinkedList<>();
     }
 
     /**
@@ -40,9 +47,23 @@ public class ElevatorButton {
 
     /**
      * Setter for the mbutton
+     *
      * @param on
      */
     public void setOn(boolean on) {
+        if (on) {
+            onTime.add(System.currentTimeMillis());
+        } else {
+            offTime.add(System.currentTimeMillis());
+        }
         this.on = on;
+    }
+
+    public Queue<Long> getOnTime() {
+        return onTime;
+    }
+
+    public Queue<Long> getOffTime() {
+        return offTime;
     }
 }
