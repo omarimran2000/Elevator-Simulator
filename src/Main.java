@@ -1,3 +1,7 @@
+/**
+ * Main class that runs all four main functions
+ */
+
 import ElevatorSubsystem.ElevatorSubsystem;
 import FloorSubsystem.FloorSubsystem;
 import GUI.GUI;
