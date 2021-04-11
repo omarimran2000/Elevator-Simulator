@@ -442,7 +442,7 @@ public class Elevator extends Thread implements ElevatorApi {
                 gui.setState(elevatorNumber, getElevatorState());
             }
             gui.setElevatorButton(elevatorNumber, position.getFloorNumber(), false, false);
-
+            buttons.get(position.getFloorNumber()).setOn(false);
             people.remove(position.getFloorNumber());
             destinations.remove(position);
 

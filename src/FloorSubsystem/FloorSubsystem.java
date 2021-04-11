@@ -7,11 +7,13 @@ import stub.GuiClient;
 import stub.SchedulerClient;
 import utill.Config;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.SocketException;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 import static java.util.stream.Collectors.groupingBy;
@@ -26,9 +28,9 @@ public class FloorSubsystem {
     /**
      * Generates the floors
      *
-     * @param config    the config file
+     * @param config the config file
      * @param scheduler the scheduler
-     * @param gui       the gui
+     * @param gui the gui
      * @param schedule  the list of events
      * @return The map of the floors
      */
@@ -67,9 +69,9 @@ public class FloorSubsystem {
     /**
      * Generates the map of floors in the system
      *
-     * @param config            The config file
+     * @param config The config file
      * @param scheduler         The scheduler
-     * @param gui               The gui
+     * @param gui The gui
      * @param schedule_filename The input file
      * @return The map of floors
      * @throws FileNotFoundException
@@ -82,7 +84,7 @@ public class FloorSubsystem {
     /**
      * Reads the input file and schedules the events
      *
-     * @param config   The config file
+     * @param config The config file
      * @param filename The input file
      * @return The scheduled list of events
      * @throws FileNotFoundException
@@ -90,17 +92,16 @@ public class FloorSubsystem {
      */
     public static List<Event> readCSV(Config config, String filename) throws FileNotFoundException, ParseException {
         List<Event> schedule = new ArrayList<>();
-        Random rand = new Random();
-        int floor, carButton, numConcurrentEvents = 4;
-        long timeToEvent = 0;
-        for (int i = 0; i < 1000000; i++) {
-            timeToEvent += 30 * 1000;
-            for (int j = 0; j < numConcurrentEvents; j++) {
-                floor = rand.nextInt(22) + 1;
-                carButton = rand.nextInt(22) + 1;
-                schedule.add(new Event(timeToEvent, floor, carButton > floor, carButton));
-            }
+        Scanner scanner = new Scanner(new File(filename));
+
+        while (scanner.hasNext()) {
+            String[] line = scanner.nextLine().split(",");
+            schedule.add(new Event((new SimpleDateFormat(config.getProperty("dateFormatPattern"))).parse(config.getProperty("startDate")),
+                    new SimpleDateFormat(config.getProperty("dateFormatPattern")).parse("01-01-2021 " + line[0]),
+                    Integer.parseInt(line[1]), line[2].equalsIgnoreCase("up"), Integer.parseInt(line[3])));
         }
+
+        scanner.close();
         return schedule;
     }
 
