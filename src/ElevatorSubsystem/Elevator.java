@@ -48,9 +48,9 @@ public class Elevator extends Thread implements ElevatorApi {
     /**
      * Constructor for Elevator
      *
-     * @param config The config file
+     * @param config    The config file
      * @param scheduler The system scheduler
-     * @param gui GUI API
+     * @param gui       GUI API
      */
     public Elevator(Config config, SchedulerApi scheduler, GuiApi gui, int elevatorNumber, int maxFloors) throws IOException, ClassNotFoundException {
         this.config = config;
@@ -277,6 +277,7 @@ public class Elevator extends Thread implements ElevatorApi {
         public ElevatorNotMoving() {
             logger.info("Elevator " + elevatorNumber + " State Changed to: Idle");
             gui.setState(elevatorNumber, getElevatorState());
+            logger.info("insert into elevator_times values (6, " + elevatorNumber + ", " + System.currentTimeMillis() + ") on conflict do nothing;");
         }
 
         @Override
@@ -499,6 +500,7 @@ public class Elevator extends Thread implements ElevatorApi {
 
         /**
          * Gets the elevator state
+         *
          * @return The current state of the elevator
          */
         @Override
@@ -528,6 +530,7 @@ public class Elevator extends Thread implements ElevatorApi {
 
         /**
          * Calculates the distance to the floor from the where the elevator currently is
+         *
          * @param destination Potential destination for the elevator
          * @return
          */
@@ -537,7 +540,8 @@ public class Elevator extends Thread implements ElevatorApi {
         }
 
         /**
-         *  Adds a new destination to the queue
+         * Adds a new destination to the queue
+         *
          * @param destination The new destination for the Elevator
          */
         @Override
@@ -547,6 +551,7 @@ public class Elevator extends Thread implements ElevatorApi {
 
         /**
          * Check if the elevator is going to stop at the next floor
+         *
          * @return
          */
         @Override
@@ -564,6 +569,7 @@ public class Elevator extends Thread implements ElevatorApi {
 
         /**
          * Gets the elevator state
+         *
          * @return The current state of the elevator
          */
         @Override
