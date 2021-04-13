@@ -40,6 +40,7 @@ public class ElevatorButton {
 
     /**
      * Setter for the mbutton
+     *
      * @param on
      */
     public void setOn(boolean on) {

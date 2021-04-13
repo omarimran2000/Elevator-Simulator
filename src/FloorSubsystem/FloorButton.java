@@ -23,8 +23,8 @@ public class FloorButton {
      * Constructor for a floor button
      *
      * @param floorNumber the floor number
-     * @param isUp the direction of button
-     * @param gui the gui
+     * @param isUp        the direction of button
+     * @param gui         the gui
      */
     public FloorButton(int floorNumber, boolean isUp, GuiApi gui) {
         this.floorNumber = floorNumber;

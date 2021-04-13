@@ -42,6 +42,7 @@ public interface SchedulerApi {
 
     /**
      * Interrupt method
+     *
      * @throws IOException
      * @throws ClassNotFoundException
      */
