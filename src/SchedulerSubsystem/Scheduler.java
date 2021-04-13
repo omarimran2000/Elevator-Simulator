@@ -38,8 +38,9 @@ public class Scheduler extends Thread implements SchedulerApi {
 
     /**
      * Creates a scheduler
+     *
      * @param config The config file
-     * @param gui The gui
+     * @param gui    The gui
      * @throws SocketException
      */
     public Scheduler(Config config, GuiApi gui) throws SocketException {

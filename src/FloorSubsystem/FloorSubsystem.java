@@ -28,9 +28,9 @@ public class FloorSubsystem {
     /**
      * Generates the floors
      *
-     * @param config the config file
+     * @param config    the config file
      * @param scheduler the scheduler
-     * @param gui the gui
+     * @param gui       the gui
      * @param schedule  the list of events
      * @return The map of the floors
      */
@@ -69,9 +69,9 @@ public class FloorSubsystem {
     /**
      * Generates the map of floors in the system
      *
-     * @param config The config file
+     * @param config            The config file
      * @param scheduler         The scheduler
-     * @param gui The gui
+     * @param gui               The gui
      * @param schedule_filename The input file
      * @return The map of floors
      * @throws FileNotFoundException
@@ -84,7 +84,7 @@ public class FloorSubsystem {
     /**
      * Reads the input file and schedules the events
      *
-     * @param config The config file
+     * @param config   The config file
      * @param filename The input file
      * @return The scheduled list of events
      * @throws FileNotFoundException

@@ -16,6 +16,7 @@ public class FloorPanel extends JPanel {
 
     /**
      * Constructor for floorPanel
+     *
      * @param floorNumber The floor number
      */
     public FloorPanel(int floorNumber) {

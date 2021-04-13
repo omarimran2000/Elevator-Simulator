@@ -10,6 +10,7 @@ import java.util.List;
 
 /**
  * Contains the list of events kept in the scheduler yet to be allocated to an elevator
+ *
  * @version April 4, 2021
  */
 public class SchedulerPanel extends JPanel {
@@ -18,6 +19,7 @@ public class SchedulerPanel extends JPanel {
 
     /**
      * Constructor for SchedulerPanel
+     *
      * @param numFloors The number of floors in the system
      */
     public SchedulerPanel(int numFloors) {
@@ -67,8 +69,9 @@ public class SchedulerPanel extends JPanel {
 
     /**
      * Show that a destination has been added to the scheduler's list
+     *
      * @param floorNumber The destination of the event
-     * @param isUp is true if the destination is upwards, false for down
+     * @param isUp        is true if the destination is upwards, false for down
      */
     public void addDestination(int floorNumber, boolean isUp) {
         (isUp ? upDestinations : downDestinations).get(floorNumber).setBackground(Color.green);
@@ -76,6 +79,7 @@ public class SchedulerPanel extends JPanel {
 
     /**
      * Show that a destination (or set) has been removed from the scheduler's list
+     *
      * @param destinations The destinations
      */
     public void removeDestinations(HashSet<Destination> destinations) {
