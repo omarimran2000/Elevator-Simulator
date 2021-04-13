@@ -33,6 +33,13 @@ public class Event implements Comparable<Event> {
         this.carButton = car_button;
     }
 
+    public Event(long timeToEvent, int floorNumber, boolean floor_button_is_up, int car_button) {
+        this.timeToEvent = timeToEvent;
+        this.floorNumber = floorNumber;
+        this.floorButtonIsUp = floor_button_is_up;
+        this.carButton = car_button;
+    }
+
     /**
      * Getter for the elevator car button
      * The button represents the requested floor

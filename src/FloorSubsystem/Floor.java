@@ -90,12 +90,15 @@ public abstract class Floor extends Thread implements FloorApi {
         }
     }
 
+    abstract protected void printTimes();
+
     /**
      * Interrupt method
      */
     @Override
     public void interrupt() {
         receiveThread.interrupt();
+        printTimes();
         super.interrupt();
         // close socket to interrupt receive
         socket.close();
@@ -183,6 +186,12 @@ class TopFloor extends Floor {
         downButton = new FloorButton(floorNumber, false, gui);
     }
 
+    @Override
+    protected void printTimes() {
+        System.out.println("Floor: " + getFloorNumber() + ", down on time: " + downButton.getOnTime());
+        System.out.println("Floor: " + getFloorNumber() + ", down off time: " + downButton.getOffTime());
+    }
+
     /**
      * Toggles the floor button
      *
@@ -237,6 +246,12 @@ class BottomFloor extends Floor {
     public BottomFloor(Config config, int floorNumber, SchedulerApi scheduler, GuiApi gui, List<Event> schedule) throws SocketException {
         super(config, floorNumber, scheduler, schedule);
         upButton = new FloorButton(floorNumber, true, gui);
+    }
+
+    @Override
+    protected void printTimes() {
+        System.out.println("Floor: " + getFloorNumber() + ", up on time: " + upButton.getOnTime());
+        System.out.println("Floor: " + getFloorNumber() + ", up off time: " + upButton.getOffTime());
     }
 
     /**
@@ -297,6 +312,14 @@ class MiddleFloor extends Floor {
         super(config, floorNumber, scheduler, schedule);
         upButton = new FloorButton(floorNumber, true, gui);
         downButton = new FloorButton(floorNumber, false, gui);
+    }
+
+    @Override
+    protected void printTimes() {
+        System.out.println("Floor: " + getFloorNumber() + ", down on time: " + downButton.getOnTime());
+        System.out.println("Floor: " + getFloorNumber() + ", down off time: " + downButton.getOffTime());
+        System.out.println("Floor: " + getFloorNumber() + ", up on time: " + upButton.getOnTime());
+        System.out.println("Floor: " + getFloorNumber() + ", up off time: " + upButton.getOffTime());
     }
 
     /**

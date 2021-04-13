@@ -130,6 +130,10 @@ public class Elevator extends Thread implements ElevatorApi {
         executor.shutdown();
         arrivalSensor.interrupt();
         GUISendThread.interrupt();
+        for (Map.Entry<Integer, ElevatorButton> buttons : buttons.entrySet()) {
+            System.out.println("Elevator: " + elevatorNumber + ", Floor: " + buttons.getKey() + ", down on time: " + buttons.getValue().getOnTime());
+            System.out.println("Elevator: " + elevatorNumber + ", Floor: " + buttons.getKey() + ", down off time: " + buttons.getValue().getOffTime());
+        }
         super.interrupt();
         // close socket to interrupt receive
         socket.close();
@@ -438,7 +442,7 @@ public class Elevator extends Thread implements ElevatorApi {
                 gui.setState(elevatorNumber, getElevatorState());
             }
             gui.setElevatorButton(elevatorNumber, position.getFloorNumber(), false, false);
-
+            buttons.get(position.getFloorNumber()).setOn(false);
             people.remove(position.getFloorNumber());
             destinations.remove(position);
 

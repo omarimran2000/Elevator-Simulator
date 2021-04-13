@@ -3,6 +3,8 @@ package FloorSubsystem;
 import GUI.GuiApi;
 
 import java.io.IOException;
+import java.util.LinkedList;
+import java.util.Queue;
 import java.util.logging.Logger;
 
 /**
@@ -17,6 +19,8 @@ public class FloorButton {
     private final boolean isUp;
     private final GuiApi gui;
     private boolean on;
+    private final Queue<Long> onTime;
+    private final Queue<Long> offTime;
 
 
     /**
@@ -32,6 +36,8 @@ public class FloorButton {
         this.gui = gui;
         logger = Logger.getLogger(this.getClass().getName());
         on = false;
+        onTime = new LinkedList<>();
+        offTime = new LinkedList<>();
     }
 
     /**
@@ -53,6 +59,19 @@ public class FloorButton {
             logger.info("The " + (isUp ? "up" : "down") + " button on " + floorNumber + " is " + (on ? "on" : "off"));
             this.on = on;
             gui.setFloorButton(floorNumber, isUp, on);
+            if (on) {
+                onTime.add(System.currentTimeMillis());
+            } else {
+                offTime.add(System.currentTimeMillis());
+            }
         }
+    }
+
+    public Queue<Long> getOnTime() {
+        return onTime;
+    }
+
+    public Queue<Long> getOffTime() {
+        return offTime;
     }
 }
