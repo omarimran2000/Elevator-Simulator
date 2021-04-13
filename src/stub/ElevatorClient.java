@@ -47,9 +47,9 @@ public class ElevatorClient extends StubClient implements ElevatorApi {
      * Adding the destination to the floor
      *
      * @param destination
+     * @return
      * @throws IOException
      * @throws ClassNotFoundException
-     * @return
      */
     @Override
     public boolean addDestination(Destination destination) throws IOException, ClassNotFoundException {

@@ -12,6 +12,7 @@ public interface FloorApi {
 
     /**
      * Gets the waiting people
+     *
      * @param isUp the direction
      * @return the set of floor numbers
      * @throws IOException
@@ -21,6 +22,7 @@ public interface FloorApi {
 
     /**
      * Interrupt method
+     *
      * @throws IOException
      * @throws ClassNotFoundException
      */
