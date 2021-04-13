@@ -13,8 +13,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class ArrivalSensor extends Thread {
     private final Elevator elevator;
     private final Config config;
-    private boolean run;
     private final AtomicBoolean stuck;
+    private boolean run;
 
 
     /**
@@ -42,7 +42,7 @@ public class ArrivalSensor extends Thread {
     }
 
     /**
-     * The run method
+     * {@inheritDoc}
      */
     @Override
     public void run() {

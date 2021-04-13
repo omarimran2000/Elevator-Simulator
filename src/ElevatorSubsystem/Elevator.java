@@ -103,7 +103,7 @@ public class Elevator extends Thread implements ElevatorApi {
     }
 
     /**
-     * The run method
+     * {@inheritDoc}
      */
     @Override
     public void run() {
@@ -136,10 +136,7 @@ public class Elevator extends Thread implements ElevatorApi {
     }
 
     /**
-     * Gets the number of floors between the current and destination floors
-     *
-     * @param destination Potential destination for the elevator
-     * @return the distance between the two floors
+     * {@inheritDoc}
      */
     @Override
     public synchronized int distanceTheFloor(Destination destination) {
@@ -147,10 +144,7 @@ public class Elevator extends Thread implements ElevatorApi {
     }
 
     /**
-     * Adds the specified floor number to the list of destinations
-     *
-     * @param destination The new destination for the Elevator
-     * @return
+     * {@inheritDoc}
      */
     @Override
     public synchronized boolean addDestination(Destination destination) {
@@ -280,16 +274,16 @@ public class Elevator extends Thread implements ElevatorApi {
             logger.info("insert into elevator_times values (6, " + elevatorNumber + ", " + System.currentTimeMillis() + ") on conflict do nothing;");
         }
 
+        /**
+         * {@inheritDoc}
+         */
         @Override
         public void setLamps() {
             throw new RuntimeException();
         }
 
         /**
-         * Gets the number of floors between the current and destination floors
-         *
-         * @param destination Potential destination for the elevator
-         * @return the distance between the two floors
+         * {@inheritDoc}
          */
         @Override
         public int distanceTheFloor(Destination destination) {
@@ -297,9 +291,7 @@ public class Elevator extends Thread implements ElevatorApi {
         }
 
         /**
-         * Adds the specified floor number to the list of destinations
-         *
-         * @param destination The new destination for the Elevator
+         * {@inheritDoc}
          */
         @Override
         public boolean addDestination(Destination destination) {
@@ -314,7 +306,7 @@ public class Elevator extends Thread implements ElevatorApi {
         }
 
         /**
-         * @return true if the elevator should stop at the next floor
+         * {@inheritDoc}
          */
         @Override
         public boolean stopForNextFloor() {
@@ -322,7 +314,7 @@ public class Elevator extends Thread implements ElevatorApi {
         }
 
         /**
-         * Actions for when the elevator stops at a floor
+         * {@inheritDoc}
          */
         @Override
         public void atFloor() {
@@ -330,9 +322,7 @@ public class Elevator extends Thread implements ElevatorApi {
         }
 
         /**
-         * Get Elevator state
-         *
-         * @return the state
+         * {@inheritDoc}
          */
         @Override
         public ElevatorState getElevatorState() {
@@ -352,10 +342,7 @@ public class Elevator extends Thread implements ElevatorApi {
         }
 
         /**
-         * Gets the number of floors between the current and destination floors
-         *
-         * @param destination Potential destination for the elevator
-         * @return the distance between the two floors
+         * {@inheritDoc}
          */
         @Override
         public int distanceTheFloor(Destination destination) {
@@ -363,9 +350,7 @@ public class Elevator extends Thread implements ElevatorApi {
         }
 
         /**
-         * Adds the specified floor number to the list of destinations
-         *
-         * @param destination The new destination for the Elevator
+         * {@inheritDoc}
          */
         @Override
         public boolean addDestination(Destination destination) {
@@ -385,6 +370,9 @@ public class Elevator extends Thread implements ElevatorApi {
             }
         }
 
+        /**
+         * {@inheritDoc}
+         */
         @Override
         public boolean stopForNextFloor() {
             position.setFloorNumber(position.getFloorNumber() + (position.isUp() ? 1 : -1));
@@ -392,7 +380,7 @@ public class Elevator extends Thread implements ElevatorApi {
         }
 
         /**
-         * Turns off the previous lamp and turns on the next one
+         * {@inheritDoc}
          */
         @Override
         public void setLamps() {
@@ -404,7 +392,7 @@ public class Elevator extends Thread implements ElevatorApi {
         }
 
         /**
-         * Actions for when the elevator stops at a floor
+         * {@inheritDoc}
          */
         @Override
         public void atFloor() throws IOException, ClassNotFoundException {
@@ -499,9 +487,7 @@ public class Elevator extends Thread implements ElevatorApi {
         }
 
         /**
-         * Gets the elevator state
-         *
-         * @return The current state of the elevator
+         * {@inheritDoc}
          */
         @Override
         public ElevatorState getElevatorState() {
@@ -521,7 +507,7 @@ public class Elevator extends Thread implements ElevatorApi {
         }
 
         /**
-         * Setter method for lamps, throws Runtime since the elevator is stuck
+         * {@inheritDoc}
          */
         @Override
         public void setLamps() {
@@ -529,10 +515,7 @@ public class Elevator extends Thread implements ElevatorApi {
         }
 
         /**
-         * Calculates the distance to the floor from the where the elevator currently is
-         *
-         * @param destination Potential destination for the elevator
-         * @return
+         * {@inheritDoc}
          */
         @Override
         public int distanceTheFloor(Destination destination) {
@@ -540,9 +523,7 @@ public class Elevator extends Thread implements ElevatorApi {
         }
 
         /**
-         * Adds a new destination to the queue
-         *
-         * @param destination The new destination for the Elevator
+         * {@inheritDoc}
          */
         @Override
         public boolean addDestination(Destination destination) {
@@ -550,9 +531,7 @@ public class Elevator extends Thread implements ElevatorApi {
         }
 
         /**
-         * Check if the elevator is going to stop at the next floor
-         *
-         * @return
+         * {@inheritDoc}
          */
         @Override
         public boolean stopForNextFloor() {
@@ -560,7 +539,7 @@ public class Elevator extends Thread implements ElevatorApi {
         }
 
         /**
-         * Changes the state to notMoving if it is not Stuck
+         * {@inheritDoc}
          */
         @Override
         public void atFloor() {
@@ -568,9 +547,7 @@ public class Elevator extends Thread implements ElevatorApi {
         }
 
         /**
-         * Gets the elevator state
-         *
-         * @return The current state of the elevator
+         * {@inheritDoc}
          */
         @Override
         public ElevatorState getElevatorState() {

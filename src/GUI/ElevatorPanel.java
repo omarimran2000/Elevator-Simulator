@@ -24,7 +24,8 @@ public class ElevatorPanel extends JPanel {
 
     /**
      * Constructor for elevator panel
-     * @param numFloors The number of floors in the system
+     *
+     * @param numFloors      The number of floors in the system
      * @param elevatorNumber The elevator number
      */
     public ElevatorPanel(int numFloors, int elevatorNumber) {
@@ -89,6 +90,7 @@ public class ElevatorPanel extends JPanel {
 
     /**
      * Set the current floor of the elevator
+     *
      * @param floorNumber The current floor number
      */
     public void setFloor(int floorNumber) {
@@ -97,6 +99,7 @@ public class ElevatorPanel extends JPanel {
 
     /**
      * Set the current state of the elevator (NotMoving, MovingUp, MovingDown, Stuck)
+     *
      * @param state The current state
      */
     public void setStateText(ElevatorState state) {
@@ -105,6 +108,7 @@ public class ElevatorPanel extends JPanel {
 
     /**
      * Set the current directions of the elevator
+     *
      * @param direction is true for up, false for down
      */
     public void setMotorDirection(boolean direction) {
@@ -113,6 +117,7 @@ public class ElevatorPanel extends JPanel {
 
     /**
      * Set the elevator's doors open or closed
+     *
      * @param open is true for open, false for closed
      */
     public void setDoorsOpen(boolean open) {
@@ -121,8 +126,9 @@ public class ElevatorPanel extends JPanel {
 
     /**
      * Set the doors stuck state of elevator - if the doors are not stuck, "open" does not apply
+     *
      * @param stuck is true if the doors are stuck, false if they are not
-     * @param open is true is the doors are stuck open, false for closed
+     * @param open  is true is the doors are stuck open, false for closed
      */
     public void setDoorsStuck(boolean stuck, boolean open) {
         doorsStuckText.setVisible(stuck);

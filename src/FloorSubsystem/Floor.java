@@ -59,7 +59,7 @@ public abstract class Floor extends Thread implements FloorApi {
     }
 
     /**
-     * Method to run the thread
+     * {@inheritDoc}
      */
     @Override
     public void run() {
@@ -70,22 +70,22 @@ public abstract class Floor extends Thread implements FloorApi {
             logger.info("insert into floor_times values (6, " + floorNumber + ", " + startTime + ", " + schedule.size() + ") on conflict do nothing;");
         }
         while (!schedule.isEmpty() && !Thread.interrupted()) {
-            if (System.currentTimeMillis() - startTime >= schedule.peek().getTimeToEvent()) {
+            if (System.currentTimeMillis() - startTime >= schedule.peek().timeToEvent()) {
                 Event event = schedule.remove();
                 try {
-                    toggleButton(event.isFloorButtonIsUp(), true);
+                    toggleButton(event.floorButtonIsUp(), true);
                 } catch (IOException | ClassNotFoundException e) {
                     e.printStackTrace();
                 }
-                waitingPeople.get(event.isFloorButtonIsUp()).add(event.getCarButton());
+                waitingPeople.get(event.floorButtonIsUp()).add(event.carButton());
                 try {
-                    scheduler.handleFloorButton(new Destination(this.floorNumber, event.isFloorButtonIsUp()));
+                    scheduler.handleFloorButton(new Destination(this.floorNumber, event.floorButtonIsUp()));
                 } catch (IOException | ClassNotFoundException e) {
                     e.printStackTrace();
                 }
             } else {
                 try {
-                    Thread.sleep(schedule.peek().getTimeToEvent() - System.currentTimeMillis() + startTime);
+                    Thread.sleep(schedule.peek().timeToEvent() - System.currentTimeMillis() + startTime);
                 } catch (InterruptedException e) {
                     return;
                 }
@@ -105,9 +105,7 @@ public abstract class Floor extends Thread implements FloorApi {
     }
 
     /**
-     * Gets the waiting people
-     *
-     * @return the set of floors with people waiting to go up
+     * {@inheritDoc}
      */
     @Override
     public HashSet<Integer> getWaitingPeople(boolean isUp) {
@@ -139,15 +137,6 @@ public abstract class Floor extends Thread implements FloorApi {
      */
     public boolean hasEvents() {
         return !schedule.isEmpty();
-    }
-
-    /**
-     * Returns the schedule
-     *
-     * @return The schedule
-     */
-    public PriorityQueue<Event> getSchedule() {
-        return schedule;
     }
 
     /**
@@ -187,12 +176,7 @@ class TopFloor extends Floor {
     }
 
     /**
-     * Toggles the floor button
-     *
-     * @param isUp the floor button's direction
-     * @param on   whether button is now on or off
-     * @throws IOException
-     * @throws ClassNotFoundException
+     * {@inheritDoc}
      */
     @Override
     public void toggleButton(boolean isUp, boolean on) throws IOException, ClassNotFoundException {
@@ -204,9 +188,7 @@ class TopFloor extends Floor {
     }
 
     /**
-     * Method for getting the down button
-     *
-     * @return the button
+     * {@inheritDoc}
      */
     @Override
     public FloorButton getBottom() {
@@ -214,9 +196,7 @@ class TopFloor extends Floor {
     }
 
     /**
-     * Method for getting the top button
-     *
-     * @return the button
+     * {@inheritDoc}
      */
     @Override
     public FloorButton getTop() {
@@ -243,12 +223,7 @@ class BottomFloor extends Floor {
     }
 
     /**
-     * Toggles the floor button
-     *
-     * @param isUp the floor button's direction
-     * @param on   whether the button should be on or off
-     * @throws IOException
-     * @throws ClassNotFoundException
+     * {@inheritDoc}
      */
     @Override
     public void toggleButton(boolean isUp, boolean on) throws IOException, ClassNotFoundException {
@@ -260,9 +235,7 @@ class BottomFloor extends Floor {
     }
 
     /**
-     * Method for getting the bottom button
-     *
-     * @return the button
+     * {@inheritDoc}
      */
     @Override
     public FloorButton getBottom() {
@@ -270,9 +243,7 @@ class BottomFloor extends Floor {
     }
 
     /**
-     * Method for getting the up button
-     *
-     * @return the button
+     * {@inheritDoc}
      */
     @Override
     public FloorButton getTop() {
@@ -303,12 +274,7 @@ class MiddleFloor extends Floor {
     }
 
     /**
-     * Method for toggling the floor button
-     *
-     * @param isUp the button's direction
-     * @param on   whether the button is on or off
-     * @throws IOException
-     * @throws ClassNotFoundException
+     * {@inheritDoc}
      */
     @Override
     public void toggleButton(boolean isUp, boolean on) throws IOException, ClassNotFoundException {
@@ -320,9 +286,7 @@ class MiddleFloor extends Floor {
     }
 
     /**
-     * Method for returning the down button
-     *
-     * @return the downButton
+     * {@inheritDoc}
      */
     @Override
     public FloorButton getBottom() {
@@ -330,9 +294,7 @@ class MiddleFloor extends Floor {
     }
 
     /**
-     * Method for returning the up button
-     *
-     * @return the upButton
+     * {@inheritDoc}
      */
     @Override
     public FloorButton getTop() {

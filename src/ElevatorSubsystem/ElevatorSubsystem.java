@@ -28,14 +28,14 @@ public class ElevatorSubsystem {
      * @throws SocketException
      */
     public static List<Elevator> generateElevators(Config config, SchedulerApi scheduler, GuiApi gui, int maxFloor) throws IOException, ClassNotFoundException {
-        List<Elevator> elevators = new ArrayList<>();
+        List<Elevator> elevatorApis = new ArrayList<>();
 
         for (int i = 0; i < config.getIntProperty("numElevators"); i++) {
             Elevator tempElev = new Elevator(config, scheduler, gui, i, maxFloor);
             tempElev.start();
-            elevators.add(tempElev);
+            elevatorApis.add(tempElev);
         }
-        return elevators;
+        return elevatorApis;
     }
 
     public static void main(String[] args) throws IOException, ClassNotFoundException {

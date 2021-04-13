@@ -31,12 +31,7 @@ public class ElevatorClient extends StubClient implements ElevatorApi {
     }
 
     /**
-     * The distance to the floor
-     *
-     * @param destination floor
-     * @return distance
-     * @throws IOException
-     * @throws ClassNotFoundException
+     * {@inheritDoc}
      */
     @Override
     public int distanceTheFloor(Destination destination) throws IOException, ClassNotFoundException {
@@ -44,18 +39,16 @@ public class ElevatorClient extends StubClient implements ElevatorApi {
     }
 
     /**
-     * Adding the destination to the floor
-     *
-     * @param destination
-     * @throws IOException
-     * @throws ClassNotFoundException
-     * @return
+     * {@inheritDoc}
      */
     @Override
     public boolean addDestination(Destination destination) throws IOException, ClassNotFoundException {
         return sendAndReceive(2, destination, inetAddress, port);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void interrupt() throws IOException, ClassNotFoundException {
         sendAndReceive(20, inetAddress, port);

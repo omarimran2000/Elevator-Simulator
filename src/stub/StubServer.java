@@ -82,7 +82,7 @@ public class StubServer {
         try (DatagramSocket datagramSocket = new DatagramSocket()) {
 
             //run the appropriate callback to get response
-            Serializable response = callbacks.get(stubRequestMessage.getFunctionNumber()).apply(stubRequestMessage.getArguments());
+            Serializable response = callbacks.get(stubRequestMessage.functionNumber()).apply(stubRequestMessage.arguments());
 
             //serialize response
             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();

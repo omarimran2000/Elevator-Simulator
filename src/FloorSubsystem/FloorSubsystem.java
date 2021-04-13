@@ -28,16 +28,16 @@ public class FloorSubsystem {
     /**
      * Generates the floors
      *
-     * @param config the config file
+     * @param config    the config file
      * @param scheduler the scheduler
-     * @param gui the gui
+     * @param gui       the gui
      * @param schedule  the list of events
      * @return The map of the floors
      */
     public static Map<Integer, Floor> generateFloors(Config config, SchedulerApi scheduler, GuiApi gui, List<Event> schedule) throws SocketException {
         Map<Integer, Floor> floors = new HashMap<>();
 
-        Map<Integer, List<Event>> schedule_by_floor = schedule.stream().collect(groupingBy(Event::getFloorNumber));
+        Map<Integer, List<Event>> schedule_by_floor = schedule.stream().collect(groupingBy(Event::floorNumber));
 
         int max_floor_number = 0;
 
@@ -46,8 +46,8 @@ public class FloorSubsystem {
                 max_floor_number = entry.getKey();
             }
             for (Event event : entry.getValue()) {
-                if (event.getCarButton() > max_floor_number) {
-                    max_floor_number = event.getCarButton();
+                if (event.carButton() > max_floor_number) {
+                    max_floor_number = event.carButton();
                 }
             }
         }
@@ -69,9 +69,9 @@ public class FloorSubsystem {
     /**
      * Generates the map of floors in the system
      *
-     * @param config The config file
+     * @param config            The config file
      * @param scheduler         The scheduler
-     * @param gui The gui
+     * @param gui               The gui
      * @param schedule_filename The input file
      * @return The map of floors
      * @throws FileNotFoundException
@@ -84,7 +84,7 @@ public class FloorSubsystem {
     /**
      * Reads the input file and schedules the events
      *
-     * @param config The config file
+     * @param config   The config file
      * @param filename The input file
      * @return The scheduled list of events
      * @throws FileNotFoundException
