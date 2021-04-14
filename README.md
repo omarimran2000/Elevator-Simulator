@@ -11,7 +11,7 @@ The Elevator system consists of four subsystems.
 To import the project in Eclipse, unzip the archive file and then import project from file system.
 
 To run in the Command Prompt, first you need to run the subsystems in this order: GUI, ElevatorSubsystem, Scheduler, 
-then th FloorSubsystem. You can also run Main.java which runs the main scripts for all four subsystems.
+then the FloorSubsystem. You can also run Main.java which runs the main scripts for all four subsystems.
 
 The FloorSubsystem will parse the CSV file containing all the events. The relative time in the program will start at 14:
 00:00 and will then call on events based on this time.
